@@ -1,12 +1,14 @@
 import { faker } from "@faker-js/faker";
+import { Page } from "@playwright/test";
 
-export const fakeUser = {
-  name: faker.person.fullName(),
-  email: faker.internet.email(),
-  password: faker.internet.password(),
-  address: faker.location.streetAddress(),
-  city: faker.location.city(),
-  state: faker.location.state(),
-  zip: faker.location.zipCode(),
-  mobile: faker.phone.number(),
-};
+export class FakeUser {
+  username: string;
+  email: string;
+  password: string;
+
+  constructor(page: Page) {
+    this.username = faker.internet.username();
+    this.email = faker.internet.email();
+    this.password = faker.internet.password();
+  }
+}
