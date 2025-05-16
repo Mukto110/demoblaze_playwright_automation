@@ -82,6 +82,50 @@ class HomePageTest extends ExpectedValueProvider {
           homePage.firstProductCardOfMonitors
         );
       });
+
+      test("Verify product cards display image, title, price, description", async ({
+        runner,
+        homePage,
+      }) => {
+        await runner.verifyElementIsVisible(homePage.firstProductImage);
+        await runner.verifyElementIsVisible(homePage.firstProductTitle);
+        await runner.verifyElementIsVisible(homePage.firstProductPrice);
+        await runner.verifyElementIsVisible(homePage.firstProductDescription);
+      });
+
+      test("Verify clicking product image navigates to product detail page", async ({
+        runner,
+        homePage,
+        productDetailPage,
+      }) => {
+        await runner.clickOnElement(homePage.firstProductImage);
+        await runner.verifyElementIsVisible(
+          productDetailPage.firstProductTitle
+        );
+        await runner.verifyElementIsVisible(
+          productDetailPage.firstProductPrice
+        );
+        await runner.verifyElementIsVisible(
+          productDetailPage.firstProductDescription
+        );
+      });
+
+      test("Verify clicking product title navigates to product detail page", async ({
+        runner,
+        homePage,
+        productDetailPage,
+      }) => {
+        await runner.clickOnElement(homePage.firstProductTitle);
+        await runner.verifyElementIsVisible(
+          productDetailPage.firstProductTitle
+        );
+        await runner.verifyElementIsVisible(
+          productDetailPage.firstProductPrice
+        );
+        await runner.verifyElementIsVisible(
+          productDetailPage.firstProductDescription
+        );
+      });
       // -----------------------------
     });
   }
