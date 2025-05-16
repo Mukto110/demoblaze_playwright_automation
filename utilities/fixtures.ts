@@ -4,17 +4,28 @@ import { HomePage } from "../pageObjectModel/homePage.ts";
 import { FakeUser } from "./fakeData.ts";
 import { EnvData } from "./env.ts";
 import { SignupModal } from "../pageObjectModel/signUpModal.ts";
+<<<<<<< HEAD
 import { LoginHelper } from "../utilities/authHelper.ts";
 import { ProductDetailPage } from "../pageObjectModel/productDetailPage.ts";
+=======
+import{LoginHelper}from "../utilities/authHelper.ts"
+import { LoginModal } from "../pageObjectModel/login.ts";
+>>>>>>> main
 
 const test = base.extend<{
   runner: Utils;
   homePage: HomePage;
   fakeUser: FakeUser;
   envData: EnvData;
+<<<<<<< HEAD
   signUpModal: SignupModal;
   loginHelper: LoginHelper;
   productDetailPage: ProductDetailPage;
+=======
+  signUpModal :SignupModal;
+  loginHelper : LoginHelper;
+  loginModal : LoginModal;
+>>>>>>> main
 }>({
   page: async ({ page }, use) => {
     await page.waitForLoadState("load");
@@ -60,11 +71,20 @@ const test = base.extend<{
   signUpModal: async ({ page }: { page: Page }, use) => {
     const signUpModalInstance = new SignupModal(page);
     await use(signUpModalInstance);
+<<<<<<< HEAD
   },
   productDetailPage: async ({ page }: { page: Page }, use) => {
     const productDetailPageInstance = new ProductDetailPage(page);
     await use(productDetailPageInstance);
   },
+=======
+    },
+    loginModal: async ({ page }: { page: Page }, use) => {
+    const loginModalInstance = new LoginModal(page);
+    await use(loginModalInstance);
+    },
+
+>>>>>>> main
 });
 
 export { test };

@@ -4,6 +4,8 @@ export class HomePage {
   readonly homePageLogo: string;
   readonly firstProductCardOfAllProduct: string;
   readonly secondProductCardOfAllProduct: string;
+  readonly firstProductCardOfAllProduct: string;
+  readonly secondProductCardOfAllProduct: string;
   readonly navbarHome: string;
   readonly navbarContact: string;
   readonly navbarAbout: string;
@@ -23,6 +25,8 @@ export class HomePage {
 
   constructor(page: Page) {
     this.homePageLogo = `css=a[id='nava']`;
+    this.firstProductCardOfAllProduct = `xpath=//body/div[@id='contcont']/div[@class='row']/div[@class='col-lg-9']/div[@id='tbodyid']/div[1]/div[1]`;
+    this.secondProductCardOfAllProduct = `xpath=//body/div[@id='contcont']/div[@class='row']/div[@class='col-lg-9']/div[@id='tbodyid']/div[2]/div[1]`;
     this.firstProductCardOfAllProduct = `xpath=//body/div[@id='contcont']/div[@class='row']/div[@class='col-lg-9']/div[@id='tbodyid']/div[1]/div[1]`;
     this.secondProductCardOfAllProduct = `xpath=//body/div[@id='contcont']/div[@class='row']/div[@class='col-lg-9']/div[@id='tbodyid']/div[2]/div[1]`;
     this.navbarHome = `css=a[class='nav-link'][href='index.html']`;
