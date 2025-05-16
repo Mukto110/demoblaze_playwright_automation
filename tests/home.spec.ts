@@ -50,10 +50,90 @@ class HomePageTest extends ExpectedValueProvider {
         );
       });
 
+<<<<<<< HEAD
+      test("Verify clicking 'Categories' reloads homepage and shows all products", async ({
+        runner,
+        homePage,
+      }) => {
+        await runner.clickOnElement(homePage.categoryLaptops);
+        await runner.verifyElementIsVisible(homePage.macbookLaptopCard);
+        await runner.verifyElementIsVisible(homePage.categoriesHeaderSidebar);
+        await runner.clickOnElement(homePage.categoriesHeaderSidebar);
+        await runner.verifyElementIsVisible(homePage.homePageLogo);
+        await runner.verifyElementIsVisible(
+          homePage.firstProductCardOfAllProduct
+        );
+        await runner.verifyElementIsVisible(
+          homePage.secondProductCardOfAllProduct
+        );
+      });
+
+      test("Verify filtering works by 'Phones', 'Laptops', 'Monitors'", async ({
+        runner,
+        homePage,
+      }) => {
+        await runner.clickOnElement(homePage.categoriesPhones);
+        await runner.verifyElementIsVisible(
+          homePage.firstProductCardOfAllProduct
+        );
+        await runner.clickOnElement(homePage.categoryLaptops);
+        await runner.verifyElementIsVisible(homePage.macbookLaptopCard);
+        await runner.clickOnElement(homePage.categoriesMonitors);
+        await runner.verifyElementIsVisible(
+          homePage.firstProductCardOfMonitors
+        );
+      });
+
+      test("Verify product cards display image, title, price, description", async ({
+        runner,
+        homePage,
+      }) => {
+        await runner.verifyElementIsVisible(homePage.firstProductImage);
+        await runner.verifyElementIsVisible(homePage.firstProductTitle);
+        await runner.verifyElementIsVisible(homePage.firstProductPrice);
+        await runner.verifyElementIsVisible(homePage.firstProductDescription);
+      });
+
+      test("Verify clicking product image navigates to product detail page", async ({
+        runner,
+        homePage,
+        productDetailPage,
+      }) => {
+        await runner.clickOnElement(homePage.firstProductImage);
+        await runner.verifyElementIsVisible(
+          productDetailPage.firstProductTitle
+        );
+        await runner.verifyElementIsVisible(
+          productDetailPage.firstProductPrice
+        );
+        await runner.verifyElementIsVisible(
+          productDetailPage.firstProductDescription
+        );
+      });
+
+      test("Verify clicking product title navigates to product detail page", async ({
+        runner,
+        homePage,
+        productDetailPage,
+      }) => {
+        await runner.clickOnElement(homePage.firstProductTitle);
+        await runner.verifyElementIsVisible(
+          productDetailPage.firstProductTitle
+        );
+        await runner.verifyElementIsVisible(
+          productDetailPage.firstProductPrice
+        );
+        await runner.verifyElementIsVisible(
+          productDetailPage.firstProductDescription
+        );
+      });
+      // -----------------------------
+=======
       // test("Verify clicking 'Categories' reloads homepage and shows all products", async ({
       //   runner,
       //   homePage,
       // }) => {});
+>>>>>>> main
     });
   }
 }

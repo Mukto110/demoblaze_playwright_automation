@@ -1,0 +1,6 @@
+[2025-05-17 01:16:29] INFO: Navigated to https://demoblaze.com/
+[2025-05-17 01:16:29] INFO: Verified element with identifier css=a[id='nava'] is visible
+[2025-05-17 01:16:31] INFO: Clicked on element with identifier: css=div[id='tbodyid'] div:nth-child(1) div:nth-child(1) a:nth-child(1) img:nth-child(1)
+[2025-05-17 01:16:33] INFO: Verified element with identifier css=h2[class='name'] is visible
+[2025-05-17 01:16:33] INFO: Verified element with identifier css=h3[class='price-container'] is visible
+[2025-05-17 01:16:33] INFO: Verified element with identifier css=div[id='more-information'] is visible
