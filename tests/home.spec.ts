@@ -50,10 +50,10 @@ class HomePageTest extends ExpectedValueProvider {
         );
       });
 
-      // test("Verify clicking 'Categories' reloads homepage and shows all products", async ({
-      //   runner,
-      //   homePage,
-      // }) => {});
+      test("Verify clicking 'Categories' reloads homepage and shows all products", async ({
+        runner,
+        homePage,
+      }) => {});
     });
   }
 }
