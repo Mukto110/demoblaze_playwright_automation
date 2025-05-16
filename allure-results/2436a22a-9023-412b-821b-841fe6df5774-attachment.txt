@@ -1,0 +1,4 @@
+[2025-05-16 17:34:46] INFO: Navigated to https://demoblaze.com/
+[2025-05-16 17:34:46] INFO: Verified element with identifier css=a[id='nava'] is visible
+[2025-05-16 17:34:51] INFO: Verified element with identifier xpath=//body/div[@id='contcont']/div[@class='row']/div[@class='col-lg-9']/div[@id='tbodyid']/div[1]/div[1] is visible
+[2025-05-16 17:34:56] INFO: Verified element with identifier xpath=//body/div[@id='contcont']/div[@class='row']/div[@class='col-lg-9']/div[@id='tbodyid']/div[2]/div[1] is visible

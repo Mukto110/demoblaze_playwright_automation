@@ -20,6 +20,18 @@ class HomePageTest extends ExpectedValueProvider {
         await runner.verifyElementIsVisible(homePage.firstProductCard);
         await runner.verifyElementIsVisible(homePage.secondProductCard);
       });
+
+      test("Verify navigation bar is displayed correctly", async ({
+        runner,
+        homePage,
+      }) => {
+        await runner.verifyElementIsVisible(homePage.navbarHome);
+        await runner.verifyElementIsVisible(homePage.navbarContact);
+        await runner.verifyElementIsVisible(homePage.navbarAbout);
+        await runner.verifyElementIsVisible(homePage.navbarCart);
+        await runner.verifyElementIsVisible(homePage.navbarLogin);
+        await runner.verifyElementIsVisible(homePage.navbarSignup);
+      });
     });
   }
 }
