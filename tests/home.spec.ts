@@ -53,7 +53,36 @@ class HomePageTest extends ExpectedValueProvider {
       test("Verify clicking 'Categories' reloads homepage and shows all products", async ({
         runner,
         homePage,
-      }) => {});
+      }) => {
+        await runner.clickOnElement(homePage.categoryLaptops);
+        await runner.verifyElementIsVisible(homePage.macbookLaptopCard);
+        await runner.verifyElementIsVisible(homePage.categoriesHeaderSidebar);
+        await runner.clickOnElement(homePage.categoriesHeaderSidebar);
+        await runner.verifyElementIsVisible(homePage.homePageLogo);
+        await runner.verifyElementIsVisible(
+          homePage.firstProductCardOfAllProduct
+        );
+        await runner.verifyElementIsVisible(
+          homePage.secondProductCardOfAllProduct
+        );
+      });
+
+      test("Verify filtering works by 'Phones', 'Laptops', 'Monitors'", async ({
+        runner,
+        homePage,
+      }) => {
+        await runner.clickOnElement(homePage.categoriesPhones);
+        await runner.verifyElementIsVisible(
+          homePage.firstProductCardOfAllProduct
+        );
+        await runner.clickOnElement(homePage.categoryLaptops);
+        await runner.verifyElementIsVisible(homePage.macbookLaptopCard);
+        await runner.clickOnElement(homePage.categoriesMonitors);
+        await runner.verifyElementIsVisible(
+          homePage.firstProductCardOfMonitors
+        );
+      });
+      // -----------------------------
     });
   }
 }
