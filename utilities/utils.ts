@@ -331,6 +331,59 @@ export class Utils {
     return savePath;
   }
 
+   async handleAlertWithMessage(expectedMessage: string): Promise<void> {
+    try {
+      this.page.once("dialog", async (dialog) => {
+        const message = dialog.message();
+        expect(message).toBe(expectedMessage);
+        await dialog.accept();
+        this.logMessage(`Alert with message "${message}" accepted.`);
+      });
+    } catch (error) {
+      const errorMsg = `Failed to handle alert with expected message: "${expectedMessage}"`;
+      this.logMessage(errorMsg, "error");
+      await this.captureScreenshotOnFailure("handleAlertWithMessage");
+      throw new Error(errorMsg);
+    }
+  }
+
+  async validateMinLengthAfterSubmit(
+  inputSelector: string,
+  submitSelector: string,
+  minLength: number
+): Promise<void> {
+  try {
+    // Click the submit button
+    await this.page.locator(submitSelector).click();
+    this.logMessage(`Clicked submit button: ${submitSelector}`);
+
+    // Wait briefly for validation logic to run (DOM update, message, etc.)
+    await this.page.waitForTimeout(500);
+
+    // Get the value of the input field
+    const inputField = this.page.locator(inputSelector);
+    await expect(inputField).toBeVisible();
+
+    const value = await inputField.inputValue();
+
+    if (value.length <= minLength) {
+      throw new Error(
+        `Expected input to have less than ${minLength} characters for validation error, but got ${value.length}.`
+      );
+    }
+
+    this.logMessage(
+      `Validation triggered successfully: input has ${value.length} characters (expected less than ${minLength}).`
+    );
+  } catch (error) {
+    const errorMsg = `Min-length validation failed after submit: ${error.message}`;
+    this.logMessage(errorMsg, "error");
+    await this.captureScreenshotOnFailure("validateMinLengthAfterSubmit");
+    throw new Error(errorMsg);
+  }
+}
+
+
   async scrollToTop() {
     await this.page.evaluate(() => {
       window.scrollTo({ top: 0, behavior: "smooth" });

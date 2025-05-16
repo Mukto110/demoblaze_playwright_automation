@@ -1,0 +1,8 @@
+[2025-05-16 18:37:43] INFO: Navigated to https://demoblaze.com/
+[2025-05-16 18:37:43] INFO: Verified element with identifier css=a[id='nava'] is visible
+[2025-05-16 18:37:43] INFO: Verified element with identifier css=#signin2 is visible
+[2025-05-16 18:37:43] INFO: Clicked on element with identifier: css=#signin2
+[2025-05-16 18:37:44] INFO: Verified element with identifier css=#signInModalLabel contains text: "Sign up"
+[2025-05-16 18:37:44] INFO: Filled input box (css=#sign-username) with text: "Lou.Wilkinson"
+[2025-05-16 18:37:44] INFO: Filled input box (css=#sign-password) with text: "N7qiKmgcW0kl_PJ"
+[2025-05-16 18:37:44] INFO: Clicked on element with identifier: css=body > div:nth-child(2) > div:nth-child(1) > div:nth-child(1) > div:nth-child(3) > button:nth-child(2)
