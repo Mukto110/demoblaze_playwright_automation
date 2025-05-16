@@ -3,12 +3,16 @@ import { Utils } from "./utils";
 import { HomePage } from "../pageObjectModel/homePage.ts";
 import { FakeUser } from "./fakeData.ts";
 import { EnvData } from "./env.ts";
+import { SignupModal } from "../pageObjectModel/signUpModal.ts";
+import{LoginHelper}from "../utilities/authHelper.ts"
 
 const test = base.extend<{
   runner: Utils;
   homePage: HomePage;
   fakeUser: FakeUser;
   envData: EnvData;
+  signUpModal :SignupModal;
+  loginHelper : LoginHelper;
 }>({
   page: async ({ page }, use) => {
     await page.waitForLoadState("load");
@@ -42,11 +46,21 @@ const test = base.extend<{
     const envDataInstance = new EnvData(page);
     await use(envDataInstance);
   },
+      loginHelper: async ({ page }: { page: Page }, use) => {
+    const loginHelperlInstance = new LoginHelper(page);
+    await use(loginHelperlInstance);
+    },
 
   homePage: async ({ page }: { page: Page }, use) => {
     const homePageInstance = new HomePage(page);
     await use(homePageInstance);
+
   },
+    signUpModal: async ({ page }: { page: Page }, use) => {
+    const signUpModalInstance = new SignupModal(page);
+    await use(signUpModalInstance);
+    },
+
 });
 
 export { test };
