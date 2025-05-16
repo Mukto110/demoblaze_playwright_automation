@@ -50,7 +50,6 @@ class HomePageTest extends ExpectedValueProvider {
         );
       });
 
-<<<<<<< HEAD
       test("Verify clicking 'Categories' reloads homepage and shows all products", async ({
         runner,
         homePage,
@@ -127,13 +126,6 @@ class HomePageTest extends ExpectedValueProvider {
           productDetailPage.firstProductDescription
         );
       });
-      // -----------------------------
-=======
-      // test("Verify clicking 'Categories' reloads homepage and shows all products", async ({
-      //   runner,
-      //   homePage,
-      // }) => {});
->>>>>>> main
     });
   }
 }
