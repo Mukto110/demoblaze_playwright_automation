@@ -32,6 +32,17 @@ class HomePageTest extends ExpectedValueProvider {
         await runner.verifyElementIsVisible(homePage.navbarLogin);
         await runner.verifyElementIsVisible(homePage.navbarSignup);
       });
+
+      test("Verify homepage reloads and resets filters on 'Home' navbar click", async ({
+        runner,
+        homePage,
+      }) => {
+        await runner.clickOnElement(homePage.categoryLaptops);
+        await runner.verifyElementIsVisible(homePage.macbookLaptopCard);
+        await runner.clickOnElement(homePage.homePageLogo);
+        await runner.verifyElementIsVisible(homePage.homePageLogo);
+        await runner.verifyElementIsVisible(homePage.firstProductCard);
+      });
     });
   }
 }

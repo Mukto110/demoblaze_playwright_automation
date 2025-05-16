@@ -56,6 +56,20 @@ export class Utils {
     }
   }
 
+  async verifyElementIsNotVisible(identifier: string): Promise<void> {
+    try {
+      await expect.soft(this.page.locator(identifier)).not.toBeVisible();
+      this.logMessage(
+        `Verified element with identifier ${identifier} is not visible`
+      );
+    } catch (error) {
+      const errorMsg = `Failed to verify element with identifier ${identifier} is not visible`;
+      this.logMessage(errorMsg, "error");
+      await this.captureScreenshotOnFailure("verifyElementIsNotVisible");
+      throw new Error(errorMsg);
+    }
+  }
+
   async verifyElementIsHidden(identifier: string): Promise<void> {
     try {
       await expect.soft(this.page.locator(identifier)).toBeHidden();
@@ -331,7 +345,7 @@ export class Utils {
     return savePath;
   }
 
-   async handleAlertWithMessage(expectedMessage: string): Promise<void> {
+  async handleAlertWithMessage(expectedMessage: string): Promise<void> {
     try {
       this.page.once("dialog", async (dialog) => {
         const message = dialog.message();
@@ -348,41 +362,40 @@ export class Utils {
   }
 
   async validateMinLengthAfterSubmit(
-  inputSelector: string,
-  submitSelector: string,
-  minLength: number
-): Promise<void> {
-  try {
-    // Click the submit button
-    await this.page.locator(submitSelector).click();
-    this.logMessage(`Clicked submit button: ${submitSelector}`);
+    inputSelector: string,
+    submitSelector: string,
+    minLength: number
+  ): Promise<void> {
+    try {
+      // Click the submit button
+      await this.page.locator(submitSelector).click();
+      this.logMessage(`Clicked submit button: ${submitSelector}`);
 
-    // Wait briefly for validation logic to run (DOM update, message, etc.)
-    await this.page.waitForTimeout(500);
+      // Wait briefly for validation logic to run (DOM update, message, etc.)
+      await this.page.waitForTimeout(500);
 
-    // Get the value of the input field
-    const inputField = this.page.locator(inputSelector);
-    await expect(inputField).toBeVisible();
+      // Get the value of the input field
+      const inputField = this.page.locator(inputSelector);
+      await expect(inputField).toBeVisible();
 
-    const value = await inputField.inputValue();
+      const value = await inputField.inputValue();
 
-    if (value.length <= minLength) {
-      throw new Error(
-        `Expected input to have less than ${minLength} characters for validation error, but got ${value.length}.`
+      if (value.length <= minLength) {
+        throw new Error(
+          `Expected input to have less than ${minLength} characters for validation error, but got ${value.length}.`
+        );
+      }
+
+      this.logMessage(
+        `Validation triggered successfully: input has ${value.length} characters (expected less than ${minLength}).`
       );
+    } catch (error) {
+      const errorMsg = `Min-length validation failed after submit: ${error.message}`;
+      this.logMessage(errorMsg, "error");
+      await this.captureScreenshotOnFailure("validateMinLengthAfterSubmit");
+      throw new Error(errorMsg);
     }
-
-    this.logMessage(
-      `Validation triggered successfully: input has ${value.length} characters (expected less than ${minLength}).`
-    );
-  } catch (error) {
-    const errorMsg = `Min-length validation failed after submit: ${error.message}`;
-    this.logMessage(errorMsg, "error");
-    await this.captureScreenshotOnFailure("validateMinLengthAfterSubmit");
-    throw new Error(errorMsg);
   }
-}
-
 
   async scrollToTop() {
     await this.page.evaluate(() => {

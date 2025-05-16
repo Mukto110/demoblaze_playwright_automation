@@ -10,6 +10,8 @@ export class HomePage {
   readonly navbarCart: string;
   readonly navbarLogin: string;
   readonly navbarSignup: string;
+  readonly categoryLaptops: string;
+  readonly macbookLaptopCard: string;
 
   constructor(page: Page) {
     this.homePageLogo = `css=a[id='nava']`;
@@ -21,5 +23,7 @@ export class HomePage {
     this.navbarCart = `css=a[id='cartur']`;
     this.navbarLogin = `css=a[id='login2']`;
     this.navbarSignup = `css=a[id='signin2']`;
+    this.categoryLaptops = `xpath=//a[@id='itemc' and text()='Laptops']`;
+    this.macbookLaptopCard = `css=body div[id='contcont'] div[class='row'] div[class='col-lg-9'] div[id='tbodyid'] div:nth-child(1) div:nth-child(1)`;
   }
 }
