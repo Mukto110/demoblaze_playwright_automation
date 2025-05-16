@@ -5,6 +5,7 @@ import { FakeUser } from "./fakeData.ts";
 import { EnvData } from "./env.ts";
 import { SignupModal } from "../pageObjectModel/signUpModal.ts";
 import{LoginHelper}from "../utilities/authHelper.ts"
+import { LoginModal } from "../pageObjectModel/login.ts";
 
 const test = base.extend<{
   runner: Utils;
@@ -13,6 +14,7 @@ const test = base.extend<{
   envData: EnvData;
   signUpModal :SignupModal;
   loginHelper : LoginHelper;
+  loginModal : LoginModal;
 }>({
   page: async ({ page }, use) => {
     await page.waitForLoadState("load");
@@ -59,6 +61,10 @@ const test = base.extend<{
     signUpModal: async ({ page }: { page: Page }, use) => {
     const signUpModalInstance = new SignupModal(page);
     await use(signUpModalInstance);
+    },
+    loginModal: async ({ page }: { page: Page }, use) => {
+    const loginModalInstance = new LoginModal(page);
+    await use(loginModalInstance);
     },
 
 });
