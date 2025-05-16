@@ -1,0 +1,2 @@
+[2025-05-16 17:36:15] ERROR: Failed to navigate to undefined
+[2025-05-16 17:36:16] ERROR: navigateTo failed. Screenshot captured.
