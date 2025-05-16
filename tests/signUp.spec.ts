@@ -20,9 +20,8 @@ class SignupModal extends ExpectedValueProvider {
         signUpModal,
         fakeUser
       }) => {
-        await runner.verifyElementIsVisible(`css=#signin2`);
-        // this to be updated when the locator is set in homePage.ts
-        await runner.clickOnElement(`css=#signin2`);
+        await runner.verifyElementIsVisible(homePage.navbarSignup);
+        await runner.clickOnElement(homePage.navbarSignup);
         await runner.verifyContainText(signUpModal.signUpModalLabel,'Sign up')
         await runner.verifyElementIsVisible(signUpModal.usernameTextField)
         await runner.verifyElementIsVisible(signUpModal.passwordTextField)
@@ -37,9 +36,8 @@ class SignupModal extends ExpectedValueProvider {
         signUpModal,
         fakeUser
       }) => {
-        await runner.verifyElementIsVisible(`css=#signin2`);
-        // this to be updated when the locator is set in homePage.ts
-        await runner.clickOnElement(`css=#signin2`);
+        await runner.verifyElementIsVisible(homePage.navbarSignup);
+        await runner.clickOnElement(homePage.navbarSignup);
         await runner.verifyContainText(signUpModal.signUpModalLabel,'Sign up')
         await runner.fillInputBox(signUpModal.usernameTextField,fakeUser.username)
         await runner.fillInputBox(signUpModal.passwordTextField,fakeUser.password)
@@ -53,9 +51,8 @@ class SignupModal extends ExpectedValueProvider {
         signUpModal,
         fakeUser
       }) => {
-        await runner.verifyElementIsVisible(`css=#signin2`);
-        // this to be updated when the locator is set in homePage.ts
-        await runner.clickOnElement(`css=#signin2`);
+        await runner.verifyElementIsVisible(homePage.navbarSignup);
+        await runner.clickOnElement(homePage.navbarSignup);
         await runner.verifyContainText(signUpModal.signUpModalLabel,'Sign up')
         await runner.fillInputBox(signUpModal.usernameTextField,fakeUser.username)
         await runner.fillInputBox(signUpModal.passwordTextField,fakeUser.password)
@@ -69,9 +66,8 @@ class SignupModal extends ExpectedValueProvider {
         signUpModal,
         fakeUser
       }) => {
-        await runner.verifyElementIsVisible(`css=#signin2`);
-        // this to be updated when the locator is set in homePage.ts
-        await runner.clickOnElement(`css=#signin2`);
+        await runner.verifyElementIsVisible(homePage.navbarSignup);
+        await runner.clickOnElement(homePage.navbarSignup);
         await runner.verifyContainText(signUpModal.signUpModalLabel,'Sign up')
         await runner.fillInputBox(signUpModal.usernameTextField,'')
         await runner.fillInputBox(signUpModal.passwordTextField,'')
@@ -85,9 +81,8 @@ class SignupModal extends ExpectedValueProvider {
         signUpModal,
         envData
       }) => {
-        await runner.verifyElementIsVisible(`css=#signin2`);
-        // this to be updated when the locator is set in homePage.ts
-        await runner.clickOnElement(`css=#signin2`);
+        await runner.verifyElementIsVisible(homePage.navbarSignup);
+        await runner.clickOnElement(homePage.navbarSignup);
         await runner.verifyContainText(signUpModal.signUpModalLabel,'Sign up')
         await runner.clickOnElement(signUpModal.closeButton)
         await runner.verifyUrlContains(envData.baseUrl)
@@ -100,9 +95,8 @@ class SignupModal extends ExpectedValueProvider {
         signUpModal,
         envData,fakeUser
       }) => {
-        await runner.verifyElementIsVisible(`css=#signin2`);
-        // this to be updated when the locator is set in homePage.ts
-        await runner.clickOnElement(`css=#signin2`);
+        await runner.verifyElementIsVisible(homePage.navbarSignup);
+        await runner.clickOnElement(homePage.navbarSignup);
         await runner.verifyContainText(signUpModal.signUpModalLabel,'Sign up')
         await runner.fillInputBox(signUpModal.usernameTextField,fakeUser.username)
         await runner.fillInputBox(signUpModal.passwordTextField,"ash")
