@@ -17,8 +17,12 @@ class HomePageTest extends ExpectedValueProvider {
         runner,
         homePage,
       }) => {
-        await runner.verifyElementIsVisible(homePage.firstProductCard);
-        await runner.verifyElementIsVisible(homePage.secondProductCard);
+        await runner.verifyElementIsVisible(
+          homePage.firstProductCardOfAllProduct
+        );
+        await runner.verifyElementIsVisible(
+          homePage.secondProductCardOfAllProduct
+        );
       });
 
       test("Verify navigation bar is displayed correctly", async ({
@@ -41,8 +45,15 @@ class HomePageTest extends ExpectedValueProvider {
         await runner.verifyElementIsVisible(homePage.macbookLaptopCard);
         await runner.clickOnElement(homePage.homePageLogo);
         await runner.verifyElementIsVisible(homePage.homePageLogo);
-        await runner.verifyElementIsVisible(homePage.firstProductCard);
+        await runner.verifyElementIsVisible(
+          homePage.firstProductCardOfAllProduct
+        );
       });
+
+      // test("Verify clicking 'Categories' reloads homepage and shows all products", async ({
+      //   runner,
+      //   homePage,
+      // }) => {});
     });
   }
 }
