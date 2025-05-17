@@ -22,6 +22,8 @@ export class HomePage {
   readonly firstProductDescription: string;
   readonly carousel: string;
   readonly activeCarouselImage: string;
+  readonly carouselNextButton: string;
+  readonly carouselPreviousButton: string;
 
   constructor(page: Page) {
     this.homePageLogo = `css=a[id='nava']`;
@@ -47,5 +49,7 @@ export class HomePage {
     this.firstProductDescription = `css=body > div:nth-child(6) > div:nth-child(1) > div:nth-child(2) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(2) > p:nth-child(3)`;
     this.carousel = `css=div[id='carouselExampleIndicators']`;
     this.activeCarouselImage = `css=.carousel-item.active img`;
+    this.carouselNextButton = `css=span[class='carousel-control-next-icon']`;
+    this.carouselPreviousButton = `css=.carousel-control-prev-icon`;
   }
 }

@@ -139,6 +139,30 @@ class HomePageTest extends ExpectedValueProvider {
         const secondImageSrc = await activeImageLocator.getAttribute("src");
         await runner.verifyNotEqual(firstImageSrc, secondImageSrc);
       });
+
+      test("Verify carousel arrows change displayed product", async ({
+        page,
+        runner,
+        homePage,
+      }) => {
+        await runner.verifyElementIsVisible(homePage.carousel);
+        const activeImageLocator = page.locator(homePage.activeCarouselImage);
+        const firstImageSrc = await activeImageLocator.getAttribute("src");
+        await runner.clickOnElement(homePage.carouselNextButton);
+        await runner.wait(1);
+        const secondImageSrc = await activeImageLocator.getAttribute("src");
+        await runner.verifyNotEqual(secondImageSrc, firstImageSrc);
+        await runner.clickOnElement(homePage.carouselNextButton);
+        await runner.wait(1);
+        const thirdImageSrc = await activeImageLocator.getAttribute("src");
+        await runner.verifyNotEqual(thirdImageSrc, firstImageSrc);
+        await runner.clickOnElement(homePage.carouselPreviousButton);
+        await runner.wait(1);
+        await runner.verifyNotEqual(secondImageSrc, thirdImageSrc);
+        await runner.clickOnElement(homePage.carouselPreviousButton);
+        await runner.wait(1);
+        await runner.verifyNotEqual(firstImageSrc, secondImageSrc);
+      });
       //---------------------------------------------------------------
     });
   }
