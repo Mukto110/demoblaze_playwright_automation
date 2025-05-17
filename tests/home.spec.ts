@@ -240,11 +240,12 @@ class HomePageTest extends ExpectedValueProvider {
         homePage,
         loginModal,
         signUpModal,
+        contactModal,
       }) => {
         await runner.verifyElementIsVisible(homePage.navbarContact);
         await runner.clickOnElement(homePage.navbarContact);
-        await runner.verifyElementIsVisible(homePage.contactModalTitle);
-        await runner.clickOnElement(homePage.contactModalCloseButton);
+        await runner.verifyElementIsVisible(contactModal.title);
+        await runner.clickOnElement(contactModal.closeButton);
         await runner.wait(1);
 
         await runner.verifyElementIsVisible(homePage.navbarAbout);
