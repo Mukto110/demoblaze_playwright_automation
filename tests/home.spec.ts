@@ -126,6 +126,20 @@ class HomePageTest extends ExpectedValueProvider {
           productDetailPage.firstProductDescription
         );
       });
+
+      test("Verify carousel is displayed, functional, and auto changes", async ({
+        page,
+        runner,
+        homePage,
+      }) => {
+        await runner.verifyElementIsVisible(homePage.carousel);
+        const activeImageLocator = page.locator(homePage.activeCarouselImage);
+        const firstImageSrc = await activeImageLocator.getAttribute("src");
+        await runner.wait(7);
+        const secondImageSrc = await activeImageLocator.getAttribute("src");
+        await runner.verifyNotEqual(firstImageSrc, secondImageSrc);
+      });
+      //---------------------------------------------------------------
     });
   }
 }

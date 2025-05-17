@@ -402,4 +402,18 @@ export class Utils {
       window.scrollTo({ top: 0, behavior: "smooth" });
     });
   }
+
+  async verifyNotEqual(actual: any, expected: any, message?: string) {
+    expect(
+      actual,
+      message || `Expected values to be different but got the same: ${actual}`
+    ).not.toBe(expected);
+  }
+
+  async verifyEqual(actual: any, expected: any, message?: string) {
+    expect(
+      actual,
+      message || `Expected ${actual} to be equal to ${expected}`
+    ).toBe(expected);
+  }
 }

@@ -20,6 +20,8 @@ export class HomePage {
   readonly firstProductTitle: string;
   readonly firstProductPrice: string;
   readonly firstProductDescription: string;
+  readonly carousel: string;
+  readonly activeCarouselImage: string;
 
   constructor(page: Page) {
     this.homePageLogo = `css=a[id='nava']`;
@@ -43,5 +45,7 @@ export class HomePage {
     this.firstProductTitle = `css=body > div:nth-child(6) > div:nth-child(1) > div:nth-child(2) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(2) > h4:nth-child(1) > a:nth-child(1)`;
     this.firstProductPrice = `css=body > div:nth-child(6) > div:nth-child(1) > div:nth-child(2) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(2) > h5:nth-child(2)`;
     this.firstProductDescription = `css=body > div:nth-child(6) > div:nth-child(1) > div:nth-child(2) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(2) > p:nth-child(3)`;
+    this.carousel = `css=div[id='carouselExampleIndicators']`;
+    this.activeCarouselImage = `css=.carousel-item.active img`;
   }
 }
