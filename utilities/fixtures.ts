@@ -9,6 +9,7 @@ import { ProductDetailPage } from "../pageObjectModel/productDetailPage.ts";
 import { LoginModal } from "../pageObjectModel/login.ts";
 import { CartPage } from "../pageObjectModel/cartPage.ts";
 import { ContactModal } from "../pageObjectModel/contactModal.ts";
+import { AboutModal } from "../pageObjectModel/aboutModal.ts";
 
 const test = base.extend<{
   runner: Utils;
@@ -21,6 +22,7 @@ const test = base.extend<{
   loginModal: LoginModal;
   cartPage: CartPage;
   contactModal: ContactModal;
+  aboutModal: AboutModal;
 }>({
   page: async ({ page }, use) => {
     await page.waitForLoadState("load");
@@ -88,6 +90,11 @@ const test = base.extend<{
   contactModal: async ({ page }: { page: Page }, use) => {
     const contactModalInstance = new ContactModal(page);
     await use(contactModalInstance);
+  },
+
+  aboutModal: async ({ page }: { page: Page }, use) => {
+    const aboutModalInstance = new AboutModal(page);
+    await use(aboutModalInstance);
   },
 });
 
