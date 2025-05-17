@@ -28,8 +28,6 @@ export class HomePage {
   readonly paginationPreviousButton: string;
   readonly footer: string;
   readonly footerText: string;
-  readonly aboutModalTitle: string;
-  readonly aboutModalCloseButton: string;
 
   constructor(page: Page) {
     this.homePageLogo = `css=a[id='nava']`;
@@ -61,7 +59,5 @@ export class HomePage {
     this.paginationPreviousButton = `xpath=//button[@id='prev2']`;
     this.footer = `css=div[id='footc']`;
     this.footerText = `xpath=//p[@class='m-0 text-center text-white']`;
-    this.aboutModalTitle = `css=h5[id='videoModalLabel']`;
-    this.aboutModalCloseButton = `css=div[id='videoModal'] div[class='modal-footer'] button[type='button']`;
   }
 }

@@ -513,4 +513,33 @@ export class Utils {
       throw new Error(msg);
     }
   }
+
+  async getVideoCurrentTime(selector: string): Promise<number> {
+    return this.page.evaluate((sel) => {
+      const v = document.querySelector(sel) as HTMLVideoElement | null;
+      return v ? Math.floor(v.currentTime) : 0;
+    }, selector);
+  }
+
+  async verifyGreaterThan(
+    actual: number,
+    expectedMin: number,
+    message?: string
+  ): Promise<void> {
+    try {
+      expect(
+        actual,
+        message || `Expected ${actual} to be greater than ${expectedMin}`
+      ).toBeGreaterThan(expectedMin);
+
+      this.logMessage(`Verified ${actual} > ${expectedMin}`);
+    } catch (err: any) {
+      const msg =
+        message ||
+        `Failed greater‑than verification: ${actual} is not > ${expectedMin}`;
+      this.logMessage(msg, "error");
+      await this.captureScreenshotOnFailure("verifyGreaterThan");
+      throw new Error(msg);
+    }
+  }
 }
