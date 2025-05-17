@@ -28,8 +28,6 @@ export class HomePage {
   readonly paginationPreviousButton: string;
   readonly footer: string;
   readonly footerText: string;
-  readonly contactModalTitle: string;
-  readonly contactModalCloseButton: string;
   readonly aboutModalTitle: string;
   readonly aboutModalCloseButton: string;
 
@@ -63,8 +61,6 @@ export class HomePage {
     this.paginationPreviousButton = `xpath=//button[@id='prev2']`;
     this.footer = `css=div[id='footc']`;
     this.footerText = `xpath=//p[@class='m-0 text-center text-white']`;
-    this.contactModalTitle = `css=h5[id='exampleModalLabel']`;
-    this.contactModalCloseButton = `css=div[id='exampleModal'] div[class='modal-footer'] button:nth-child(1)`;
     this.aboutModalTitle = `css=h5[id='videoModalLabel']`;
     this.aboutModalCloseButton = `css=div[id='videoModal'] div[class='modal-footer'] button[type='button']`;
   }
