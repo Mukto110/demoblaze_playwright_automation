@@ -1,2 +1,0 @@
-[2025-05-16 21:06:09] ERROR: Failed to navigate to https://demoblaze.com/
-[2025-05-16 21:06:09] ERROR: Error capturing screenshot: page.screenshot: Target page, context or browser has been closed

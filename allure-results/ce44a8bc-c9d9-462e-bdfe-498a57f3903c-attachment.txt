@@ -1,2 +1,0 @@
-[2025-05-16 21:06:47] ERROR: Failed to navigate to https://demoblaze.com/
-[2025-05-16 21:06:48] ERROR: navigateTo failed. Screenshot captured.

@@ -1,9 +1,0 @@
-[2025-05-17 01:14:09] INFO: Navigated to https://demoblaze.com/
-[2025-05-17 01:14:09] INFO: Verified element with identifier css=a[id='nava'] is visible
-[2025-05-17 01:14:10] INFO: Verified element with identifier css=a[id='login2'] is visible
-[2025-05-17 01:14:10] INFO: Clicked on element with identifier: css=a[id='login2']
-[2025-05-17 01:14:10] INFO: Verified element with identifier css=#logInModalLabel contains text: "Log in"
-[2025-05-17 01:14:10] INFO: Verified element with identifier css=#loginusername is visible
-[2025-05-17 01:14:10] INFO: Verified element with identifier css=#loginpassword is visible
-[2025-05-17 01:14:11] INFO: Verified element with identifier css=div[id='logInModal'] div[class='modal-footer'] button:nth-child(1) is visible
-[2025-05-17 01:14:11] INFO: Verified element with identifier css=button[onclick='logIn()'] is visible

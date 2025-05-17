@@ -1,8 +1,0 @@
-[2025-05-16 17:34:45] INFO: Navigated to https://demoblaze.com/
-[2025-05-16 17:34:45] INFO: Verified element with identifier css=a[id='nava'] is visible
-[2025-05-16 17:34:45] INFO: Verified element with identifier css=a[class='nav-link'][href='index.html'] is visible
-[2025-05-16 17:34:45] INFO: Verified element with identifier css=a[data-target='#exampleModal'] is visible
-[2025-05-16 17:34:45] INFO: Verified element with identifier css=a[data-target='#videoModal'] is visible
-[2025-05-16 17:34:45] INFO: Verified element with identifier css=a[id='cartur'] is visible
-[2025-05-16 17:34:45] INFO: Verified element with identifier css=a[id='login2'] is visible
-[2025-05-16 17:34:45] INFO: Verified element with identifier css=a[id='signin2'] is visible
