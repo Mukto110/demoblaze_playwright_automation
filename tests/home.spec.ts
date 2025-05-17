@@ -234,6 +234,36 @@ class HomePageTest extends ExpectedValueProvider {
           homeData.expectedFooterText
         );
       });
+
+      test("Verify navbar links open correct modals ('Contact', 'Login', 'Sign up', 'About Us')", async ({
+        runner,
+        homePage,
+        loginModal,
+        signUpModal,
+      }) => {
+        await runner.verifyElementIsVisible(homePage.navbarContact);
+        await runner.clickOnElement(homePage.navbarContact);
+        await runner.verifyElementIsVisible(homePage.contactModalTitle);
+        await runner.clickOnElement(homePage.contactModalCloseButton);
+        await runner.wait(1);
+
+        await runner.verifyElementIsVisible(homePage.navbarAbout);
+        await runner.clickOnElement(homePage.navbarAbout);
+        await runner.verifyElementIsVisible(homePage.aboutModalTitle);
+        await runner.clickOnElement(homePage.aboutModalCloseButton);
+        await runner.wait(1);
+
+        await runner.verifyElementIsVisible(homePage.navbarLogin);
+        await runner.clickOnElement(homePage.navbarLogin);
+        await runner.verifyElementIsVisible(loginModal.loginModalLabel);
+        await runner.clickOnElement(loginModal.closeButton);
+        await runner.wait(1);
+
+        await runner.verifyElementIsVisible(homePage.navbarSignup);
+        await runner.clickOnElement(homePage.navbarSignup);
+        await runner.verifyElementIsVisible(signUpModal.signUpModalLabel);
+        await runner.clickOnElement(signUpModal.closeButton);
+      });
       //---------------------------------------------------------------
     });
   }
