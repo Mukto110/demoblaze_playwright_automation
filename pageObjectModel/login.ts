@@ -9,7 +9,6 @@ export class LoginModal {
   readonly logoutButton: string;
   readonly nameOfUserText: string;
 
-
   constructor(page: Page) {
     this.loginModalLabel = `css=#logInModalLabel`;
     this.usernameTextField = `css=#loginusername`;
@@ -18,6 +17,5 @@ export class LoginModal {
     this.loginButton = `css=button[onclick='logIn()']`;
     this.logoutButton = `css=#logout2`;
     this.nameOfUserText = `css=#nameofuser`;
-
   }
 }

@@ -24,6 +24,10 @@ export class HomePage {
   readonly activeCarouselImage: string;
   readonly carouselNextButton: string;
   readonly carouselPreviousButton: string;
+  readonly paginationNextButton: string;
+  readonly paginationPreviousButton: string;
+  readonly footer: string;
+  readonly footerText: string;
 
   constructor(page: Page) {
     this.homePageLogo = `css=a[id='nava']`;
@@ -51,5 +55,9 @@ export class HomePage {
     this.activeCarouselImage = `css=.carousel-item.active img`;
     this.carouselNextButton = `css=span[class='carousel-control-next-icon']`;
     this.carouselPreviousButton = `css=.carousel-control-prev-icon`;
+    this.paginationNextButton = `xpath=//button[@id='next2']`;
+    this.paginationPreviousButton = `xpath=//button[@id='prev2']`;
+    this.footer = `css=div[id='footc']`;
+    this.footerText = `xpath=//p[@class='m-0 text-center text-white']`;
   }
 }

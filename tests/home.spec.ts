@@ -1,5 +1,6 @@
 import { test } from "../utilities/fixtures";
 import { ExpectedValueProvider } from "../utilities/valueProvider";
+import homeData from "../testData/home.json";
 
 class HomePageTest extends ExpectedValueProvider {
   constructor() {
@@ -128,40 +129,110 @@ class HomePageTest extends ExpectedValueProvider {
       });
 
       test("Verify carousel is displayed, functional, and auto changes", async ({
-        page,
         runner,
         homePage,
       }) => {
         await runner.verifyElementIsVisible(homePage.carousel);
-        const activeImageLocator = page.locator(homePage.activeCarouselImage);
-        const firstImageSrc = await activeImageLocator.getAttribute("src");
+        const firstImageSrc = await runner.getAttributeFromLocator(
+          homePage.activeCarouselImage,
+          "src"
+        );
         await runner.wait(7);
-        const secondImageSrc = await activeImageLocator.getAttribute("src");
-        await runner.verifyNotEqual(firstImageSrc, secondImageSrc);
+        const secondImageSrc = await runner.getAttributeFromLocator(
+          homePage.activeCarouselImage,
+          "src"
+        );
+        await runner.verifyNotEqual(
+          firstImageSrc,
+          secondImageSrc,
+          "Carousel image did not auto-change."
+        );
       });
 
       test("Verify carousel arrows change displayed product", async ({
-        page,
         runner,
         homePage,
       }) => {
         await runner.verifyElementIsVisible(homePage.carousel);
-        const activeImageLocator = page.locator(homePage.activeCarouselImage);
-        const firstImageSrc = await activeImageLocator.getAttribute("src");
+
+        const firstImageSrc = await runner.getAttributeFromLocator(
+          homePage.activeCarouselImage,
+          "src"
+        );
+
         await runner.clickOnElement(homePage.carouselNextButton);
         await runner.wait(1);
-        const secondImageSrc = await activeImageLocator.getAttribute("src");
+        const secondImageSrc = await runner.getAttributeFromLocator(
+          homePage.activeCarouselImage,
+          "src"
+        );
         await runner.verifyNotEqual(secondImageSrc, firstImageSrc);
+
         await runner.clickOnElement(homePage.carouselNextButton);
         await runner.wait(1);
-        const thirdImageSrc = await activeImageLocator.getAttribute("src");
-        await runner.verifyNotEqual(thirdImageSrc, firstImageSrc);
+        const thirdImageSrc = await runner.getAttributeFromLocator(
+          homePage.activeCarouselImage,
+          "src"
+        );
+        await runner.verifyNotEqual(thirdImageSrc, secondImageSrc);
+
         await runner.clickOnElement(homePage.carouselPreviousButton);
         await runner.wait(1);
-        await runner.verifyNotEqual(secondImageSrc, thirdImageSrc);
+        const backToSecond = await runner.getAttributeFromLocator(
+          homePage.activeCarouselImage,
+          "src"
+        );
+        await runner.verifyEqual(backToSecond, secondImageSrc);
+
         await runner.clickOnElement(homePage.carouselPreviousButton);
         await runner.wait(1);
-        await runner.verifyNotEqual(firstImageSrc, secondImageSrc);
+        const backToFirst = await runner.getAttributeFromLocator(
+          homePage.activeCarouselImage,
+          "src"
+        );
+        await runner.verifyEqual(backToFirst, firstImageSrc);
+      });
+
+      test("Verify pagination 'Next' and 'Previous' buttons work correctly", async ({
+        runner,
+        homePage,
+      }) => {
+        const firstPageProductTitle = await runner.getText(
+          homePage.firstProductTitle
+        );
+        await runner.clickOnElement(homePage.paginationNextButton);
+        await runner.wait(1);
+        const secondPageProductTitle = await runner.getText(
+          homePage.firstProductTitle
+        );
+        await runner.verifyNotEqual(
+          firstPageProductTitle,
+          secondPageProductTitle,
+          "Products did not change after clicking 'Next'."
+        );
+
+        await runner.clickOnElement(homePage.paginationPreviousButton);
+        await runner.wait(2);
+
+        const backToFirstPageProductTitle = await runner.getText(
+          homePage.firstProductTitle
+        );
+        await runner.verifyEqual(
+          backToFirstPageProductTitle,
+          firstPageProductTitle,
+          "Products did not return to first page after clicking 'Previous'."
+        );
+      });
+
+      test("Verify footer is present with copyright text", async ({
+        runner,
+        homePage,
+      }) => {
+        await runner.verifyElementIsVisible(homePage.footer);
+        await runner.verifyContainText(
+          homePage.footerText,
+          homeData.expectedFooterText
+        );
       });
       //---------------------------------------------------------------
     });
