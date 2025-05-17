@@ -20,6 +20,18 @@ export class HomePage {
   readonly firstProductTitle: string;
   readonly firstProductPrice: string;
   readonly firstProductDescription: string;
+  readonly carousel: string;
+  readonly activeCarouselImage: string;
+  readonly carouselNextButton: string;
+  readonly carouselPreviousButton: string;
+  readonly paginationNextButton: string;
+  readonly paginationPreviousButton: string;
+  readonly footer: string;
+  readonly footerText: string;
+  readonly contactModalTitle: string;
+  readonly contactModalCloseButton: string;
+  readonly aboutModalTitle: string;
+  readonly aboutModalCloseButton: string;
 
   constructor(page: Page) {
     this.homePageLogo = `css=a[id='nava']`;
@@ -39,9 +51,21 @@ export class HomePage {
     this.macbookLaptopCard = `css=body > div:nth-child(6) > div:nth-child(1) > div:nth-child(2) > div:nth-child(1) > div:nth-child(3)`;
     this.categoriesHeaderSidebar = `css=a[id='cat']`;
     this.firstProductCardOfMonitors = `css=body > div:nth-child(6) > div:nth-child(1) > div:nth-child(2) > div:nth-child(1) > div:nth-child(1)`;
-    this.firstProductImage = `css=body > div[id='tbodyid'] div:nth-child(1) div:nth-child(1) a:nth-child(1) img:nth-child(1)`;
+    this.firstProductImage = `css=div[id='tbodyid'] div:nth-child(1) div:nth-child(1) a:nth-child(1) img:nth-child(1)`;
     this.firstProductTitle = `css=body > div:nth-child(6) > div:nth-child(1) > div:nth-child(2) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(2) > h4:nth-child(1) > a:nth-child(1)`;
     this.firstProductPrice = `css=body > div:nth-child(6) > div:nth-child(1) > div:nth-child(2) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(2) > h5:nth-child(2)`;
     this.firstProductDescription = `css=body > div:nth-child(6) > div:nth-child(1) > div:nth-child(2) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(2) > p:nth-child(3)`;
+    this.carousel = `css=div[id='carouselExampleIndicators']`;
+    this.activeCarouselImage = `css=.carousel-item.active img`;
+    this.carouselNextButton = `css=span[class='carousel-control-next-icon']`;
+    this.carouselPreviousButton = `css=.carousel-control-prev-icon`;
+    this.paginationNextButton = `xpath=//button[@id='next2']`;
+    this.paginationPreviousButton = `xpath=//button[@id='prev2']`;
+    this.footer = `css=div[id='footc']`;
+    this.footerText = `xpath=//p[@class='m-0 text-center text-white']`;
+    this.contactModalTitle = `css=h5[id='exampleModalLabel']`;
+    this.contactModalCloseButton = `css=div[id='exampleModal'] div[class='modal-footer'] button:nth-child(1)`;
+    this.aboutModalTitle = `css=h5[id='videoModalLabel']`;
+    this.aboutModalCloseButton = `css=div[id='videoModal'] div[class='modal-footer'] button[type='button']`;
   }
 }

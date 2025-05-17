@@ -1,7 +1,0 @@
-[2025-05-16 23:21:43] INFO: Navigated to https://demoblaze.com/
-[2025-05-16 23:21:43] INFO: Verified element with identifier css=a[id='nava'] is visible
-[2025-05-16 23:21:43] INFO: Clicked on element with identifier: xpath=//a[@id='itemc' and text()='Laptops']
-[2025-05-16 23:21:44] INFO: Verified element with identifier css=body div[id='contcont'] div[class='row'] div[class='col-lg-9'] div[id='tbodyid'] div:nth-child(1) div:nth-child(1) is visible
-[2025-05-16 23:21:44] INFO: Clicked on element with identifier: css=a[id='nava']
-[2025-05-16 23:21:44] INFO: Verified element with identifier css=a[id='nava'] is visible
-[2025-05-16 23:21:45] INFO: Verified element with identifier xpath=//body/div[@id='contcont']/div[@class='row']/div[@class='col-lg-9']/div[@id='tbodyid']/div[1]/div[1] is visible

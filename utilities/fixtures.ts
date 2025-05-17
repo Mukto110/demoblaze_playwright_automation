@@ -7,6 +7,7 @@ import { SignupModal } from "../pageObjectModel/signUpModal.ts";
 import { LoginHelper } from "../utilities/authHelper.ts";
 import { ProductDetailPage } from "../pageObjectModel/productDetailPage.ts";
 import { LoginModal } from "../pageObjectModel/login.ts";
+import { CartPage } from "../pageObjectModel/cartPage.ts";
 
 const test = base.extend<{
   runner: Utils;
@@ -17,6 +18,7 @@ const test = base.extend<{
   loginHelper: LoginHelper;
   productDetailPage: ProductDetailPage;
   loginModal: LoginModal;
+  cartPage: CartPage;
 }>({
   page: async ({ page }, use) => {
     await page.waitForLoadState("load");
@@ -74,6 +76,11 @@ const test = base.extend<{
   loginModal: async ({ page }: { page: Page }, use) => {
     const loginModalInstance = new LoginModal(page);
     await use(loginModalInstance);
+  },
+
+  cartPage: async ({ page }: { page: Page }, use) => {
+    const cartPageInstance = new CartPage(page);
+    await use(cartPageInstance);
   },
 });
 

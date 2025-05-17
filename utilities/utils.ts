@@ -402,4 +402,45 @@ export class Utils {
       window.scrollTo({ top: 0, behavior: "smooth" });
     });
   }
+
+  async verifyNotEqual(actual: any, expected: any, message?: string) {
+    expect(
+      actual,
+      message || `Expected values to be different but got the same: ${actual}`
+    ).not.toBe(expected);
+  }
+
+  async verifyEqual(actual: any, expected: any, message?: string) {
+    expect(
+      actual,
+      message || `Expected ${actual} to be equal to ${expected}`
+    ).toBe(expected);
+  }
+
+  async getAttributeFromLocator(
+    locator: string,
+    attributeName: string
+  ): Promise<string | null> {
+    const value = await this.page.locator(locator).getAttribute(attributeName);
+    if (value === null) {
+      throw new Error(
+        `Attribute '${attributeName}' not found for locator: ${locator}`
+      );
+    }
+    return value;
+  }
+  async getText(selector: string): Promise<string> {
+    try {
+      const locator = this.page.locator(selector);
+      await expect(locator).toBeVisible();
+      const text = await locator.first().innerText();
+      this.logMessage(`Text of '${selector}' is "${text.trim()}"`);
+      return text.trim();
+    } catch (err: any) {
+      const msg = `Failed to get text from '${selector}': ${err.message}`;
+      this.logMessage(msg, "error");
+      await this.captureScreenshotOnFailure("getText");
+      throw new Error(msg);
+    }
+  }
 }

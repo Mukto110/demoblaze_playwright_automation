@@ -1,3 +1,4 @@
 { 
-    "expectedText": "Signup / Login"  
+    "expectedText": "Signup / Login",
+    "expectedFooterText": "Copyright © Product Store 2017"
 }
