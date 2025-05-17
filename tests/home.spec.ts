@@ -264,7 +264,16 @@ class HomePageTest extends ExpectedValueProvider {
         await runner.verifyElementIsVisible(signUpModal.signUpModalLabel);
         await runner.clickOnElement(signUpModal.closeButton);
       });
-      //---------------------------------------------------------------
+
+      test("Verify cart button in navbar navigates to cart page", async ({
+        runner,
+        homePage,
+        cartPage,
+      }) => {
+        await runner.verifyElementIsVisible(homePage.navbarCart);
+        await runner.clickOnElement(homePage.navbarCart);
+        await runner.verifyContainText(cartPage.cartPageTitle, "Products");
+      });
     });
   }
 }
