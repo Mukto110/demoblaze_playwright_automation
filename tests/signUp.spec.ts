@@ -7,7 +7,7 @@ class SignupModal extends ExpectedValueProvider {
   }
 
   runTest() {
-    test.describe("Home Page Functionality Test", () => {
+    test.describe("SignUp Modal Functionality Test", () => {
       test.beforeEach(async ({ runner, envData, homePage }) => {
         await runner.navigateTo(envData.baseUrl);
         await runner.verifyElementIsVisible(homePage.homePageLogo);

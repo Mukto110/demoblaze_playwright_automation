@@ -521,6 +521,38 @@ export class Utils {
     }, selector);
   }
 
+  async clickAndVerifyAlertMessage(
+  triggerSelector: string,
+  expectedAlertMessage: string
+): Promise<void> {
+  try {
+    this.page.once("dialog", async (dialog) => {
+      const actualMessage = dialog.message();
+
+      if (actualMessage !== expectedAlertMessage) {
+        const errorMsg = `Alert message mismatch: expected "${expectedAlertMessage}", but got "${actualMessage}"`;
+        this.logMessage(errorMsg, "error");
+        await this.captureScreenshotOnFailure("clickAndVerifyAlertMessage");
+        throw new Error(errorMsg);
+      }
+
+      this.logMessage(`Verified alert message: "${actualMessage}"`);
+      await dialog.accept();
+      this.logMessage("Alert accepted.");
+    });
+
+    await this.page.locator(triggerSelector).click();
+    this.logMessage(`Clicked on element: ${triggerSelector}`);
+
+  } catch (error) {
+    const errorMsg = `Failed to handle alert for ${triggerSelector}: ${error.message}`;
+    this.logMessage(errorMsg, "error");
+    await this.captureScreenshotOnFailure("clickAndVerifyAlertMessage");
+    throw new Error(errorMsg);
+  }
+}
+
+
   async verifyGreaterThan(
     actual: number,
     expectedMin: number,
