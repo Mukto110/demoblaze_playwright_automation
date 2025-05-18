@@ -6,7 +6,7 @@ import { EnvData } from "./env.ts";
 import { SignupModal } from "../pageObjectModel/signUpModal.ts";
 import { LoginHelper } from "../utilities/authHelper.ts";
 import { ProductDetailPage } from "../pageObjectModel/productDetailPage.ts";
-import { LoginModal } from "../pageObjectModel/login.ts";
+import { LoginModal } from "../pageObjectModel/loginModal.ts";
 import { CartPage } from "../pageObjectModel/cartPage.ts";
 import { ContactModal } from "../pageObjectModel/contactModal.ts";
 import { AboutModal } from "../pageObjectModel/aboutModal.ts";
