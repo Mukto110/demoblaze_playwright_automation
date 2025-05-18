@@ -1,4 +1,3 @@
-import { EnvData } from "../utilities/env";
 import { test } from "../utilities/fixtures";
 import { ExpectedValueProvider } from "../utilities/valueProvider";
 

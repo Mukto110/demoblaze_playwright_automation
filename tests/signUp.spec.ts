@@ -89,7 +89,7 @@ class SignupModal extends ExpectedValueProvider {
         await runner.verifyElementIsVisible(homePage.homePageLogo);
         
       });
-      test.fail("Verify that the password field must contain more than 6 characters during user registration TS_SGN_06", async ({
+      test("Verify that the password field must contain more than 6 characters during user registration TS_SGN_06", async ({
         runner,
         homePage,
         signUpModal,
