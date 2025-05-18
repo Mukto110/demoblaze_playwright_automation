@@ -8,6 +8,8 @@ export class CartPage {
   readonly titleSection: string;
   readonly priceSection: string;
   readonly closeSection: string;
+  readonly firstCartedProduct: string;
+  readonly secondCartedProduct: string;
 
   constructor(page: Page) {
     this.cartPageTitle = `css=div[class='col-lg-8'] h2`;
@@ -17,5 +19,7 @@ export class CartPage {
     this.titleSection = `xpath=//th[normalize-space()='Title']`;
     this.priceSection = `xpath=//th[normalize-space()='Price']`;
     this.closeSection = `xpath=//th[normalize-space()='x']`;
+    this.firstCartedProduct = `css=tbody tr:nth-child(1)`;
+    this.secondCartedProduct = `css=tbody tr:nth-child(2)`;
   }
 }
