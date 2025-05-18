@@ -240,17 +240,19 @@ class HomePageTest extends ExpectedValueProvider {
         homePage,
         loginModal,
         signUpModal,
+        contactModal,
+        aboutModal,
       }) => {
         await runner.verifyElementIsVisible(homePage.navbarContact);
         await runner.clickOnElement(homePage.navbarContact);
-        await runner.verifyElementIsVisible(homePage.contactModalTitle);
-        await runner.clickOnElement(homePage.contactModalCloseButton);
+        await runner.verifyElementIsVisible(contactModal.title);
+        await runner.clickOnElement(contactModal.closeButton);
         await runner.wait(1);
 
         await runner.verifyElementIsVisible(homePage.navbarAbout);
         await runner.clickOnElement(homePage.navbarAbout);
-        await runner.verifyElementIsVisible(homePage.aboutModalTitle);
-        await runner.clickOnElement(homePage.aboutModalCloseButton);
+        await runner.verifyElementIsVisible(aboutModal.title);
+        await runner.clickOnElement(aboutModal.closeButton);
         await runner.wait(1);
 
         await runner.verifyElementIsVisible(homePage.navbarLogin);
@@ -278,5 +280,4 @@ class HomePageTest extends ExpectedValueProvider {
   }
 }
 
-const homePageTest = new HomePageTest();
-homePageTest.runTest();
+new HomePageTest().runTest();

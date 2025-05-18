@@ -443,4 +443,103 @@ export class Utils {
       throw new Error(msg);
     }
   }
+
+  async typeText(selector: string, text: string): Promise<void> {
+    try {
+      const locator = this.page.locator(selector);
+      await expect(locator).toBeVisible(); // ensure visible
+      await locator.fill(""); // clear existing value
+      await locator.type(text); // type the text
+      this.logMessage(`Typed "${text}" into '${selector}'`);
+    } catch (err: any) {
+      const msg = `Failed to type into '${selector}': ${err.message}`;
+      this.logMessage(msg, "error");
+      await this.captureScreenshotOnFailure("typeText");
+      throw new Error(msg);
+    }
+  }
+
+  async verifyInputValue(
+    selector: string,
+    expected: string,
+    message?: string
+  ): Promise<void> {
+    try {
+      const locator = this.page.locator(selector);
+      await expect(locator).toBeVisible();
+      const actual = await locator.inputValue();
+      expect(
+        actual,
+        message ||
+          `Expected value of '${selector}' to be "${expected}" but got "${actual}"`
+      ).toBe(expected);
+
+      this.logMessage(
+        `Verified input '${selector}' value equals "${expected}"`
+      );
+    } catch (err: any) {
+      const msg =
+        message ||
+        `Failed to verify input value for '${selector}': ${err.message}`;
+      this.logMessage(msg, "error");
+      await this.captureScreenshotOnFailure("verifyInputValue");
+      throw new Error(msg);
+    }
+  }
+
+  async verifyElementIsDisabled(
+    selector: string,
+    message?: string
+  ): Promise<void> {
+    try {
+      const locator = this.page.locator(selector);
+      await expect(locator).toBeVisible();
+
+      // Playwright has a built‑in matcher for disabled state
+      await expect
+        .soft(
+          locator,
+          message || `Expected element '${selector}' to be disabled`
+        )
+        .toBeDisabled();
+
+      this.logMessage(`Verified element '${selector}' is disabled`);
+    } catch (err: any) {
+      const msg =
+        message ||
+        `Failed to verify element '${selector}' is disabled: ${err.message}`;
+      this.logMessage(msg, "error");
+      await this.captureScreenshotOnFailure("verifyElementIsDisabled");
+      throw new Error(msg);
+    }
+  }
+
+  async getVideoCurrentTime(selector: string): Promise<number> {
+    return this.page.evaluate((sel) => {
+      const v = document.querySelector(sel) as HTMLVideoElement | null;
+      return v ? Math.floor(v.currentTime) : 0;
+    }, selector);
+  }
+
+  async verifyGreaterThan(
+    actual: number,
+    expectedMin: number,
+    message?: string
+  ): Promise<void> {
+    try {
+      expect(
+        actual,
+        message || `Expected ${actual} to be greater than ${expectedMin}`
+      ).toBeGreaterThan(expectedMin);
+
+      this.logMessage(`Verified ${actual} > ${expectedMin}`);
+    } catch (err: any) {
+      const msg =
+        message ||
+        `Failed greater‑than verification: ${actual} is not > ${expectedMin}`;
+      this.logMessage(msg, "error");
+      await this.captureScreenshotOnFailure("verifyGreaterThan");
+      throw new Error(msg);
+    }
+  }
 }
