@@ -3,7 +3,7 @@ import { ExpectedValueProvider } from "../utilities/valueProvider";
 
 class AboutUsTest extends ExpectedValueProvider {
   runTest() {
-    test.describe("About‑Us Modal Functionality", () => {
+    test.describe("AboutUs Modal Functionality", () => {
       test.beforeEach(async ({ runner, envData, homePage }) => {
         await runner.navigateTo(envData.baseUrl);
         await runner.clickOnElement(homePage.navbarAbout);

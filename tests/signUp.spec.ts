@@ -14,7 +14,7 @@ class SignupModal extends ExpectedValueProvider {
       });
       
 
-      test("Verify that the signup modal opens when clicking the Sign up button TS_SGN_01", async ({
+      test("Verify that the signup modal opens when clicking the Sign up button ", async ({
         runner,
         homePage,
         signUpModal,
@@ -30,7 +30,7 @@ class SignupModal extends ExpectedValueProvider {
 
         
       });
-      test("Verify that a new user can register with valid, unique credentials TS_SGN_02", async ({
+      test("Verify that a new user can register with valid, unique credentials ", async ({
         runner,
         homePage,
         signUpModal,
@@ -45,7 +45,7 @@ class SignupModal extends ExpectedValueProvider {
         await runner.clickOnElement(signUpModal.signUpButton)
         
       });
-      test("Verify that an error message is shown when registering with existing username TS_SGN_03", async ({
+      test("Verify that an error message is shown when registering with existing username T", async ({
         runner,
         homePage,
         signUpModal,
@@ -60,7 +60,7 @@ class SignupModal extends ExpectedValueProvider {
         await runner.clickOnElement(signUpModal.signUpButton)
         
       });
-      test("Verify mandatory field validation when signup fields are emptyTS_SGN_04", async ({
+      test("Verify mandatory field validation when signup fields are empty", async ({
         runner,
         homePage,
         signUpModal,
@@ -75,7 +75,7 @@ class SignupModal extends ExpectedValueProvider {
         await runner.clickOnElement(signUpModal.signUpButton)
         
       });
-      test("Verify that closing the signup modal works as expected TS_SGN_05", async ({
+      test("Verify that closing the signup modal works as expected ", async ({
         runner,
         homePage,
         signUpModal,
@@ -89,7 +89,7 @@ class SignupModal extends ExpectedValueProvider {
         await runner.verifyElementIsVisible(homePage.homePageLogo);
         
       });
-      test("Verify that the password field must contain more than 6 characters during user registration TS_SGN_06", async ({
+      test("Verify that the password field must contain more than 6 characters during user registration ", async ({
         runner,
         homePage,
         signUpModal,
