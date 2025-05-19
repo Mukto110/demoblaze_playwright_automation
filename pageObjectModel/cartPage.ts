@@ -8,6 +8,7 @@ export class CartPage {
   readonly titleSection: string;
   readonly priceSection: string;
   readonly closeSection: string;
+  readonly deleteButton: string;
   readonly firstCartedProduct: string;
   readonly secondCartedProduct: string;
 
@@ -19,6 +20,7 @@ export class CartPage {
     this.titleSection = `xpath=//th[normalize-space()='Title']`;
     this.priceSection = `xpath=//th[normalize-space()='Price']`;
     this.closeSection = `xpath=//th[normalize-space()='x']`;
+    this.deleteButton = `xpath=/html[1]/body[1]/div[6]/div[1]/div[1]/div[1]/table[1]/tbody[1]/tr[1]/td[4]/a[1]`;
     this.firstCartedProduct = `css=tbody tr:nth-child(1)`;
     this.secondCartedProduct = `css=tbody tr:nth-child(2)`;
   }

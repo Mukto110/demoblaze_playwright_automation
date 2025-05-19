@@ -520,6 +520,39 @@ export class Utils {
       return v ? Math.floor(v.currentTime) : 0;
     }, selector);
   }
+  async refreshPage(): Promise<void> {
+  try {
+    await this.page.reload();
+    this.logMessage("✅ Page refreshed successfully.");
+  } catch (error) {
+    const errorMsg = "❌ Failed to refresh the page.";
+    this.logMessage(errorMsg, "error");
+    await this.captureScreenshotOnFailure("refreshPage");
+    throw new Error(errorMsg);
+  }
+}
+
+
+ async clearSessionData(): Promise<void> {
+  try {
+    // ✅ Clear only sessionStorage
+    await this.page.evaluate(() => {
+      sessionStorage.clear();
+    });
+
+    // ✅ Clear cookies
+    await this.page.context().clearCookies();
+
+    this.logMessage("✅ Cleared sessionStorage and cookies. localStorage preserved.");
+  } catch (error) {
+    const errorMsg = "❌ Failed to clear sessionStorage and cookies.";
+    this.logMessage(errorMsg, "error");
+    await this.captureScreenshotOnFailure("clearSessionData");
+    throw new Error(errorMsg);
+  }
+}
+
+
 
   async clickAndVerifyAlertMessage(
   triggerSelector: string,

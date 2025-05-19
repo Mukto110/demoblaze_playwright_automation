@@ -24,23 +24,7 @@ const test = base.extend<{
   contactModal: ContactModal;
   aboutModal: AboutModal;
 }>({
-  page: async ({ page }, use) => {
-    await page.waitForLoadState("load");
-    await use(page);
-    try {
-      await page.evaluate(() => {
-        localStorage.clear();
-        sessionStorage.clear();
-      });
-    } catch (err: any) {
-      if (err.message.includes("Execution context was destroyed")) {
-        console.warn("Skipped storage clearing due to navigation.");
-      } else {
-        throw err;
-      }
-    }
-    await page.context().clearCookies();
-  },
+
 
   runner: async ({ page }: { page: Page }, use) => {
     const utilsInstance = new Utils(page);

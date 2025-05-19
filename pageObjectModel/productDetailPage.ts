@@ -4,12 +4,18 @@ export class ProductDetailPage {
   readonly firstProductTitle: string;
   readonly firstProductPrice: string;
   readonly firstProductDescription: string;
+  readonly secondProductTitle: string;
+  readonly secondProductPrice: string;
+  readonly secondProductDescription: string;
   readonly addToCartButton: string;
 
   constructor(page: Page) {
     this.firstProductTitle = `css=h2[class='name']`;
-    this.firstProductPrice = `css=h3[class='price-container']`;
-    this.firstProductDescription = `css=div[id='more-information']`;
-    this.addToCartButton = `css=a[class="btn btn-success btn-lg"]`;
+    this.firstProductPrice = `xpath=/html[1]/body[1]/div[5]/div[1]/div[2]/div[1]/div[1]/div[1]/p[1]`;
+    this.firstProductDescription = `css=div[id="more-information"] p`;
+    // this.secondProductTitle = `css=h2[class='name']`;
+    // this.secondProductPrice = `css=h3[class='price-container']`;
+    // this.secondProductDescription = `css=div[id='more-information']`;
+    this.addToCartButton = `xpath=/html[1]/body[1]/div[5]/div[1]/div[2]/div[2]/div[1]/a[1]`;
   }
 }
