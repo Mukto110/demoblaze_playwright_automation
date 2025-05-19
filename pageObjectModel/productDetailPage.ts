@@ -12,7 +12,7 @@ export class ProductDetailPage {
   constructor(page: Page) {
     this.firstProductTitle = `css=h2[class='name']`;
     this.firstProductPrice = `xpath=/html[1]/body[1]/div[5]/div[1]/div[2]/div[1]/div[1]/div[1]/p[1]`;
-    this.firstProductDescription = `css=div[id="more-information"]`;
+    this.firstProductDescription = `css=div[id="more-information"] p`;
     // this.secondProductTitle = `css=h2[class='name']`;
     // this.secondProductPrice = `css=h3[class='price-container']`;
     // this.secondProductDescription = `css=div[id='more-information']`;
