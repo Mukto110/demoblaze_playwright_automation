@@ -54,7 +54,6 @@ class CartPage extends ExpectedValueProvider {
         await runner.verifyElementIsVisible(productDetailPage.firstProductTitle)
         await runner.verifyElementIsVisible(productDetailPage.firstProductTitle)
         await runner.verifyElementIsVisible(productDetailPage.addToCartButton)
-        await runner.clickOnElement(productDetailPage.addToCartButton)
         await runner.clickAndVerifyAlertMessage(productDetailPage.addToCartButton,'Product added')
 
 
@@ -93,7 +92,6 @@ class CartPage extends ExpectedValueProvider {
         await runner.verifyElementIsVisible(productDetailPage.firstProductTitle)
         await runner.verifyElementIsVisible(productDetailPage.addToCartButton)
         await runner.clickAndVerifyAlertMessage(productDetailPage.addToCartButton,'Product added')
-        await runner.clickOnElement(productDetailPage.addToCartButton)
 
         await runner.clickOnElement(homePage.navbarHome)
         await runner.verifyElementIsVisible(homePage.secondProductCardOfAllProduct);
@@ -104,8 +102,7 @@ class CartPage extends ExpectedValueProvider {
         await runner.verifyElementIsVisible(productDetailPage.firstProductPrice)
         await runner.verifyElementIsVisible(productDetailPage.firstProductTitle)
         await runner.verifyElementIsVisible(productDetailPage.addToCartButton)
-        // await runner.clickAndVerifyAlertMessage(productDetailPage.addToCartButton,'Product added')
-        await runner.clickOnElement(productDetailPage.addToCartButton)
+        await runner.clickAndVerifyAlertMessage(productDetailPage.addToCartButton,'Product added')
 
 
 
@@ -152,7 +149,6 @@ class CartPage extends ExpectedValueProvider {
         await runner.verifyElementIsVisible(productDetailPage.firstProductTitle)
         await runner.verifyElementIsVisible(productDetailPage.addToCartButton)
         await runner.clickAndVerifyAlertMessage(productDetailPage.addToCartButton,'Product added')
-        await runner.clickOnElement(productDetailPage.addToCartButton)
         await runner.clickOnElement(homePage.navbarHome)
         await runner.clickOnElement(homePage.secondProductCardOfAllProduct)
 
@@ -161,8 +157,9 @@ class CartPage extends ExpectedValueProvider {
         await runner.verifyElementIsVisible(productDetailPage.firstProductPrice)
         await runner.verifyElementIsVisible(productDetailPage.firstProductTitle)
         await runner.verifyElementIsVisible(productDetailPage.addToCartButton)
-        await runner.clickAndVerifyAlertMessage(productDetailPage.addToCartButton,'Product added')
+        // await runner.clickAndVerifyAlertMessage(productDetailPage.addToCartButton,'Product added')
         await runner.clickOnElement(productDetailPage.addToCartButton)
+
 
 
 
@@ -178,6 +175,60 @@ class CartPage extends ExpectedValueProvider {
 
         await runner.verifyElementIsNotVisible(cartPage.firstCartedProduct)
         await runner.verifyElementIsVisible(cartPage.secondCartedProduct)
+
+
+
+
+
+
+
+        
+      });
+      test("verifying the purchase order procedure", async ({
+        runner,
+        homePage,
+        cartPage,
+        envData,
+        productDetailPage,
+        fakeUser
+      }) => {
+
+        await runner.verifyElementIsVisible(homePage.firstProductCardOfAllProduct);
+        await runner.clickOnElement(homePage.firstProductCardOfAllProduct);
+        // await runner.wait(2)
+        // await runner.verifyUrlContains(envData.firstProductUrl)
+        // await runner.verifyElementIsVisible(productDetailPage.firstProductDescription)
+        // await runner.verifyElementIsVisible(productDetailPage.firstProductPrice)
+        // await runner.verifyElementIsVisible(productDetailPage.firstProductTitle)
+        // await runner.verifyElementIsVisible(productDetailPage.addToCartButton)
+        await runner.clickAndVerifyAlertMessage(productDetailPage.addToCartButton,'Product added')
+
+
+
+        await runner.clickOnElement(homePage.navbarCart)
+        // await runner.wait(2)
+        // await runner.verifyUrlContains(envData.cartUrl)
+        await runner.verifyContainText(cartPage.cartPageTitle,'Products')
+
+        await runner.verifyElementIsVisible(cartPage.firstCartedProduct)
+
+        await runner.verifyElementIsVisible(cartPage.placeOrderButton)  
+        await runner.clickOnElement(cartPage.placeOrderButton)
+        await runner.verifyContainText(cartPage.orderModalTitle,'Place order')
+        await runner.verifyElementIsVisible(cartPage.totalPriceInOrderModal)
+        await runner.fillInputBox(cartPage.nameInputInOrderModal,fakeUser.username)
+        await runner.fillInputBox(cartPage.countryInputInOrderModal,fakeUser.country)
+        await runner.fillInputBox(cartPage.cityInputInOrderModal,fakeUser.city)
+        await runner.fillInputBox(cartPage.creditCardInputInOrderModal,fakeUser.card)
+        await runner.fillInputBox(cartPage.monthInputInOrderModal,fakeUser.month)
+        await runner.fillInputBox(cartPage.yearInputInOrderModal,fakeUser.year)
+        await runner.clickAndVerifyAlertMessage(cartPage.purchaseButtonInOrderModal,cartPage.purchaseCofimationMessageAlert)
+        await runner.verifyElementIsVisible(cartPage.purchaseCofimationDetailsInAlert)
+        await runner.verifyElementIsVisible(cartPage.okButtonInAlert)
+        await runner.clickOnElement(cartPage.okButtonInAlert)
+        await runner.wait(2)
+        await runner.verifyUrlContains(envData.baseUrl)
+
 
 
 
