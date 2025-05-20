@@ -16,6 +16,6 @@ export class ProductDetailPage {
     // this.secondProductTitle = `css=h2[class='name']`;
     // this.secondProductPrice = `css=h3[class='price-container']`;
     // this.secondProductDescription = `css=div[id='more-information']`;
-    this.addToCartButton = `xpath=/html[1]/body[1]/div[5]/div[1]/div[2]/div[2]/div[1]/a[1]`;
+    this.addToCartButton = `xpath=//a[normalize-space()='Add to cart']`;
   }
 }
