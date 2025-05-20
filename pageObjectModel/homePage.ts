@@ -28,6 +28,10 @@ export class HomePage {
   readonly paginationPreviousButton: string;
   readonly footer: string;
   readonly footerText: string;
+  readonly allProductCards: string;
+  readonly productCardTitle: string;
+  readonly productCardPrice: string;
+  readonly productCardImage: string;
 
   constructor(page: Page) {
     this.homePageLogo = `css=a[id='nava']`;
@@ -57,5 +61,9 @@ export class HomePage {
     this.paginationPreviousButton = `xpath=//button[@id='prev2']`;
     this.footer = `css=div[id='footc']`;
     this.footerText = `xpath=//p[@class='m-0 text-center text-white']`;
+    this.allProductCards = `css=div[id='tbodyid'] div[class='col-lg-4 col-md-6 mb-4']`;
+    this.productCardTitle = `css=div[id='tbodyid'] div[class='col-lg-4 col-md-6 mb-4'] h4 > a`;
+    this.productCardPrice = `css=div[id='tbodyid'] div[class='col-lg-4 col-md-6 mb-4'] h5`;
+    this.productCardImage = `css=div[id='tbodyid'] div[class='col-lg-4 col-md-6 mb-4'] img`;
   }
 }

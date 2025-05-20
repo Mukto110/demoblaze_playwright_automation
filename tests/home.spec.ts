@@ -88,10 +88,12 @@ class HomePageTest extends ExpectedValueProvider {
         runner,
         homePage,
       }) => {
-        await runner.verifyElementIsVisible(homePage.firstProductImage);
-        await runner.verifyElementIsVisible(homePage.firstProductTitle);
-        await runner.verifyElementIsVisible(homePage.firstProductPrice);
-        await runner.verifyElementIsVisible(homePage.firstProductDescription);
+        await runner.verifyAllProductCardsContent({
+          productCardSelector: homePage.allProductCards,
+          titleSelector: homePage.productCardTitle,
+          priceSelector: homePage.productCardPrice,
+          imageSelector: homePage.productCardImage,
+        });
       });
 
       test("Verify clicking product image navigates to product detail page", async ({

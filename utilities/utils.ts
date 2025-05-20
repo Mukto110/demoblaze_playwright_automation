@@ -521,70 +521,67 @@ export class Utils {
     }, selector);
   }
   async refreshPage(): Promise<void> {
-  try {
-    await this.page.reload();
-    this.logMessage("✅ Page refreshed successfully.");
-  } catch (error) {
-    const errorMsg = "❌ Failed to refresh the page.";
-    this.logMessage(errorMsg, "error");
-    await this.captureScreenshotOnFailure("refreshPage");
-    throw new Error(errorMsg);
+    try {
+      await this.page.reload();
+      this.logMessage("✅ Page refreshed successfully.");
+    } catch (error) {
+      const errorMsg = "❌ Failed to refresh the page.";
+      this.logMessage(errorMsg, "error");
+      await this.captureScreenshotOnFailure("refreshPage");
+      throw new Error(errorMsg);
+    }
   }
-}
 
+  async clearSessionData(): Promise<void> {
+    try {
+      // ✅ Clear only sessionStorage
+      await this.page.evaluate(() => {
+        sessionStorage.clear();
+      });
 
- async clearSessionData(): Promise<void> {
-  try {
-    // ✅ Clear only sessionStorage
-    await this.page.evaluate(() => {
-      sessionStorage.clear();
-    });
+      // ✅ Clear cookies
+      await this.page.context().clearCookies();
 
-    // ✅ Clear cookies
-    await this.page.context().clearCookies();
-
-    this.logMessage("✅ Cleared sessionStorage and cookies. localStorage preserved.");
-  } catch (error) {
-    const errorMsg = "❌ Failed to clear sessionStorage and cookies.";
-    this.logMessage(errorMsg, "error");
-    await this.captureScreenshotOnFailure("clearSessionData");
-    throw new Error(errorMsg);
+      this.logMessage(
+        "✅ Cleared sessionStorage and cookies. localStorage preserved."
+      );
+    } catch (error) {
+      const errorMsg = "❌ Failed to clear sessionStorage and cookies.";
+      this.logMessage(errorMsg, "error");
+      await this.captureScreenshotOnFailure("clearSessionData");
+      throw new Error(errorMsg);
+    }
   }
-}
-
-
 
   async clickAndVerifyAlertMessage(
-  triggerSelector: string,
-  expectedAlertMessage: string
-): Promise<void> {
-  try {
-    this.page.once("dialog", async (dialog) => {
-      const actualMessage = dialog.message();
+    triggerSelector: string,
+    expectedAlertMessage: string
+  ): Promise<void> {
+    try {
+      this.page.once("dialog", async (dialog) => {
+        const actualMessage = dialog.message();
 
-      if (actualMessage !== expectedAlertMessage) {
-        const errorMsg = `Alert message mismatch: expected "${expectedAlertMessage}", but got "${actualMessage}"`;
-        this.logMessage(errorMsg, "error");
-        await this.captureScreenshotOnFailure("clickAndVerifyAlertMessage");
-        throw new Error(errorMsg);
-      }
+        if (actualMessage !== expectedAlertMessage) {
+          const errorMsg = `Alert message mismatch: expected "${expectedAlertMessage}", but got "${actualMessage}"`;
+          this.logMessage(errorMsg, "error");
+          await this.captureScreenshotOnFailure("clickAndVerifyAlertMessage");
+          throw new Error(errorMsg);
+        }
 
-      this.logMessage(`Verified alert message: "${actualMessage}"`);
-      await dialog.accept();
-      this.logMessage("Alert accepted.");
-    });
+        this.logMessage(`Verified alert message: "${actualMessage}"`);
+        await dialog.accept();
+        this.logMessage("Alert accepted.");
+      });
 
-    await this.page.locator(triggerSelector).click();
-    this.logMessage(`Clicked on element: ${triggerSelector}`);
-
-  } catch (error) {
-    const errorMsg = `Failed to handle alert for ${triggerSelector}: ${error.message}`;
-    this.logMessage(errorMsg, "error");
-    await this.captureScreenshotOnFailure("clickAndVerifyAlertMessage");
-    throw new Error(errorMsg);
+      await this.page.locator(triggerSelector).click();
+      this.logMessage(`Clicked on element: ${triggerSelector}`);
+    } catch (error) {
+      const errorMsg = `Failed to handle alert for ${triggerSelector}: ${error.message}`;
+      this.logMessage(errorMsg, "error");
+      await this.captureScreenshotOnFailure("clickAndVerifyAlertMessage");
+      throw new Error(errorMsg);
+    }
   }
-}
-
 
   async verifyGreaterThan(
     actual: number,
@@ -605,6 +602,81 @@ export class Utils {
       this.logMessage(msg, "error");
       await this.captureScreenshotOnFailure("verifyGreaterThan");
       throw new Error(msg);
+    }
+  }
+
+  async validateAllProductCards(
+    cardContainerSelector: string,
+    imageSelector: string,
+    titleSelector: string,
+    priceSelector: string
+  ): Promise<void> {
+    try {
+      const cards = this.page.locator(cardContainerSelector);
+      const count = await cards.count();
+
+      expect.soft(count).toBe(9);
+      this.logMessage(`✅ Found ${count} product cards.`);
+
+      for (let i = 0; i < count; i++) {
+        const card = cards.nth(i);
+        const image = card.locator(imageSelector);
+        const title = card.locator(titleSelector);
+        const price = card.locator(priceSelector);
+
+        await expect.soft(image).toBeVisible();
+        await expect.soft(title).toBeVisible();
+        await expect.soft(price).toBeVisible();
+
+        const titleText = await title.innerText();
+        const priceText = await price.innerText();
+
+        const expectedTitlePattern =
+          this.expected.getExpectedProductTitlePattern();
+        const expectedPricePattern =
+          this.expected.getExpectedProductPricePattern();
+
+        expect.soft(titleText).toMatch(expectedTitlePattern);
+        expect.soft(priceText).toMatch(expectedPricePattern);
+
+        this.logMessage(
+          `✅ Card ${i + 1} - Title: "${titleText}", Price: "${priceText}"`
+        );
+      }
+    } catch (error) {
+      await this.captureScreenshotOnFailure("validateAllProductCards");
+      this.logMessage("❌ Product card validation failed.", "error");
+      throw error;
+    }
+  }
+
+  async verifyAllProductCardsContent(selectors: {
+    productCardSelector: string;
+    titleSelector: string;
+    priceSelector: string;
+    imageSelector: string;
+  }): Promise<void> {
+    const { productCardSelector, titleSelector, priceSelector, imageSelector } =
+      selectors;
+
+    const productCards = this.page.locator(productCardSelector);
+    const count = await productCards.count();
+
+    const titlePattern = this.expected.getExpectedProductTitlePattern();
+    const pricePattern = this.expected.getExpectedProductPricePattern();
+    const imagePattern = this.expected.getExpectedProductImagePattern();
+
+    for (let i = 0; i < count; i++) {
+      const card = productCards.nth(i);
+      const title = await card.locator(titleSelector).innerText();
+      const price = await card.locator(priceSelector).innerText();
+      const imgSrc = await card.locator(imageSelector).getAttribute("src");
+
+      expect(title).toMatch(titlePattern);
+      expect(price).toMatch(pricePattern);
+      expect(imgSrc).toMatch(imagePattern);
+
+      this.logMessage(`✅ Product card ${i + 1} passed validation`);
     }
   }
 }
