@@ -26,4 +26,16 @@ export class ExpectedValueProvider {
       throw new Error(`Error reading or parsing the file: ${jsonFilePath}`);
     }
   }
+
+  getExpectedProductTitlePattern(): RegExp {
+    return /^[\w\s\-]+$/;
+  }
+
+  getExpectedProductPricePattern(): RegExp {
+    return /^\$\d{2,5}$/;
+  }
+
+  getExpectedProductImagePattern(): RegExp {
+    return /^https?:\/\/.*\.(jpg|jpeg|png|gif)$/i;
+  }
 }
