@@ -88,15 +88,7 @@ class HomePageTest extends ExpectedValueProvider {
         runner,
         homePage,
       }) => {
-        const cards = await runner.getAllProductCards(homePage.allProductCards);
-
-        for (let i = 0; i < cards.length; i++) {
-          const card = cards[i];
-          await runner.validateProductImage(homePage.productCardImage);
-          await runner.validateProductTitle(homePage.productCardTitle);
-          await runner.validateProductPrice(homePage.productCardPrice);
-          await runner.validateProductDescription(card);
-        }
+        await runner.validateAllProductCards(homePage.productCardSelectors);
       });
 
       test("Verify clicking product image navigates to product detail page", async ({

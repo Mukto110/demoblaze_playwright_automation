@@ -688,9 +688,9 @@ export class Utils {
     }
   }
 
-  async validateProductDescription(locator: Locator): Promise<void> {
+  async validateProductDescription(locator: string): Promise<void> {
     try {
-      const text = (await locator.innerText()).trim();
+      const text = (await this.page.innerText(locator)).trim();
 
       if (text.length === 0) {
         const errorMsg = "❌ Product description is empty";
@@ -704,6 +704,31 @@ export class Utils {
       const errorMsg = `Failed to validate product description: ${error.message}`;
       this.logMessage(errorMsg, "error");
       await this.captureScreenshotOnFailure("validateProductDescription");
+      throw new Error(errorMsg);
+    }
+  }
+
+  async validateAllProductCards(selectors: {
+    container: string;
+    title: string;
+    price: string;
+    image: string;
+  }): Promise<void> {
+    try {
+      const cards = await this.getAllProductCards(selectors.container);
+
+      for (let i = 0; i < cards.length; i++) {
+        await this.validateProductImage(selectors.image);
+        await this.validateProductTitle(selectors.title);
+        await this.validateProductPrice(selectors.price);
+        await this.validateProductDescription(selectors.container);
+
+        this.logMessage(`✅ Product card ${i + 1} validated successfully`);
+      }
+    } catch (error) {
+      const errorMsg = `Failed to validate product cards: ${error.message}`;
+      this.logMessage(errorMsg, "error");
+      await this.captureScreenshotOnFailure("validateAllProductCards");
       throw new Error(errorMsg);
     }
   }
