@@ -605,78 +605,106 @@ export class Utils {
     }
   }
 
-  async validateAllProductCards(
-    cardContainerSelector: string,
-    imageSelector: string,
-    titleSelector: string,
-    priceSelector: string
-  ): Promise<void> {
+  async getAllProductCards(selector: string): Promise<Locator[]> {
     try {
-      const cards = this.page.locator(cardContainerSelector);
-      const count = await cards.count();
+      const cardsLocator = this.page.locator(selector);
+      const count = await cardsLocator.count();
 
-      expect.soft(count).toBe(9);
-      this.logMessage(`✅ Found ${count} product cards.`);
-
+      const cards: Locator[] = [];
       for (let i = 0; i < count; i++) {
-        const card = cards.nth(i);
-        const image = card.locator(imageSelector);
-        const title = card.locator(titleSelector);
-        const price = card.locator(priceSelector);
-
-        await expect.soft(image).toBeVisible();
-        await expect.soft(title).toBeVisible();
-        await expect.soft(price).toBeVisible();
-
-        const titleText = await title.innerText();
-        const priceText = await price.innerText();
-
-        const expectedTitlePattern =
-          this.expected.getExpectedProductTitlePattern();
-        const expectedPricePattern =
-          this.expected.getExpectedProductPricePattern();
-
-        expect.soft(titleText).toMatch(expectedTitlePattern);
-        expect.soft(priceText).toMatch(expectedPricePattern);
-
-        this.logMessage(
-          `✅ Card ${i + 1} - Title: "${titleText}", Price: "${priceText}"`
-        );
+        cards.push(cardsLocator.nth(i));
       }
+
+      this.logMessage(`✅ Found ${count} product cards`);
+      return cards;
     } catch (error) {
-      await this.captureScreenshotOnFailure("validateAllProductCards");
-      this.logMessage("❌ Product card validation failed.", "error");
-      throw error;
+      const errorMsg = `❌ Failed to get product cards for selector '${selector}': ${error.message}`;
+      this.logMessage(errorMsg, "error");
+      await this.captureScreenshotOnFailure("getAllProductCards");
+      throw new Error(errorMsg);
     }
   }
 
-  async verifyAllProductCardsContent(selectors: {
-    productCardSelector: string;
-    titleSelector: string;
-    priceSelector: string;
-    imageSelector: string;
-  }): Promise<void> {
-    const { productCardSelector, titleSelector, priceSelector, imageSelector } =
-      selectors;
+  async validateProductImage(imageLocator: Locator): Promise<void> {
+    try {
+      const imgSrc = await imageLocator.getAttribute("src");
+      const imagePattern = this.expected.getExpectedProductImagePattern();
 
-    const productCards = this.page.locator(productCardSelector);
-    const count = await productCards.count();
+      if (!imgSrc || !imagePattern.test(imgSrc)) {
+        const errorMsg = `❌ Image src '${imgSrc}' failed regex validation`;
+        this.logMessage(errorMsg, "error");
+        await this.captureScreenshotOnFailure("validateProductImage");
+        throw new Error(errorMsg);
+      }
 
-    const titlePattern = this.expected.getExpectedProductTitlePattern();
-    const pricePattern = this.expected.getExpectedProductPricePattern();
-    const imagePattern = this.expected.getExpectedProductImagePattern();
+      this.logMessage(`✅ Image source '${imgSrc}' passed regex validation`);
+    } catch (error) {
+      const errorMsg = `Failed to validate product image: ${error.message}`;
+      this.logMessage(errorMsg, "error");
+      await this.captureScreenshotOnFailure("validateProductImage");
+      throw new Error(errorMsg);
+    }
+  }
 
-    for (let i = 0; i < count; i++) {
-      const card = productCards.nth(i);
-      const title = await card.locator(titleSelector).innerText();
-      const price = await card.locator(priceSelector).innerText();
-      const imgSrc = await card.locator(imageSelector).getAttribute("src");
+  async validateProductTitle(titleLocator: Locator): Promise<void> {
+    try {
+      const titleText = await titleLocator.innerText();
+      const titlePattern = this.expected.getExpectedProductTitlePattern();
 
-      expect(title).toMatch(titlePattern);
-      expect(price).toMatch(pricePattern);
-      expect(imgSrc).toMatch(imagePattern);
+      if (!titlePattern.test(titleText)) {
+        const errorMsg = `❌ Title '${titleText}' failed regex validation`;
+        this.logMessage(errorMsg, "error");
+        await this.captureScreenshotOnFailure("validateProductTitle");
+        throw new Error(errorMsg);
+      }
 
-      this.logMessage(`✅ Product card ${i + 1} passed validation`);
+      this.logMessage(`✅ Title '${titleText}' passed regex validation`);
+    } catch (error) {
+      const errorMsg = `Failed to validate product title: ${error.message}`;
+      this.logMessage(errorMsg, "error");
+      await this.captureScreenshotOnFailure("validateProductTitle");
+      throw new Error(errorMsg);
+    }
+  }
+
+  async validateProductPrice(priceLocator: Locator): Promise<void> {
+    try {
+      const priceText = await priceLocator.innerText();
+      const pricePattern = this.expected.getExpectedProductPricePattern();
+
+      if (!pricePattern.test(priceText)) {
+        const errorMsg = `❌ Price '${priceText}' failed regex validation`;
+        this.logMessage(errorMsg, "error");
+        await this.captureScreenshotOnFailure("validateProductPrice");
+        throw new Error(errorMsg);
+      }
+
+      this.logMessage(`✅ Price '${priceText}' passed regex validation`);
+    } catch (error) {
+      const errorMsg = `Failed to validate product price: ${error.message}`;
+      this.logMessage(errorMsg, "error");
+      await this.captureScreenshotOnFailure("validateProductPrice");
+      throw new Error(errorMsg);
+    }
+  }
+
+  async validateProductDescription(locator: Locator): Promise<void> {
+    try {
+      const text = (await locator.innerText()).trim();
+
+      if (text.length === 0) {
+        const errorMsg = "❌ Product description is empty";
+        this.logMessage(errorMsg, "error");
+        await this.captureScreenshotOnFailure("validateProductDescription");
+        throw new Error(errorMsg);
+      }
+
+      this.logMessage("✅ Product description validated");
+    } catch (error) {
+      const errorMsg = `Failed to validate product description: ${error.message}`;
+      this.logMessage(errorMsg, "error");
+      await this.captureScreenshotOnFailure("validateProductDescription");
+      throw new Error(errorMsg);
     }
   }
 }

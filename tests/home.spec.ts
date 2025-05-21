@@ -88,12 +88,21 @@ class HomePageTest extends ExpectedValueProvider {
         runner,
         homePage,
       }) => {
-        await runner.verifyAllProductCardsContent({
-          productCardSelector: homePage.allProductCards,
-          titleSelector: homePage.productCardTitle,
-          priceSelector: homePage.productCardPrice,
-          imageSelector: homePage.productCardImage,
-        });
+        const cards = await runner.getAllProductCards(homePage.allProductCards);
+
+        for (let i = 0; i < cards.length; i++) {
+          const card = cards[i];
+          await runner.validateProductImage(
+            card.locator(homePage.productCardImage)
+          );
+          await runner.validateProductTitle(
+            card.locator(homePage.productCardTitle)
+          );
+          await runner.validateProductPrice(
+            card.locator(homePage.productCardPrice)
+          );
+          await runner.validateProductDescription(card);
+        }
       });
 
       test("Verify clicking product image navigates to product detail page", async ({
