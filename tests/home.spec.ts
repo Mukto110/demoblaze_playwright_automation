@@ -92,15 +92,9 @@ class HomePageTest extends ExpectedValueProvider {
 
         for (let i = 0; i < cards.length; i++) {
           const card = cards[i];
-          await runner.validateProductImage(
-            card.locator(homePage.productCardImage)
-          );
-          await runner.validateProductTitle(
-            card.locator(homePage.productCardTitle)
-          );
-          await runner.validateProductPrice(
-            card.locator(homePage.productCardPrice)
-          );
+          await runner.validateProductImage(homePage.productCardImage);
+          await runner.validateProductTitle(homePage.productCardTitle);
+          await runner.validateProductPrice(homePage.productCardPrice);
           await runner.validateProductDescription(card);
         }
       });

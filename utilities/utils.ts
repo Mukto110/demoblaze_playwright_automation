@@ -625,9 +625,9 @@ export class Utils {
     }
   }
 
-  async validateProductImage(imageLocator: Locator): Promise<void> {
+  async validateProductImage(imageLocator: string): Promise<void> {
     try {
-      const imgSrc = await imageLocator.getAttribute("src");
+      const imgSrc = await this.page.getAttribute(imageLocator, "src");
       const imagePattern = this.expected.getExpectedProductImagePattern();
 
       if (!imgSrc || !imagePattern.test(imgSrc)) {
@@ -646,9 +646,9 @@ export class Utils {
     }
   }
 
-  async validateProductTitle(titleLocator: Locator): Promise<void> {
+  async validateProductTitle(titleLocator: string): Promise<void> {
     try {
-      const titleText = await titleLocator.innerText();
+      const titleText = await this.page.innerText(titleLocator);
       const titlePattern = this.expected.getExpectedProductTitlePattern();
 
       if (!titlePattern.test(titleText)) {
@@ -667,9 +667,9 @@ export class Utils {
     }
   }
 
-  async validateProductPrice(priceLocator: Locator): Promise<void> {
+  async validateProductPrice(priceLocator: string): Promise<void> {
     try {
-      const priceText = await priceLocator.innerText();
+      const priceText = await this.page.innerText(priceLocator);
       const pricePattern = this.expected.getExpectedProductPricePattern();
 
       if (!pricePattern.test(priceText)) {
