@@ -732,4 +732,56 @@ export class Utils {
       throw new Error(errorMsg);
     }
   }
+
+  async verifyPaginationWorks(selectors: {
+    container: string;
+    title: string;
+    nextButton: string;
+    previousButton: string;
+  }): Promise<void> {
+    try {
+      const cardsLocator = this.page.locator(selectors.container);
+
+      const relativeTitleSelector = selectors.title.replace(
+        selectors.container + " ",
+        ""
+      );
+      const firstCardTitleLocator = cardsLocator
+        .nth(0)
+        .locator(`:scope >> ${relativeTitleSelector}`);
+
+      const firstTitle = (await firstCardTitleLocator.textContent())?.trim();
+
+      await this.clickOnElement(selectors.nextButton);
+      await this.wait(1);
+
+      const newFirstTitle = (await firstCardTitleLocator.textContent())?.trim();
+
+      await this.verifyNotEqual(
+        firstTitle,
+        newFirstTitle,
+        "Products did not change after clicking 'Next'."
+      );
+
+      await this.clickOnElement(selectors.previousButton);
+      await this.wait(2);
+
+      const finalFirstTitle = (
+        await firstCardTitleLocator.textContent()
+      )?.trim();
+
+      await this.verifyEqual(
+        finalFirstTitle,
+        firstTitle,
+        "Products did not return to the first page after clicking 'Previous'."
+      );
+
+      this.logMessage("✅ Pagination functionality verified successfully");
+    } catch (error) {
+      const errorMsg = `❌ Pagination verification failed: ${error.message}`;
+      this.logMessage(errorMsg, "error");
+      await this.captureScreenshotOnFailure("verifyPaginationWorks");
+      throw new Error(errorMsg);
+    }
+  }
 }

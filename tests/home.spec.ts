@@ -194,31 +194,12 @@ class HomePageTest extends ExpectedValueProvider {
         runner,
         homePage,
       }) => {
-        const firstPageProductTitle = await runner.getText(
-          homePage.firstProductTitle
-        );
-        await runner.clickOnElement(homePage.paginationNextButton);
-        await runner.wait(1);
-        const secondPageProductTitle = await runner.getText(
-          homePage.firstProductTitle
-        );
-        await runner.verifyNotEqual(
-          firstPageProductTitle,
-          secondPageProductTitle,
-          "Products did not change after clicking 'Next'."
-        );
-
-        await runner.clickOnElement(homePage.paginationPreviousButton);
-        await runner.wait(2);
-
-        const backToFirstPageProductTitle = await runner.getText(
-          homePage.firstProductTitle
-        );
-        await runner.verifyEqual(
-          backToFirstPageProductTitle,
-          firstPageProductTitle,
-          "Products did not return to first page after clicking 'Previous'."
-        );
+        await runner.verifyPaginationWorks({
+          container: homePage.productCardSelectors.container,
+          title: homePage.productCardSelectors.title,
+          nextButton: homePage.paginationNextButton,
+          previousButton: homePage.paginationPreviousButton,
+        });
       });
 
       test("Verify footer is present with copyright text", async ({
