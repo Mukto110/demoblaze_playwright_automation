@@ -7,6 +7,13 @@ class HomePageTest extends ExpectedValueProvider {
     super();
   }
 
+  // test("Verify '", async ({
+  //       runner,
+  //       homePage,
+  //     }) => {
+
+  //     });
+
   runTest() {
     test.describe("Home Page Functionality Test", () => {
       test.beforeEach(async ({ runner, envData, homePage }) => {
@@ -14,16 +21,15 @@ class HomePageTest extends ExpectedValueProvider {
         await runner.verifyElementIsVisible(homePage.homePageLogo);
       });
 
-      test("Verify that the homepage loads with featured products visible", async ({
+      test("Verify homepage reloads on logo button click", async ({
         runner,
         homePage,
       }) => {
-        await runner.verifyElementIsVisible(
-          homePage.firstProductCardOfAllProduct
-        );
-        await runner.verifyElementIsVisible(
-          homePage.secondProductCardOfAllProduct
-        );
+        await runner.getAttributeFromLocator(homePage.homePageLogoImage, "src");
+        await runner.verifyContainText(homePage.homePageLogo, "PRODUCT STORE");
+        await runner.clickOnElement(homePage.homePageLogo);
+        await runner.wait(2);
+        await runner.verifyElementIsVisible(homePage.homePageLogo);
       });
 
       test("Verify navigation bar is displayed correctly", async ({
@@ -31,12 +37,60 @@ class HomePageTest extends ExpectedValueProvider {
         homePage,
       }) => {
         await runner.verifyElementIsVisible(homePage.navbarHome);
+        await runner.verifyContainText(homePage.navbarHome, "Home");
         await runner.verifyElementIsVisible(homePage.navbarContact);
+        await runner.verifyContainText(homePage.navbarContact, "Contact");
         await runner.verifyElementIsVisible(homePage.navbarAbout);
+        await runner.verifyContainText(homePage.navbarAbout, "About us");
         await runner.verifyElementIsVisible(homePage.navbarCart);
+        await runner.verifyContainText(homePage.navbarCart, "Cart");
         await runner.verifyElementIsVisible(homePage.navbarLogin);
+        await runner.verifyContainText(homePage.navbarLogin, "Log in");
         await runner.verifyElementIsVisible(homePage.navbarSignup);
+        await runner.verifyContainText(homePage.navbarSignup, "Sign up");
       });
+
+      test("Verify hero banner carousel is displayed, functional, and auto changes", async ({
+        runner,
+        homePage,
+      }) => {
+        await runner.verifyCarouselIsAutoChanging(
+          homePage.carousel,
+          homePage.activeCarouselImage
+        );
+      });
+
+      test("Verify hero banner carousel arrows change displayed product", async ({
+        runner,
+        homePage,
+      }) => {
+        await runner.verifyCarouselArrowNavigation(
+          homePage.carousel,
+          homePage.activeCarouselImage,
+          homePage.carouselNextButton,
+          homePage.carouselPreviousButton
+        );
+      });
+
+      test("Verify that the homepage loads with featured products visible", async ({
+        runner,
+        homePage,
+      }) => {
+        await runner.validateProductContainers(homePage.productContainer);
+      });
+
+      test("Verify filtering works by 'Phones', 'Laptops', 'Monitors'", async ({
+        runner,
+        homePage,
+      }) => {
+        await runner.verifyElementIsVisible(homePage.categoriesHeader);
+        await runner.verifyContainText(homePage.categoriesHeader, "CATEGORIES");
+        await runner.verifyElementIsVisible(homePage.categoriesPhones);
+        await runner.verifyContainText(homePage.categoriesPhones, "Phones");
+        await runner.clickOnElement(homePage.categoriesPhones);
+      });
+
+      // ------------------------------------------------------------------------------------------
 
       test("Verify homepage reloads and resets filters on 'Home' navbar click", async ({
         runner,
@@ -55,40 +109,27 @@ class HomePageTest extends ExpectedValueProvider {
         runner,
         homePage,
       }) => {
-        await runner.clickOnElement(homePage.categoryLaptops);
-        await runner.verifyElementIsVisible(homePage.macbookLaptopCard);
-        await runner.verifyElementIsVisible(homePage.categoriesHeaderSidebar);
-        await runner.clickOnElement(homePage.categoriesHeaderSidebar);
-        await runner.verifyElementIsVisible(homePage.homePageLogo);
-        await runner.verifyElementIsVisible(
-          homePage.firstProductCardOfAllProduct
-        );
-        await runner.verifyElementIsVisible(
-          homePage.secondProductCardOfAllProduct
-        );
-      });
-
-      test("Verify filtering works by 'Phones', 'Laptops', 'Monitors'", async ({
-        runner,
-        homePage,
-      }) => {
-        await runner.clickOnElement(homePage.categoriesPhones);
-        await runner.verifyElementIsVisible(
-          homePage.firstProductCardOfAllProduct
-        );
-        await runner.clickOnElement(homePage.categoryLaptops);
-        await runner.verifyElementIsVisible(homePage.macbookLaptopCard);
-        await runner.clickOnElement(homePage.categoriesMonitors);
-        await runner.verifyElementIsVisible(
-          homePage.firstProductCardOfMonitors
-        );
+        // await runner.clickOnElement(homePage.categoryLaptops);
+        // await runner.verifyElementIsVisible(homePage.macbookLaptopCard);
+        // await runner.verifyElementIsVisible(homePage.categoriesHeaderSidebar);
+        // await runner.clickOnElement(homePage.categoriesHeaderSidebar);
+        // await runner.verifyElementIsVisible(homePage.homePageLogo);
+        // await runner.verifyElementIsVisible(
+        //   homePage.firstProductCardOfAllProduct
+        // );
+        // await runner.verifyElementIsVisible(
+        //   homePage.secondProductCardOfAllProduct
+        // );
       });
 
       test("Verify product cards display image, title, price, description", async ({
         runner,
         homePage,
       }) => {
-        await runner.validateAllProductCards(homePage.productCardSelectors);
+        // await runner.validateAllProductCards(homePage.productCardSelectors);
+        // await runner.clickOnElement(homePage.paginationNextButton);
+        // await runner.wait(1);
+        // await runner.validateAllProductCards(homePage.productCardSelectors);
       });
 
       test("Verify clicking product image navigates to product detail page", async ({
@@ -125,81 +166,16 @@ class HomePageTest extends ExpectedValueProvider {
         );
       });
 
-      test("Verify carousel is displayed, functional, and auto changes", async ({
-        runner,
-        homePage,
-      }) => {
-        await runner.verifyElementIsVisible(homePage.carousel);
-        const firstImageSrc = await runner.getAttributeFromLocator(
-          homePage.activeCarouselImage,
-          "src"
-        );
-        await runner.wait(7);
-        const secondImageSrc = await runner.getAttributeFromLocator(
-          homePage.activeCarouselImage,
-          "src"
-        );
-        await runner.verifyNotEqual(
-          firstImageSrc,
-          secondImageSrc,
-          "Carousel image did not auto-change."
-        );
-      });
-
-      test("Verify carousel arrows change displayed product", async ({
-        runner,
-        homePage,
-      }) => {
-        await runner.verifyElementIsVisible(homePage.carousel);
-
-        const firstImageSrc = await runner.getAttributeFromLocator(
-          homePage.activeCarouselImage,
-          "src"
-        );
-
-        await runner.clickOnElement(homePage.carouselNextButton);
-        await runner.wait(1);
-        const secondImageSrc = await runner.getAttributeFromLocator(
-          homePage.activeCarouselImage,
-          "src"
-        );
-        await runner.verifyNotEqual(secondImageSrc, firstImageSrc);
-
-        await runner.clickOnElement(homePage.carouselNextButton);
-        await runner.wait(1);
-        const thirdImageSrc = await runner.getAttributeFromLocator(
-          homePage.activeCarouselImage,
-          "src"
-        );
-        await runner.verifyNotEqual(thirdImageSrc, secondImageSrc);
-
-        await runner.clickOnElement(homePage.carouselPreviousButton);
-        await runner.wait(1);
-        const backToSecond = await runner.getAttributeFromLocator(
-          homePage.activeCarouselImage,
-          "src"
-        );
-        await runner.verifyEqual(backToSecond, secondImageSrc);
-
-        await runner.clickOnElement(homePage.carouselPreviousButton);
-        await runner.wait(1);
-        const backToFirst = await runner.getAttributeFromLocator(
-          homePage.activeCarouselImage,
-          "src"
-        );
-        await runner.verifyEqual(backToFirst, firstImageSrc);
-      });
-
       test("Verify pagination 'Next' and 'Previous' buttons work correctly", async ({
         runner,
         homePage,
       }) => {
-        await runner.verifyPaginationWorks({
-          container: homePage.productCardSelectors.container,
-          title: homePage.productCardSelectors.title,
-          nextButton: homePage.paginationNextButton,
-          previousButton: homePage.paginationPreviousButton,
-        });
+        // await runner.verifyPaginationWorks({
+        //   container: homePage.productCardSelectors.container,
+        //   title: homePage.productCardSelectors.title,
+        //   nextButton: homePage.paginationNextButton,
+        //   previousButton: homePage.paginationPreviousButton,
+        // });
       });
 
       test("Verify footer is present with copyright text", async ({

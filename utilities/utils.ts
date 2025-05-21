@@ -419,7 +419,7 @@ export class Utils {
 
   async getAttributeFromLocator(
     locator: string,
-    attributeName: string
+    attributeName: string | "src" | "href"
   ): Promise<string | null> {
     const value = await this.page.locator(locator).getAttribute(attributeName);
     if (value === null) {
@@ -625,110 +625,115 @@ export class Utils {
     }
   }
 
-  async validateProductImage(imageLocator: string): Promise<void> {
+  async validateProductContainers(locator: string): Promise<void> {
     try {
-      const imgSrc = await this.page.getAttribute(imageLocator, "src");
-      const imagePattern = this.expected.getExpectedProductImagePattern();
+      await this.page.waitForSelector(locator, { timeout: 10000 });
 
-      if (!imgSrc || !imagePattern.test(imgSrc)) {
-        const errorMsg = `❌ Image src '${imgSrc}' failed regex validation`;
+      const containers = this.page.locator(locator);
+      const count = await containers.count();
+      this.logMessage(`✅ Found ${count} product cards`);
+
+      if (count === 0) {
+        const errorMsg = "❌ No product containers found.";
         this.logMessage(errorMsg, "error");
-        await this.captureScreenshotOnFailure("validateProductImage");
+        await this.captureScreenshotOnFailure("validateProductContainers");
         throw new Error(errorMsg);
       }
 
-      this.logMessage(`✅ Image source '${imgSrc}' passed regex validation`);
-    } catch (error) {
-      const errorMsg = `Failed to validate product image: ${error.message}`;
+      for (let i = 0; i < count; i++) {
+        await expect(containers.nth(i)).toBeVisible();
+      }
+    } catch (error: any) {
+      const errorMsg = `Failed to validate product containers: ${error.message}`;
       this.logMessage(errorMsg, "error");
-      await this.captureScreenshotOnFailure("validateProductImage");
+      await this.captureScreenshotOnFailure("validateProductContainers");
       throw new Error(errorMsg);
     }
   }
 
-  async validateProductTitle(titleLocator: string): Promise<void> {
+  async validateProductTitles(selector: string): Promise<void> {
     try {
-      const titleText = await this.page.innerText(titleLocator);
-      const titlePattern = this.expected.getExpectedProductTitlePattern();
+      const titles = this.page.locator(selector);
+      const count = await titles.count();
 
-      if (!titlePattern.test(titleText)) {
-        const errorMsg = `❌ Title '${titleText}' failed regex validation`;
-        this.logMessage(errorMsg, "error");
-        await this.captureScreenshotOnFailure("validateProductTitle");
-        throw new Error(errorMsg);
+      for (let i = 0; i < count; i++) {
+        const title = await titles.nth(i).innerText();
+        const pattern = this.expected.getExpectedProductTitlePattern();
+        if (!pattern.test(title)) {
+          throw new Error(
+            `❌ Title at index ${i} failed validation: "${title}"`
+          );
+        }
+        this.logMessage(`✅ Title ${i + 1} passed: "${title}"`);
       }
-
-      this.logMessage(`✅ Title '${titleText}' passed regex validation`);
-    } catch (error) {
-      const errorMsg = `Failed to validate product title: ${error.message}`;
+    } catch (error: any) {
+      const errorMsg = `Failed to validate product titles: ${error.message}`;
       this.logMessage(errorMsg, "error");
-      await this.captureScreenshotOnFailure("validateProductTitle");
+      await this.captureScreenshotOnFailure("validateProductTitles");
       throw new Error(errorMsg);
     }
   }
 
-  async validateProductPrice(priceLocator: string): Promise<void> {
+  async validateProductPrices(selector: string): Promise<void> {
     try {
-      const priceText = await this.page.innerText(priceLocator);
-      const pricePattern = this.expected.getExpectedProductPricePattern();
+      const prices = this.page.locator(selector);
+      const count = await prices.count();
 
-      if (!pricePattern.test(priceText)) {
-        const errorMsg = `❌ Price '${priceText}' failed regex validation`;
-        this.logMessage(errorMsg, "error");
-        await this.captureScreenshotOnFailure("validateProductPrice");
-        throw new Error(errorMsg);
+      for (let i = 0; i < count; i++) {
+        const price = await prices.nth(i).innerText();
+        const pattern = this.expected.getExpectedProductPricePattern();
+        if (!pattern.test(price)) {
+          throw new Error(
+            `❌ Price at index ${i} failed validation: "${price}"`
+          );
+        }
+        this.logMessage(`✅ Price ${i + 1} passed: "${price}"`);
       }
-
-      this.logMessage(`✅ Price '${priceText}' passed regex validation`);
-    } catch (error) {
-      const errorMsg = `Failed to validate product price: ${error.message}`;
+    } catch (error: any) {
+      const errorMsg = `Failed to validate product prices: ${error.message}`;
       this.logMessage(errorMsg, "error");
-      await this.captureScreenshotOnFailure("validateProductPrice");
+      await this.captureScreenshotOnFailure("validateProductPrices");
       throw new Error(errorMsg);
     }
   }
 
-  async validateProductDescription(locator: string): Promise<void> {
+  async validateProductImages(selector: string): Promise<void> {
     try {
-      const text = (await this.page.innerText(locator)).trim();
+      const images = this.page.locator(selector);
+      const count = await images.count();
 
-      if (text.length === 0) {
-        const errorMsg = "❌ Product description is empty";
-        this.logMessage(errorMsg, "error");
-        await this.captureScreenshotOnFailure("validateProductDescription");
-        throw new Error(errorMsg);
+      for (let i = 0; i < count; i++) {
+        const src = await images.nth(i).getAttribute("src");
+        const pattern = this.expected.getExpectedProductImagePattern();
+        if (!src || !pattern.test(src)) {
+          throw new Error(`❌ Image at index ${i} failed validation: "${src}"`);
+        }
+        this.logMessage(`✅ Image ${i + 1} passed: "${src}"`);
       }
-
-      this.logMessage("✅ Product description validated");
-    } catch (error) {
-      const errorMsg = `Failed to validate product description: ${error.message}`;
+    } catch (error: any) {
+      const errorMsg = `Failed to validate product images: ${error.message}`;
       this.logMessage(errorMsg, "error");
-      await this.captureScreenshotOnFailure("validateProductDescription");
+      await this.captureScreenshotOnFailure("validateProductImages");
       throw new Error(errorMsg);
     }
   }
 
-  async validateAllProductCards(selectors: {
-    container: string;
-    title: string;
-    price: string;
-    image: string;
-  }): Promise<void> {
+  async validateProductDescriptions(selector: string): Promise<void> {
     try {
-      const cards = await this.getAllProductCards(selectors.container);
+      const containers = this.page.locator(selector);
+      const count = await containers.count();
 
-      for (let i = 0; i < cards.length; i++) {
-        await this.validateProductImage(selectors.image);
-        await this.validateProductTitle(selectors.title);
-        await this.validateProductPrice(selectors.price);
-        await this.validateProductDescription(selectors.container);
-
-        this.logMessage(`✅ Product card ${i + 1} validated successfully`);
+      for (let i = 0; i < count; i++) {
+        const text = (await containers.nth(i).innerText()).trim();
+        if (!text) {
+          throw new Error(`❌ Description at index ${i} is empty.`);
+        }
+        this.logMessage(`✅ Description ${i + 1} is present.`);
       }
-    } catch (error) {
-      const errorMsg = `Failed to validate product cards: ${error.message}`;
+    } catch (error: any) {
+      const errorMsg = `Failed to validate product descriptions: ${error.message}`;
       this.logMessage(errorMsg, "error");
-      await this.captureScreenshotOnFailure("validateAllProductCards");
+      await this.captureScreenshotOnFailure("validateProductDescriptions");
       throw new Error(errorMsg);
     }
   }
@@ -782,6 +787,134 @@ export class Utils {
       this.logMessage(errorMsg, "error");
       await this.captureScreenshotOnFailure("verifyPaginationWorks");
       throw new Error(errorMsg);
+    }
+  }
+
+  async verifyCarouselIsAutoChanging(
+    carouselLocator: string,
+    activeImageLocator: string,
+    waitTimeInSeconds: number = 7
+  ): Promise<void> {
+    try {
+      await this.verifyElementIsVisible(carouselLocator);
+
+      const firstImageSrc = await this.getAttributeFromLocator(
+        activeImageLocator,
+        "src"
+      );
+
+      await this.wait(waitTimeInSeconds);
+
+      const secondImageSrc = await this.getAttributeFromLocator(
+        activeImageLocator,
+        "src"
+      );
+
+      await this.verifyNotEqual(
+        firstImageSrc,
+        secondImageSrc,
+        "Carousel image did not auto-change."
+      );
+
+      this.logMessage(
+        "✅ Carousel auto-change functionality verified successfully."
+      );
+    } catch (error: any) {
+      const errorMsg = `❌ Failed to verify carousel auto-change: ${error.message}`;
+      this.logMessage(errorMsg, "error");
+      await this.captureScreenshotOnFailure("verifyCarouselIsAutoChanging");
+      throw new Error(errorMsg);
+    }
+  }
+
+  async verifyCarouselArrowNavigation(
+    carouselLocator: string,
+    activeImageLocator: string,
+    nextButtonLocator: string,
+    prevButtonLocator: string
+  ): Promise<void> {
+    try {
+      await this.verifyElementIsVisible(carouselLocator);
+
+      const firstImage = await this.getAttributeFromLocator(
+        activeImageLocator,
+        "src"
+      );
+
+      await this.clickOnElement(nextButtonLocator);
+      await this.wait(1);
+      const secondImage = await this.getAttributeFromLocator(
+        activeImageLocator,
+        "src"
+      );
+      await this.verifyNotEqual(secondImage, firstImage);
+
+      await this.clickOnElement(nextButtonLocator);
+      await this.wait(1);
+      const thirdImage = await this.getAttributeFromLocator(
+        activeImageLocator,
+        "src"
+      );
+      await this.verifyNotEqual(thirdImage, secondImage);
+
+      await this.clickOnElement(prevButtonLocator);
+      await this.wait(1);
+      const backToSecond = await this.getAttributeFromLocator(
+        activeImageLocator,
+        "src"
+      );
+      await this.verifyEqual(backToSecond, secondImage);
+
+      await this.clickOnElement(prevButtonLocator);
+      await this.wait(1);
+      const backToFirst = await this.getAttributeFromLocator(
+        activeImageLocator,
+        "src"
+      );
+      await this.verifyEqual(backToFirst, firstImage);
+
+      this.logMessage("✅ Carousel arrow navigation verified successfully.");
+    } catch (error: any) {
+      const errorMsg = `❌ Failed to verify carousel navigation: ${error.message}`;
+      this.logMessage(errorMsg, "error");
+      await this.captureScreenshotOnFailure("verifyCarouselArrowNavigation");
+      throw new Error(errorMsg);
+    }
+  }
+
+  async verifyProductTitlesMatch(
+    selector: string,
+    pattern: RegExp
+  ): Promise<void> {
+    try {
+      const titleElements = this.page.locator(selector);
+      const count = await titleElements.count();
+
+      if (count === 0) {
+        const errorMsg = `❌ No product titles found for selector: ${selector}`;
+        this.logMessage(errorMsg, "error");
+        await this.captureScreenshotOnFailure("verifyProductTitlesMatch");
+        throw new Error(errorMsg);
+      }
+
+      for (let i = 0; i < count; i++) {
+        const title = (await titleElements.nth(i).innerText()).trim();
+        if (!pattern.test(title)) {
+          const errorMsg = `❌ Title "${title}" at index ${i} did not match expected pattern`;
+          this.logMessage(errorMsg, "error");
+          await this.captureScreenshotOnFailure("verifyProductTitlesMatch");
+          throw new Error(errorMsg);
+        }
+      }
+
+      this.logMessage(
+        `✅ All ${count} product titles matched the expected pattern`
+      );
+    } catch (error: any) {
+      const finalMsg = `Failed to verify product titles match: ${error.message}`;
+      this.logMessage(finalMsg, "error");
+      await this.captureScreenshotOnFailure("verifyProductTitlesMatch");
+      throw new Error(finalMsg);
     }
   }
 }

@@ -2,19 +2,20 @@ import { Page } from "@playwright/test";
 
 export class HomePage {
   readonly homePageLogo: string;
-  readonly firstProductCardOfAllProduct: string;
-  readonly secondProductCardOfAllProduct: string;
+  readonly homePageLogoImage: string;
+  readonly firstProductCardOfAllProduct: string; //
+  readonly secondProductCardOfAllProduct: string; //
   readonly navbarHome: string;
   readonly navbarContact: string;
   readonly navbarAbout: string;
   readonly navbarCart: string;
   readonly navbarLogin: string;
   readonly navbarSignup: string;
+  readonly categoriesHeader: string;
   readonly categoriesPhones: string;
   readonly categoryLaptops: string;
   readonly categoriesMonitors: string;
   readonly macbookLaptopCard: string;
-  readonly categoriesHeaderSidebar: string;
   readonly firstProductCardOfMonitors: string;
   readonly firstProductImage: string;
   readonly firstProductTitle: string;
@@ -28,29 +29,27 @@ export class HomePage {
   readonly paginationPreviousButton: string;
   readonly footer: string;
   readonly footerText: string;
-  readonly productCardSelectors: {
-    container: string;
-    title: string;
-    price: string;
-    image: string;
-    description?: string;
-  };
+  readonly productContainer: string;
+  readonly productTitle: string;
+  readonly productPrice: string;
+  readonly productImage: string;
 
   constructor(page: Page) {
     this.homePageLogo = `css=a[id='nava']`;
+    this.homePageLogoImage = `css=[id='nava'] img`;
     this.firstProductCardOfAllProduct = `xpath=//body/div[@id='contcont']/div[@class='row']/div[@class='col-lg-9']/div[@id='tbodyid']/div[1]/div[1]`;
     this.secondProductCardOfAllProduct = `xpath=//body/div[@id='contcont']/div[@class='row']/div[@class='col-lg-9']/div[@id='tbodyid']/div[2]/div[1]`;
-    this.navbarHome = `css=a[class='nav-link'][href='index.html']`;
+    this.navbarHome = `css=ul[class='navbar-nav ml-auto'] [href='index.html']`;
     this.navbarContact = `css=a[data-target='#exampleModal']`;
     this.navbarAbout = `css=a[data-target='#videoModal']`;
     this.navbarCart = `css=a[id='cartur']`;
     this.navbarLogin = `css=a[id='login2']`;
     this.navbarSignup = `css=a[id='signin2']`;
+    this.categoriesHeader = `css=div[class='list-group'] a[id='cat']`;
     this.categoriesPhones = `xpath=//a[@id='itemc' and text()='Phones']`;
     this.categoryLaptops = `xpath=//a[@id='itemc' and text()='Laptops']`;
     this.categoriesMonitors = `xpath=//a[@id='itemc' and text()='Monitors']`;
     this.macbookLaptopCard = `css=body > div:nth-child(6) > div:nth-child(1) > div:nth-child(2) > div:nth-child(1) > div:nth-child(3)`;
-    this.categoriesHeaderSidebar = `css=a[id='cat']`;
     this.firstProductCardOfMonitors = `css=body > div:nth-child(6) > div:nth-child(1) > div:nth-child(2) > div:nth-child(1) > div:nth-child(1)`;
     this.firstProductImage = `css=div[id='tbodyid'] div:nth-child(1) div:nth-child(1) a:nth-child(1) img:nth-child(1)`;
     this.firstProductTitle = `css=body > div:nth-child(6) > div:nth-child(1) > div:nth-child(2) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(2) > h4:nth-child(1) > a:nth-child(1)`;
@@ -64,11 +63,9 @@ export class HomePage {
     this.paginationPreviousButton = `xpath=//button[@id='prev2']`;
     this.footer = `css=div[id='footc']`;
     this.footerText = `xpath=//p[@class='m-0 text-center text-white']`;
-    this.productCardSelectors = {
-      container: `css=div[id='tbodyid'] div[class='col-lg-4 col-md-6 mb-4']`,
-      title: `css=div[id='tbodyid'] div[class='col-lg-4 col-md-6 mb-4'] h4 > a`,
-      price: `css=div[id='tbodyid'] div[class='col-lg-4 col-md-6 mb-4'] h5`,
-      image: `css=div[id='tbodyid'] div[class='col-lg-4 col-md-6 mb-4'] img`,
-    };
+    this.productContainer = `css=div#tbodyid div.col-lg-4.col-md-6.mb-4`;
+    this.productTitle = `css=div[id='tbodyid'] div[class='col-lg-4 col-md-6 mb-4'] h4 > a`;
+    this.productPrice = `css=div[id='tbodyid'] div[class='col-lg-4 col-md-6 mb-4'] h5`;
+    this.productImage = `css=div[id='tbodyid'] div[class='col-lg-4 col-md-6 mb-4'] img`;
   }
 }
