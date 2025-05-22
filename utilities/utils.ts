@@ -42,6 +42,18 @@ export class Utils {
     }
   }
 
+  async goBack(): Promise<void> {
+    try {
+      await this.page.goBack();
+      this.logMessage(`Navigated back to previous page`);
+    } catch (error) {
+      const errorMsg = `Failed to navigate back to the previous page`;
+      this.logMessage(errorMsg, "error");
+      await this.captureScreenshotOnFailure("goBack");
+      throw new Error(errorMsg);
+    }
+  }
+
   async verifyElementIsVisible(identifier: string): Promise<void> {
     try {
       await expect.soft(this.page.locator(identifier)).toBeVisible();

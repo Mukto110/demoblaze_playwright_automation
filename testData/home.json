@@ -1,4 +1,20 @@
-{ 
-    "expectedText": "Signup / Login",
-    "expectedFooterText": "Copyright © Product Store 2017"
+{
+    "homeLogoText": "PRODUCT STORE",
+    "navbarHomeText": "Home",
+    "navbarContactText": "Contact",
+    "navbarAboutUsText": "About us",
+    "navbarCartText": "Cart",
+    "navbarLoginText": "Log in",
+    "navbarSignUpText": "Sign up",
+    "categoriesHeaderText": "CATEGORIES",
+    "categoriesPhonesText": "Phones",
+    "titleTextOfFirstProductPhones": "Samsung galaxy s6",
+    "titleTextOfSecondProductPhones": "Nokia lumia 1520",
+    "categoriesLaptopsText": "Laptops",
+    "titleTextOfFirstProductLaptops": "Sony vaio i5",
+    "titleTextOfSecondProductLaptops": "Sony vaio i7",
+    "categoriesMonitorsText":  "Monitors",
+    "titleTextOfFirstProductMonitors": "Apple monitor 24",
+    "titleTextOfSecondProductMonitors": "ASUS Full HD",
+    "copyrightText": "Copyright © Product Store 2017"
 }

@@ -17,10 +17,12 @@ export class HomePage {
   readonly secondProductCardTitle: string;
   readonly paginationPreviousButton: string;
   readonly paginationNextButton: string;
+  readonly firstProductImage: string;
+  readonly secondProductImage: string;
   // --------------------------------------------
   readonly macbookLaptopCard: string;
   readonly firstProductCardOfMonitors: string;
-  readonly firstProductImage: string;
+
   readonly firstProductTitle: string;
   readonly firstProductPrice: string;
   readonly firstProductDescription: string;
@@ -54,10 +56,12 @@ export class HomePage {
     this.secondProductCardTitle = `css=div[id='tbodyid'] div:nth-child(2) div:nth-child(1) div:nth-child(2) h4:nth-child(1) a`;
     this.paginationPreviousButton = `css=li[class='page-item'] button[id='prev2']`;
     this.paginationNextButton = `css=li[class='page-item'] button[id='next2']`;
+    this.firstProductImage = `css=div[id='tbodyid'] div:nth-child(1) div:nth-child(1) a:nth-child(1) img:nth-child(1)`;
+    this.secondProductImage = `css=div[id='tbodyid'] div:nth-child(2) div:nth-child(1) a:nth-child(1) img:nth-child(1)`;
     // -----------------------------------------------------------------------------------
     this.macbookLaptopCard = `css=body > div:nth-child(6) > div:nth-child(1) > div:nth-child(2) > div:nth-child(1) > div:nth-child(3)`;
     this.firstProductCardOfMonitors = `css=body > div:nth-child(6) > div:nth-child(1) > div:nth-child(2) > div:nth-child(1) > div:nth-child(1)`;
-    this.firstProductImage = `css=div[id='tbodyid'] div:nth-child(1) div:nth-child(1) a:nth-child(1) img:nth-child(1)`;
+
     this.firstProductTitle = `css=body > div:nth-child(6) > div:nth-child(1) > div:nth-child(2) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(2) > h4:nth-child(1) > a:nth-child(1)`;
     this.firstProductPrice = `css=body > div:nth-child(6) > div:nth-child(1) > div:nth-child(2) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(2) > h5:nth-child(2)`;
     this.firstProductDescription = `css=body > div:nth-child(6) > div:nth-child(1) > div:nth-child(2) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(2) > p:nth-child(3)`;
