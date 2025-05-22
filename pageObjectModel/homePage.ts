@@ -3,8 +3,6 @@ import { Page } from "@playwright/test";
 export class HomePage {
   readonly homePageLogo: string;
   readonly homePageLogoImage: string;
-  readonly firstProductCardOfAllProduct: string; //
-  readonly secondProductCardOfAllProduct: string; //
   readonly navbarHome: string;
   readonly navbarContact: string;
   readonly navbarAbout: string;
@@ -13,8 +11,11 @@ export class HomePage {
   readonly navbarSignup: string;
   readonly categoriesHeader: string;
   readonly categoriesPhones: string;
-  readonly categoryLaptops: string;
+  readonly categoriesLaptops: string;
   readonly categoriesMonitors: string;
+  readonly firstProductCardTitle: string;
+  readonly secondProductCardTitle: string;
+  // --------------------------------------------
   readonly macbookLaptopCard: string;
   readonly firstProductCardOfMonitors: string;
   readonly firstProductImage: string;
@@ -37,8 +38,6 @@ export class HomePage {
   constructor(page: Page) {
     this.homePageLogo = `css=a[id='nava']`;
     this.homePageLogoImage = `css=[id='nava'] img`;
-    this.firstProductCardOfAllProduct = `xpath=//body/div[@id='contcont']/div[@class='row']/div[@class='col-lg-9']/div[@id='tbodyid']/div[1]/div[1]`;
-    this.secondProductCardOfAllProduct = `xpath=//body/div[@id='contcont']/div[@class='row']/div[@class='col-lg-9']/div[@id='tbodyid']/div[2]/div[1]`;
     this.navbarHome = `css=ul[class='navbar-nav ml-auto'] [href='index.html']`;
     this.navbarContact = `css=a[data-target='#exampleModal']`;
     this.navbarAbout = `css=a[data-target='#videoModal']`;
@@ -47,8 +46,11 @@ export class HomePage {
     this.navbarSignup = `css=a[id='signin2']`;
     this.categoriesHeader = `css=div[class='list-group'] a[id='cat']`;
     this.categoriesPhones = `xpath=//a[@id='itemc' and text()='Phones']`;
-    this.categoryLaptops = `xpath=//a[@id='itemc' and text()='Laptops']`;
+    this.categoriesLaptops = `xpath=//a[@id='itemc' and text()='Laptops']`;
     this.categoriesMonitors = `xpath=//a[@id='itemc' and text()='Monitors']`;
+    this.firstProductCardTitle = `css=div[id='tbodyid'] div:nth-child(1) div:nth-child(1) div:nth-child(2) h4:nth-child(1) a`;
+    this.secondProductCardTitle = `css=div[id='tbodyid'] div:nth-child(2) div:nth-child(1) div:nth-child(2) h4:nth-child(1) a`;
+    // -----------------------------------------------------------------------------------
     this.macbookLaptopCard = `css=body > div:nth-child(6) > div:nth-child(1) > div:nth-child(2) > div:nth-child(1) > div:nth-child(3)`;
     this.firstProductCardOfMonitors = `css=body > div:nth-child(6) > div:nth-child(1) > div:nth-child(2) > div:nth-child(1) > div:nth-child(1)`;
     this.firstProductImage = `css=div[id='tbodyid'] div:nth-child(1) div:nth-child(1) a:nth-child(1) img:nth-child(1)`;
@@ -63,7 +65,8 @@ export class HomePage {
     this.paginationPreviousButton = `xpath=//button[@id='prev2']`;
     this.footer = `css=div[id='footc']`;
     this.footerText = `xpath=//p[@class='m-0 text-center text-white']`;
-    this.productContainer = `css=div#tbodyid div.col-lg-4.col-md-6.mb-4`;
+    // <--------------------------------------------------------------->
+    this.productContainer = `css=div[id='tbodyid'] div[class='col-lg-4 col-md-6 mb-4']`;
     this.productTitle = `css=div[id='tbodyid'] div[class='col-lg-4 col-md-6 mb-4'] h4 > a`;
     this.productPrice = `css=div[id='tbodyid'] div[class='col-lg-4 col-md-6 mb-4'] h5`;
     this.productImage = `css=div[id='tbodyid'] div[class='col-lg-4 col-md-6 mb-4'] img`;

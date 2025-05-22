@@ -79,15 +79,58 @@ class HomePageTest extends ExpectedValueProvider {
         await runner.validateProductContainers(homePage.productContainer);
       });
 
-      test("Verify filtering works by 'Phones', 'Laptops', 'Monitors'", async ({
+      test("Verify filtering works by 'Phones', 'Laptops', 'Monitors' and resets filtering on click on categories tab", async ({
         runner,
         homePage,
       }) => {
+        // Validate "Phones"
         await runner.verifyElementIsVisible(homePage.categoriesHeader);
         await runner.verifyContainText(homePage.categoriesHeader, "CATEGORIES");
+
         await runner.verifyElementIsVisible(homePage.categoriesPhones);
         await runner.verifyContainText(homePage.categoriesPhones, "Phones");
         await runner.clickOnElement(homePage.categoriesPhones);
+        await runner.validateProductContainers(homePage.productContainer);
+        await runner.verifyContainText(
+          homePage.firstProductCardTitle,
+          "Samsung galaxy s6"
+        );
+        await runner.verifyContainText(
+          homePage.secondProductCardTitle,
+          "Nokia lumia 1520"
+        );
+
+        // Validate "Laptops"
+        await runner.verifyElementIsVisible(homePage.categoriesLaptops);
+        await runner.verifyContainText(homePage.categoriesLaptops, "Laptops");
+        await runner.clickOnElement(homePage.categoriesLaptops);
+        await runner.validateProductContainers(homePage.productContainer);
+        await runner.verifyContainText(
+          homePage.firstProductCardTitle,
+          "Sony vaio i5"
+        );
+        await runner.verifyContainText(
+          homePage.secondProductCardTitle,
+          "Sony vaio i7"
+        );
+
+        // Validate "Monitors"
+        await runner.verifyElementIsVisible(homePage.categoriesMonitors);
+        await runner.verifyContainText(homePage.categoriesMonitors, "Monitors");
+        await runner.clickOnElement(homePage.categoriesMonitors);
+        await runner.validateProductContainers(homePage.productContainer);
+        await runner.verifyContainText(
+          homePage.firstProductCardTitle,
+          "Apple monitor 24"
+        );
+        await runner.verifyContainText(
+          homePage.secondProductCardTitle,
+          "ASUS Full HD"
+        );
+
+        // Reset filtering by clicking "CATEGORIES"
+        await runner.clickOnElement(homePage.categoriesHeader);
+        await runner.validateProductContainers(homePage.productContainer);
       });
 
       // ------------------------------------------------------------------------------------------
@@ -96,13 +139,11 @@ class HomePageTest extends ExpectedValueProvider {
         runner,
         homePage,
       }) => {
-        await runner.clickOnElement(homePage.categoryLaptops);
+        await runner.clickOnElement(homePage.categoriesLaptops);
         await runner.verifyElementIsVisible(homePage.macbookLaptopCard);
         await runner.clickOnElement(homePage.homePageLogo);
         await runner.verifyElementIsVisible(homePage.homePageLogo);
-        await runner.verifyElementIsVisible(
-          homePage.firstProductCardOfAllProduct
-        );
+        await runner.verifyElementIsVisible(homePage.firstProductCardTitle);
       });
 
       test("Verify clicking 'Categories' reloads homepage and shows all products", async ({
