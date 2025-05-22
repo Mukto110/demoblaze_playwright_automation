@@ -15,6 +15,8 @@ export class HomePage {
   readonly categoriesMonitors: string;
   readonly firstProductCardTitle: string;
   readonly secondProductCardTitle: string;
+  readonly paginationPreviousButton: string;
+  readonly paginationNextButton: string;
   // --------------------------------------------
   readonly macbookLaptopCard: string;
   readonly firstProductCardOfMonitors: string;
@@ -26,14 +28,14 @@ export class HomePage {
   readonly activeCarouselImage: string;
   readonly carouselNextButton: string;
   readonly carouselPreviousButton: string;
-  readonly paginationNextButton: string;
-  readonly paginationPreviousButton: string;
+
   readonly footer: string;
   readonly footerText: string;
   readonly productContainer: string;
   readonly productTitle: string;
   readonly productPrice: string;
   readonly productImage: string;
+  readonly productDescription: string;
 
   constructor(page: Page) {
     this.homePageLogo = `css=a[id='nava']`;
@@ -50,6 +52,8 @@ export class HomePage {
     this.categoriesMonitors = `xpath=//a[@id='itemc' and text()='Monitors']`;
     this.firstProductCardTitle = `css=div[id='tbodyid'] div:nth-child(1) div:nth-child(1) div:nth-child(2) h4:nth-child(1) a`;
     this.secondProductCardTitle = `css=div[id='tbodyid'] div:nth-child(2) div:nth-child(1) div:nth-child(2) h4:nth-child(1) a`;
+    this.paginationPreviousButton = `css=li[class='page-item'] button[id='prev2']`;
+    this.paginationNextButton = `css=li[class='page-item'] button[id='next2']`;
     // -----------------------------------------------------------------------------------
     this.macbookLaptopCard = `css=body > div:nth-child(6) > div:nth-child(1) > div:nth-child(2) > div:nth-child(1) > div:nth-child(3)`;
     this.firstProductCardOfMonitors = `css=body > div:nth-child(6) > div:nth-child(1) > div:nth-child(2) > div:nth-child(1) > div:nth-child(1)`;
@@ -61,14 +65,13 @@ export class HomePage {
     this.activeCarouselImage = `css=.carousel-item.active img`;
     this.carouselNextButton = `css=span[class='carousel-control-next-icon']`;
     this.carouselPreviousButton = `css=.carousel-control-prev-icon`;
-    this.paginationNextButton = `xpath=//button[@id='next2']`;
-    this.paginationPreviousButton = `xpath=//button[@id='prev2']`;
     this.footer = `css=div[id='footc']`;
     this.footerText = `xpath=//p[@class='m-0 text-center text-white']`;
     // <--------------------------------------------------------------->
-    this.productContainer = `css=div[id='tbodyid'] div[class='col-lg-4 col-md-6 mb-4']`;
+    this.productContainer = `css=div[class='col-lg-9'] div[id='tbodyid'] div[class='col-lg-4 col-md-6 mb-4']`;
     this.productTitle = `css=div[id='tbodyid'] div[class='col-lg-4 col-md-6 mb-4'] h4 > a`;
     this.productPrice = `css=div[id='tbodyid'] div[class='col-lg-4 col-md-6 mb-4'] h5`;
     this.productImage = `css=div[id='tbodyid'] div[class='col-lg-4 col-md-6 mb-4'] img`;
+    this.productDescription = `css=div[id='tbodyid'] div[class='col-lg-4 col-md-6 mb-4'] p`;
   }
 }

@@ -7,7 +7,7 @@ class HomePageTest extends ExpectedValueProvider {
     super();
   }
 
-  // test("Verify '", async ({
+  // test("Verify ", async ({
   //       runner,
   //       homePage,
   //     }) => {
@@ -133,45 +133,114 @@ class HomePageTest extends ExpectedValueProvider {
         await runner.validateProductContainers(homePage.productContainer);
       });
 
-      // ------------------------------------------------------------------------------------------
-
       test("Verify homepage reloads and resets filters on 'Home' navbar click", async ({
         runner,
         homePage,
       }) => {
+        await runner.verifyContainText(
+          homePage.firstProductCardTitle,
+          "Samsung galaxy s6"
+        );
+        await runner.verifyContainText(
+          homePage.secondProductCardTitle,
+          "Nokia lumia 1520"
+        );
         await runner.clickOnElement(homePage.categoriesLaptops);
-        await runner.verifyElementIsVisible(homePage.macbookLaptopCard);
-        await runner.clickOnElement(homePage.homePageLogo);
-        await runner.verifyElementIsVisible(homePage.homePageLogo);
-        await runner.verifyElementIsVisible(homePage.firstProductCardTitle);
+        await runner.verifyContainText(
+          homePage.firstProductCardTitle,
+          "Sony vaio i5"
+        );
+        await runner.verifyContainText(
+          homePage.secondProductCardTitle,
+          "Sony vaio i7"
+        );
+        await runner.clickOnElement(homePage.navbarHome);
+        await runner.wait(1, { waitForLoadState: "load" });
+        await runner.verifyContainText(
+          homePage.firstProductCardTitle,
+          "Samsung galaxy s6"
+        );
+        await runner.verifyContainText(
+          homePage.secondProductCardTitle,
+          "Nokia lumia 1520"
+        );
       });
 
       test("Verify clicking 'Categories' reloads homepage and shows all products", async ({
         runner,
         homePage,
       }) => {
-        // await runner.clickOnElement(homePage.categoryLaptops);
-        // await runner.verifyElementIsVisible(homePage.macbookLaptopCard);
-        // await runner.verifyElementIsVisible(homePage.categoriesHeaderSidebar);
-        // await runner.clickOnElement(homePage.categoriesHeaderSidebar);
-        // await runner.verifyElementIsVisible(homePage.homePageLogo);
-        // await runner.verifyElementIsVisible(
-        //   homePage.firstProductCardOfAllProduct
-        // );
-        // await runner.verifyElementIsVisible(
-        //   homePage.secondProductCardOfAllProduct
-        // );
+        await runner.clickOnElement(homePage.categoriesLaptops);
+        await runner.verifyContainText(
+          homePage.firstProductCardTitle,
+          "Sony vaio i5"
+        );
+        await runner.verifyContainText(
+          homePage.secondProductCardTitle,
+          "Sony vaio i7"
+        );
+        await runner.clickOnElement(homePage.categoriesHeader);
+        await runner.wait(1, { waitForLoadState: "load" });
+        await runner.verifyContainText(
+          homePage.firstProductCardTitle,
+          "Samsung galaxy s6"
+        );
+        await runner.verifyContainText(
+          homePage.secondProductCardTitle,
+          "Nokia lumia 1520"
+        );
       });
 
-      test("Verify product cards display image, title, price, description", async ({
+      test("Verify pagination controls and product count per page", async ({
         runner,
         homePage,
       }) => {
-        // await runner.validateAllProductCards(homePage.productCardSelectors);
-        // await runner.clickOnElement(homePage.paginationNextButton);
-        // await runner.wait(1);
-        // await runner.validateAllProductCards(homePage.productCardSelectors);
+        await runner.validateProductContainers(homePage.productContainer);
+        await runner.verifyElementIsVisible(homePage.paginationPreviousButton);
+        await runner.verifyElementIsVisible(homePage.paginationNextButton);
+        await runner.verifyContainText(
+          homePage.paginationPreviousButton,
+          "Previous"
+        );
+        await runner.verifyContainText(homePage.paginationNextButton, "Next");
+        await runner.wait(1, { waitForLoadState: "load" });
+        await runner.validateProductContainers(homePage.productContainer);
       });
+
+      test("Verify product content is valid on the first page of pagination", async ({
+        runner,
+        homePage,
+      }) => {
+        await runner.validateProductContainers(homePage.productContainer);
+        await runner.validateProductImages(homePage.productImage);
+        await runner.validateProductTitles(homePage.productTitle);
+        await runner.validateProductPrices(homePage.productPrice);
+        await runner.validateProductDescriptions(homePage.productDescription);
+      });
+
+      test("Verify product content is valid on the second page of pagination", async ({
+        runner,
+        homePage,
+      }) => {
+        await runner.verifyElementIsVisible(homePage.paginationNextButton);
+        await runner.waitForProductChangeAfterPagination(
+          homePage.paginationNextButton,
+          homePage.firstProductTitle
+        );
+
+        await runner.validateProductContainers(homePage.productContainer);
+        await runner.validateProductImages(homePage.productImage);
+        await runner.validateProductTitles(homePage.productTitle);
+        await runner.validateProductPrices(homePage.productPrice);
+        await runner.validateProductDescriptions(homePage.productDescription);
+      });
+
+      // test("Verify Verify returning to first page with previous button click shows correct products", async ({
+      //       runner,
+      //       homePage,
+      //     }) => {
+      // in this test I need to store the data of first page's products to match with again visit first page's products
+      //     });
 
       test("Verify clicking product image navigates to product detail page", async ({
         runner,
@@ -189,6 +258,8 @@ class HomePageTest extends ExpectedValueProvider {
           productDetailPage.firstProductDescription
         );
       });
+
+      // ------------------------------------------------------------------------------------------
 
       test("Verify clicking product title navigates to product detail page", async ({
         runner,

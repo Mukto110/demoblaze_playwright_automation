@@ -28,7 +28,7 @@ export class ExpectedValueProvider {
   }
 
   getExpectedProductTitlePattern(): RegExp {
-    return /^[\w\s\-]+$/;
+    return /^[\w\s\d\-.']{3,}$/i;
   }
 
   getExpectedProductPricePattern(): RegExp {

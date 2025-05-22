@@ -238,30 +238,6 @@ export class Utils {
     }
   }
 
-  async pause(): Promise<void> {
-    try {
-      await this.page.pause();
-      this.logMessage("Paused the test execution for debugging.");
-    } catch (error) {
-      const errorMsg = "Failed to pause the test execution";
-      this.logMessage(errorMsg, "error");
-      await this.captureScreenshotOnFailure("pause");
-      throw new Error(errorMsg);
-    }
-  }
-
-  async uploadFile(selector: string, filePath: string): Promise<void> {
-    try {
-      await this.page.locator(selector).setInputFiles(filePath);
-      this.logMessage(`Uploaded file from path: ${filePath}`);
-    } catch (error) {
-      const errorMsg = `Failed to upload file at: ${filePath}`;
-      this.logMessage(errorMsg, "error");
-      await this.captureScreenshotOnFailure("uploadFile");
-      throw new Error(errorMsg);
-    }
-  }
-
   async verifyUrlContains(text: string): Promise<void> {
     try {
       const currentUrl = this.page.url();
@@ -916,5 +892,32 @@ export class Utils {
       await this.captureScreenshotOnFailure("verifyProductTitlesMatch");
       throw new Error(finalMsg);
     }
+  }
+
+  async waitForProductChangeAfterPagination(
+    nextButtonSelector: string,
+    productTitleSelector: string,
+    timeout = 5000
+  ): Promise<void> {
+    const initialText = await this.page
+      .locator(productTitleSelector)
+      .first()
+      .innerText();
+
+    await this.clickOnElement(nextButtonSelector);
+
+    const endTime = Date.now() + timeout;
+    while (Date.now() < endTime) {
+      const currentText = await this.page
+        .locator(productTitleSelector)
+        .first()
+        .innerText();
+      if (currentText.trim() !== initialText.trim()) return;
+      await this.page.waitForTimeout(100);
+    }
+
+    throw new Error(
+      `Product title did not change after clicking pagination button within ${timeout}ms`
+    );
   }
 }
