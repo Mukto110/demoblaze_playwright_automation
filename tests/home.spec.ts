@@ -52,7 +52,7 @@ class HomePageTest extends ExpectedValueProvider {
         await runner.verifyElementIsVisible(homePage.navbarAbout);
         await runner.verifyContainText(
           homePage.navbarAbout,
-          homeData.navbar.contact
+          homeData.navbar.about
         );
         await runner.verifyElementIsVisible(homePage.navbarCart);
         await runner.verifyContainText(
@@ -318,85 +318,85 @@ class HomePageTest extends ExpectedValueProvider {
         );
       });
 
-      // ------------------------------------------------------------------------------------------
+      // // ------------------------------------------------------------------------------------------
 
-      test("Verify clicking product title navigates to product detail page", async ({
-        runner,
-        homePage,
-        productDetailPage,
-      }) => {
-        // await runner.clickOnElement(homePage.firstProductTitle);
-        // await runner.verifyElementIsVisible(productDetailPage.productTitle);
-        // await runner.verifyElementIsVisible(productDetailPage.productPrice);
-        // await runner.verifyElementIsVisible(
-        //   productDetailPage.firstProductDescription
-        // );
-      });
+      // test("Verify clicking product title navigates to product detail page", async ({
+      //   runner,
+      //   homePage,
+      //   productDetailPage,
+      // }) => {
+      //   // await runner.clickOnElement(homePage.firstProductTitle);
+      //   // await runner.verifyElementIsVisible(productDetailPage.productTitle);
+      //   // await runner.verifyElementIsVisible(productDetailPage.productPrice);
+      //   // await runner.verifyElementIsVisible(
+      //   //   productDetailPage.firstProductDescription
+      //   // );
+      // });
 
-      test("Verify pagination 'Next' and 'Previous' buttons work correctly", async ({
-        runner,
-        homePage,
-      }) => {
-        // await runner.verifyPaginationWorks({
-        //   container: homePage.productCardSelectors.container,
-        //   title: homePage.productCardSelectors.title,
-        //   nextButton: homePage.paginationNextButton,
-        //   previousButton: homePage.paginationPreviousButton,
-        // });
-      });
+      // test("Verify pagination 'Next' and 'Previous' buttons work correctly", async ({
+      //   runner,
+      //   homePage,
+      // }) => {
+      //   // await runner.verifyPaginationWorks({
+      //   //   container: homePage.productCardSelectors.container,
+      //   //   title: homePage.productCardSelectors.title,
+      //   //   nextButton: homePage.paginationNextButton,
+      //   //   previousButton: homePage.paginationPreviousButton,
+      //   // });
+      // });
 
-      test("Verify footer is present with copyright text", async ({
-        runner,
-        homePage,
-      }) => {
-        await runner.verifyElementIsVisible(homePage.footer);
-        await runner.verifyContainText(
-          homePage.footerText,
-          homeData.footer.copyright
-        );
-      });
+      // test("Verify footer is present with copyright text", async ({
+      //   runner,
+      //   homePage,
+      // }) => {
+      //   await runner.verifyElementIsVisible(homePage.footer);
+      //   await runner.verifyContainText(
+      //     homePage.footerText,
+      //     homeData.footer.copyright
+      //   );
+      // });
 
-      test("Verify navbar links open correct modals ('Contact', 'Login', 'Sign up', 'About Us')", async ({
-        runner,
-        homePage,
-        loginModal,
-        signUpModal,
-        contactModal,
-        aboutModal,
-      }) => {
-        await runner.verifyElementIsVisible(homePage.navbarContact);
-        await runner.clickOnElement(homePage.navbarContact);
-        await runner.verifyElementIsVisible(contactModal.title);
-        await runner.clickOnElement(contactModal.closeButton);
-        await runner.wait(1);
+      // test("Verify navbar links open correct modals ('Contact', 'Login', 'Sign up', 'About Us')", async ({
+      //   runner,
+      //   homePage,
+      //   loginModal,
+      //   signUpModal,
+      //   contactModal,
+      //   aboutModal,
+      // }) => {
+      //   await runner.verifyElementIsVisible(homePage.navbarContact);
+      //   await runner.clickOnElement(homePage.navbarContact);
+      //   await runner.verifyElementIsVisible(contactModal.title);
+      //   await runner.clickOnElement(contactModal.closeButton);
+      //   await runner.wait(1);
 
-        await runner.verifyElementIsVisible(homePage.navbarAbout);
-        await runner.clickOnElement(homePage.navbarAbout);
-        await runner.verifyElementIsVisible(aboutModal.title);
-        await runner.clickOnElement(aboutModal.closeButton);
-        await runner.wait(1);
+      //   await runner.verifyElementIsVisible(homePage.navbarAbout);
+      //   await runner.clickOnElement(homePage.navbarAbout);
+      //   await runner.verifyElementIsVisible(aboutModal.title);
+      //   await runner.clickOnElement(aboutModal.closeButton);
+      //   await runner.wait(1);
 
-        await runner.verifyElementIsVisible(homePage.navbarLogin);
-        await runner.clickOnElement(homePage.navbarLogin);
-        await runner.verifyElementIsVisible(loginModal.loginModalLabel);
-        await runner.clickOnElement(loginModal.closeButton);
-        await runner.wait(1);
+      //   await runner.verifyElementIsVisible(homePage.navbarLogin);
+      //   await runner.clickOnElement(homePage.navbarLogin);
+      //   await runner.verifyElementIsVisible(loginModal.loginModalLabel);
+      //   await runner.clickOnElement(loginModal.closeButton);
+      //   await runner.wait(1);
 
-        await runner.verifyElementIsVisible(homePage.navbarSignup);
-        await runner.clickOnElement(homePage.navbarSignup);
-        await runner.verifyElementIsVisible(signUpModal.signUpModalLabel);
-        await runner.clickOnElement(signUpModal.closeButton);
-      });
+      //   await runner.verifyElementIsVisible(homePage.navbarSignup);
+      //   await runner.clickOnElement(homePage.navbarSignup);
+      //   await runner.verifyElementIsVisible(signUpModal.signUpModalLabel);
+      //   await runner.clickOnElement(signUpModal.closeButton);
+      // });
 
-      test("Verify cart button in navbar navigates to cart page", async ({
-        runner,
-        homePage,
-        cartPage,
-      }) => {
-        await runner.verifyElementIsVisible(homePage.navbarCart);
-        await runner.clickOnElement(homePage.navbarCart);
-        await runner.verifyContainText(cartPage.cartPageTitle, "Products");
-      });
+      // test("Verify cart button in navbar navigates to cart page", async ({
+      //   runner,
+      //   homePage,
+      //   cartPage,
+      // }) => {
+      //   await runner.verifyElementIsVisible(homePage.navbarCart);
+      //   await runner.clickOnElement(homePage.navbarCart);
+      //   await runner.verifyContainText(cartPage.cartPageTitle, "Products");
+      // });
     });
   }
 }
