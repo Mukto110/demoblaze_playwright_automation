@@ -42,32 +42,32 @@ class HomePageTest extends ExpectedValueProvider {
         await runner.verifyElementIsVisible(homePage.navbarHome);
         await runner.verifyContainText(
           homePage.navbarHome,
-          homeData.navbarHomeText
+          homeData.navbar.home
         );
         await runner.verifyElementIsVisible(homePage.navbarContact);
         await runner.verifyContainText(
           homePage.navbarContact,
-          homeData.navbarContactText
+          homeData.navbar.contact
         );
         await runner.verifyElementIsVisible(homePage.navbarAbout);
         await runner.verifyContainText(
           homePage.navbarAbout,
-          homeData.navbarAboutUsText
+          homeData.navbar.contact
         );
         await runner.verifyElementIsVisible(homePage.navbarCart);
         await runner.verifyContainText(
           homePage.navbarCart,
-          homeData.navbarCartText
+          homeData.navbar.cart
         );
         await runner.verifyElementIsVisible(homePage.navbarLogin);
         await runner.verifyContainText(
           homePage.navbarLogin,
-          homeData.navbarLoginText
+          homeData.navbar.login
         );
         await runner.verifyElementIsVisible(homePage.navbarSignup);
         await runner.verifyContainText(
           homePage.navbarSignup,
-          homeData.navbarSignUpText
+          homeData.navbar.signup
         );
       });
 
@@ -104,61 +104,61 @@ class HomePageTest extends ExpectedValueProvider {
         runner,
         homePage,
       }) => {
-        // Validate "Phones"
         await runner.verifyElementIsVisible(homePage.categoriesHeader);
         await runner.verifyContainText(
           homePage.categoriesHeader,
-          homeData.categoriesHeaderText
+          homeData.categories.header
         );
 
+        // Validate "Phones"
         await runner.verifyElementIsVisible(homePage.categoriesPhones);
         await runner.verifyContainText(
           homePage.categoriesPhones,
-          homeData.categoriesPhonesText
+          homeData.categories.phones.name
         );
         await runner.clickOnElement(homePage.categoriesPhones);
         await runner.validateProductContainers(homePage.productContainer);
         await runner.verifyContainText(
           homePage.firstProductCardTitle,
-          homeData.titleTextOfFirstProductPhones
+          homeData.categories.phones.firstProduct
         );
         await runner.verifyContainText(
           homePage.secondProductCardTitle,
-          homeData.titleTextOfSecondProductPhones
+          homeData.categories.phones.secondProduct
         );
 
         // Validate "Laptops"
         await runner.verifyElementIsVisible(homePage.categoriesLaptops);
         await runner.verifyContainText(
           homePage.categoriesLaptops,
-          homeData.categoriesLaptopsText
+          homeData.categories.laptops.name
         );
         await runner.clickOnElement(homePage.categoriesLaptops);
         await runner.validateProductContainers(homePage.productContainer);
         await runner.verifyContainText(
           homePage.firstProductCardTitle,
-          homeData.titleTextOfFirstProductLaptops
+          homeData.categories.laptops.firstProduct
         );
         await runner.verifyContainText(
           homePage.secondProductCardTitle,
-          homeData.titleTextOfSecondProductLaptops
+          homeData.categories.laptops.secondProduct
         );
 
         // Validate "Monitors"
         await runner.verifyElementIsVisible(homePage.categoriesMonitors);
         await runner.verifyContainText(
           homePage.categoriesMonitors,
-          homeData.categoriesMonitorsText
+          homeData.categories.monitors.name
         );
         await runner.clickOnElement(homePage.categoriesMonitors);
         await runner.validateProductContainers(homePage.productContainer);
         await runner.verifyContainText(
           homePage.firstProductCardTitle,
-          homeData.titleTextOfFirstProductMonitors
+          homeData.categories.monitors.firstProduct
         );
         await runner.verifyContainText(
           homePage.secondProductCardTitle,
-          homeData.titleTextOfSecondProductMonitors
+          homeData.categories.monitors.secondProduct
         );
 
         // Reset filtering by clicking "CATEGORIES"
@@ -166,38 +166,36 @@ class HomePageTest extends ExpectedValueProvider {
         await runner.validateProductContainers(homePage.productContainer);
       });
 
-      // to here -> hard coded values to json data
-
       test("Verify homepage reloads and resets filters on 'Home' navbar click", async ({
         runner,
         homePage,
       }) => {
         await runner.verifyContainText(
           homePage.firstProductCardTitle,
-          "Samsung galaxy s6"
+          homeData.productCardTitles.homePage.first
         );
         await runner.verifyContainText(
           homePage.secondProductCardTitle,
-          "Nokia lumia 1520"
+          homeData.productCardTitles.homePage.second
         );
         await runner.clickOnElement(homePage.categoriesLaptops);
         await runner.verifyContainText(
           homePage.firstProductCardTitle,
-          "Sony vaio i5"
+          homeData.categories.laptops.firstProduct
         );
         await runner.verifyContainText(
           homePage.secondProductCardTitle,
-          "Sony vaio i7"
+          homeData.categories.laptops.secondProduct
         );
         await runner.clickOnElement(homePage.navbarHome);
         await runner.wait(1, { waitForLoadState: "load" });
         await runner.verifyContainText(
           homePage.firstProductCardTitle,
-          "Samsung galaxy s6"
+          homeData.productCardTitles.homePage.first
         );
         await runner.verifyContainText(
           homePage.secondProductCardTitle,
-          "Nokia lumia 1520"
+          homeData.productCardTitles.homePage.second
         );
       });
 
@@ -208,21 +206,21 @@ class HomePageTest extends ExpectedValueProvider {
         await runner.clickOnElement(homePage.categoriesLaptops);
         await runner.verifyContainText(
           homePage.firstProductCardTitle,
-          "Sony vaio i5"
+          homeData.categories.laptops.firstProduct
         );
         await runner.verifyContainText(
           homePage.secondProductCardTitle,
-          "Sony vaio i7"
+          homeData.categories.laptops.secondProduct
         );
         await runner.clickOnElement(homePage.categoriesHeader);
         await runner.wait(1, { waitForLoadState: "load" });
         await runner.verifyContainText(
           homePage.firstProductCardTitle,
-          "Samsung galaxy s6"
+          homeData.productCardTitles.homePage.first
         );
         await runner.verifyContainText(
           homePage.secondProductCardTitle,
-          "Nokia lumia 1520"
+          homeData.productCardTitles.homePage.second
         );
       });
 
@@ -235,9 +233,12 @@ class HomePageTest extends ExpectedValueProvider {
         await runner.verifyElementIsVisible(homePage.paginationNextButton);
         await runner.verifyContainText(
           homePage.paginationPreviousButton,
-          "Previous"
+          homeData.pagination.previous
         );
-        await runner.verifyContainText(homePage.paginationNextButton, "Next");
+        await runner.verifyContainText(
+          homePage.paginationNextButton,
+          homeData.pagination.next
+        );
         await runner.clickOnElement(homePage.paginationNextButton);
         await runner.wait(1, { waitForLoadState: "load" });
         await runner.validateProductContainers(homePage.productContainer);
@@ -287,24 +288,34 @@ class HomePageTest extends ExpectedValueProvider {
       }) => {
         await runner.clickOnElement(homePage.firstProductImage);
         await runner.wait(1);
-        await runner.verifyUrlContains("prod.html?idp_=1");
+        await runner.verifyUrlContains(
+          homeData.productDetails.firstProduct.urlFragment
+        );
         await runner.verifyElementIsVisible(productDetailPage.productTitle);
         await runner.verifyContainText(
           productDetailPage.productTitle,
-          "Samsung galaxy s6"
+          homeData.productDetails.firstProduct.title
         );
         await runner.verifyElementIsVisible(productDetailPage.productPrice);
-        await runner.verifyContainText(productDetailPage.productPrice, "$360");
+        await runner.verifyContainText(
+          productDetailPage.productPrice,
+          homeData.productDetails.firstProduct.price
+        );
         await runner.goBack();
         await runner.wait(1);
         await runner.clickOnElement(homePage.secondProductImage);
         await runner.wait(1);
-        await runner.verifyUrlContains("prod.html?idp_=2");
+        await runner.verifyUrlContains(
+          homeData.productDetails.secondProduct.urlFragment
+        );
         await runner.verifyContainText(
           productDetailPage.productTitle,
-          "Nokia lumia 1520"
+          homeData.productDetails.secondProduct.title
         );
-        await runner.verifyContainText(productDetailPage.productPrice, "$820");
+        await runner.verifyContainText(
+          productDetailPage.productPrice,
+          homeData.productDetails.secondProduct.price
+        );
       });
 
       // ------------------------------------------------------------------------------------------
@@ -341,7 +352,7 @@ class HomePageTest extends ExpectedValueProvider {
         await runner.verifyElementIsVisible(homePage.footer);
         await runner.verifyContainText(
           homePage.footerText,
-          homeData.copyrightText
+          homeData.footer.copyright
         );
       });
 

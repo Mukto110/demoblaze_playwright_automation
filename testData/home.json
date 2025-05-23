@@ -1,20 +1,64 @@
 {
-    "homeLogoText": "PRODUCT STORE",
-    "navbarHomeText": "Home",
-    "navbarContactText": "Contact",
-    "navbarAboutUsText": "About us",
-    "navbarCartText": "Cart",
-    "navbarLoginText": "Log in",
-    "navbarSignUpText": "Sign up",
-    "categoriesHeaderText": "CATEGORIES",
-    "categoriesPhonesText": "Phones",
-    "titleTextOfFirstProductPhones": "Samsung galaxy s6",
-    "titleTextOfSecondProductPhones": "Nokia lumia 1520",
-    "categoriesLaptopsText": "Laptops",
-    "titleTextOfFirstProductLaptops": "Sony vaio i5",
-    "titleTextOfSecondProductLaptops": "Sony vaio i7",
-    "categoriesMonitorsText":  "Monitors",
-    "titleTextOfFirstProductMonitors": "Apple monitor 24",
-    "titleTextOfSecondProductMonitors": "ASUS Full HD",
-    "copyrightText": "Copyright © Product Store 2017"
+  "homeLogoText": "PRODUCT STORE",
+
+  "navbar": {
+    "home": "Home",
+    "contact": "Contact",
+    "about": "About us",
+    "cart": "Cart",
+    "login": "Log in",
+    "signup": "Sign up"
+  },
+
+  "categories": {
+    "header": "CATEGORIES",
+    "phones": {
+      "name": "Phones",
+      "firstProduct": "Samsung galaxy s6",
+      "secondProduct": "Nokia lumia 1520"
+    },
+    "laptops": {
+      "name": "Laptops",
+      "firstProduct": "Sony vaio i5",
+      "secondProduct": "Sony vaio i7"
+    },
+    "monitors": {
+      "name": "Monitors",
+      "firstProduct": "Apple monitor 24",
+      "secondProduct": "ASUS Full HD"
+    }
+  },
+
+  "productCardTitles": {
+    "homePage": {
+        "first": "Samsung galaxy s6",
+        "second": "Nokia lumia 1520"
+    },
+    "paginationSecondPage": {
+        "first": "Apple monitor 24",
+        "second": "MacBook air"
+    }
+  },
+
+   "pagination": {
+    "previous": "Previous",
+    "next": "Next"
+  },
+
+   "productDetails": {
+    "firstProduct": {
+      "urlFragment": "prod.html?idp_=1",
+      "title": "Samsung galaxy s6",
+      "price": "$360"
+    },
+    "secondProduct": {
+      "urlFragment": "prod.html?idp_=2",
+      "title": "Nokia lumia 1520",
+      "price": "$820"
+    }
+},
+
+  "footer": {
+    "copyright": "Copyright © Product Store 2017"
+  }
 }
