@@ -24,6 +24,10 @@ export class CartPage {
   readonly purchaseCofimationMessageAlert: string;
   readonly purchaseCofimationDetailsInAlert: string;
   readonly okButtonInAlert: string;
+// --------------------------------------------
+  readonly cartedProductsDetails: string;
+  readonly cartedProductsTitle: string;
+  readonly cartedProductsPrice: string;
 
   constructor(page: Page) {
     this.cartPageTitle = `css=div[class='col-lg-8'] h2`;
@@ -49,5 +53,8 @@ export class CartPage {
     this.purchaseCofimationMessageAlert = `xpath=//h2[normalize-space()='Thank you for your purchase!']`;
     this.purchaseCofimationDetailsInAlert = `css=p[class="lead text-muted "]`;
     this.okButtonInAlert = `css=button[class="confirm btn btn-lg btn-primary"]`;
+    this.cartedProductsDetails = `css=tr[class="success"]`;
+    this.cartedProductsTitle = `css=td:nth-child(2)`;
+    this.cartedProductsPrice = `css=td:nth-child(3)`;
   }
 }
