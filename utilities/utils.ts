@@ -58,19 +58,26 @@ export class Utils {
     }
   }
 
-  async verifyElementIsVisible(identifier: string): Promise<void> {
-    try {
-      await expect.soft(this.page.locator(identifier)).toBeVisible();
-      this.logMessage(
-        `Verified element with identifier ${identifier} is visible`
-      );
-    } catch (error) {
-      const errorMsg = `Failed to verify element with identifier ${identifier} is visible`;
-      this.logMessage(errorMsg, "error");
-      await this.captureScreenshotOnFailure("verifyElementIsVisible");
-      throw new Error(errorMsg);
+
+async verifyElementIsVisible(selector: string): Promise<void> {
+  try {
+    const element = this.page.locator(selector);
+    const count = await element.count();
+    if (count === 0) {
+      throw new Error(`No elements found with identifier: ${selector}`);
     }
+
+    await expect(element.first()).toBeVisible({ timeout: 5000 });
+    this.logMessage(`✅ Verified element(s) with identifier ${selector} is visible`);
+  } catch (error) {
+    const errorMsg = `Failed to verify element(s) with identifier ${selector} is visible: ${error.message}`;
+    this.logMessage(errorMsg, "error");
+    await this.captureScreenshotOnFailure("verifyElementIsVisible");
+    throw new Error(errorMsg);
   }
+}
+
+
 
   async verifyElementIsNotVisible(identifier: string): Promise<void> {
     try {
@@ -987,4 +994,267 @@ export class Utils {
       throw error;
     }
   }
+
+async addAndVerifyCartProducts(
+  productCardsLocator: string,
+  productTitlesLocator: string,
+  productPricesLocator: string,
+  addToCartButtonLocator: string,
+  homeButtonLocator: string,
+  cartNavLocator: string,
+  cartProductRowsLocator: string,
+  cartNameCellSelector: string,
+  cartPriceCellSelector: string,
+  count: number
+): Promise<void> {
+  const addedProducts: { name: string; price: string }[] = [];
+
+  try {
+    const cards = this.page.locator(productCardsLocator);
+    const titles = this.page.locator(productTitlesLocator);
+    const prices = this.page.locator(productPricesLocator);
+
+    const total = await cards.count();
+    if (total === 0) throw new Error("No product cards found.");
+
+    // 👇 Helper for unique random indices
+    const getUniqueRandomIndices = (count: number, max: number): number[] => {
+      const indices = new Set<number>();
+      while (indices.size < Math.min(count, max)) {
+        indices.add(Math.floor(Math.random() * max));
+      }
+      return [...indices];
+    };
+
+    const indices = getUniqueRandomIndices(count, total);
+    const homeButton = this.page.locator(homeButtonLocator);
+
+    for (let i = 0; i < indices.length; i++) {
+      const index = indices[i];
+      const name = await titles.nth(index).innerText();
+      const price = await prices.nth(index).innerText();
+
+      console.info(`[INFO] Navigating to: ${name} | Price: ${price}`);
+      await cards.nth(index).click();
+
+      const addToCartButton = this.page.locator(addToCartButtonLocator);
+      await addToCartButton.waitFor({ state: 'visible', timeout: 5000 });
+
+      this.page.once('dialog', async (dialog) => {
+        console.info(`[INFO] Alert accepted for: ${name}`);
+        await dialog.accept();
+      });
+
+      await addToCartButton.click();
+      await this.page.waitForTimeout(1000);
+
+      addedProducts.push({ name, price });
+
+      if (i < indices.length - 1) {
+        await Promise.all([
+          this.page.waitForLoadState('load'),
+          homeButton.click(),
+        ]);
+        await cards.first().waitFor({ state: 'visible', timeout: 10000 });
+      }
+    }
+
+    // ✅ Step 2: Go to cart
+    await this.page.locator(cartNavLocator).click();
+    await this.page.waitForLoadState('load');
+
+    // ✅ Step 3: Verify cart products
+    const cartRows = this.page.locator(cartProductRowsLocator);
+    await expect(cartRows.first()).toBeVisible({ timeout: 10000 });
+
+    const cartRowCount = await cartRows.count();
+    const actualCartItems: { name: string; price: string }[] = [];
+
+    for (let i = 0; i < cartRowCount; i++) {
+      const row = cartRows.nth(i);
+      const name = await row.locator(cartNameCellSelector).innerText();
+      const price = await row.locator(cartPriceCellSelector).innerText();
+      actualCartItems.push({ name: name.trim(), price: price.trim() });
+    }
+
+// Assuming you have 'addedProducts' which is the array of products you tried to add
+const normalizedAdded = addedProducts.map(item => ({
+  name: item.name,
+  price: item.price.replace('$', '')  // remove $ sign for consistency
+}));
+
+const normalizedCart = actualCartItems.map(item => ({
+  name: item.name,
+  price: item.price.replace('$', '')  // remove $ sign for consistency
+}));
+
+const sortedAdded = [...normalizedAdded].sort((a, b) => a.name.localeCompare(b.name));
+const sortedCart = [...normalizedCart].sort((a, b) => a.name.localeCompare(b.name));
+
+expect(sortedCart).toEqual(sortedAdded);
+
+    console.info("[✅] Cart contents match expected products.");
+  } catch (error) {
+    console.error("[❌] addAndVerifyCartProducts failed:", error);
+    await this.page.screenshot({ path: 'verify_cart_error.png' });
+    throw error;
+  }
+}
+
+async addVerifyReloadAndVerifyCartPersistence(
+    numberOfProductsToAdd: number,
+    productCardsLocator: string,
+    productTitlesLocator: string,
+    productPricesLocator: string,
+    addToCartButtonLocator: string,
+    homeButtonLocator: string,
+    cartNavLocator: string, // Still needed for initial navigation to cart
+    cartProductRowsLocator: string,
+    cartNameCellSelector: string,
+    cartPriceCellSelector: string
+  ): Promise<void> {
+    const addedProducts: { name: string; price: string }[] = [];
+
+    try {
+
+      const productCards = this.page.locator(productCardsLocator);
+      const productTitles = this.page.locator(productTitlesLocator);
+      const productPrices = this.page.locator(productPricesLocator);
+
+      const totalProductCards = await productCards.count();
+      if (totalProductCards === 0)
+        throw new Error("No product cards found on the home page.");
+
+      // Helper for unique random indices
+      const getUniqueRandomIndices = (count: number, max: number): number[] => {
+        const indices = new Set<number>();
+        while (indices.size < Math.min(count, max)) {
+          indices.add(Math.floor(Math.random() * max));
+        }
+        return [...indices];
+      };
+
+      const indicesToAdd = getUniqueRandomIndices(
+        numberOfProductsToAdd,
+        totalProductCards
+      );
+      const homeButton = this.page.locator(homeButtonLocator);
+      const addToCartButton = this.page.locator(addToCartButtonLocator);
+
+      this.logMessage(
+        `Attempting to add ${indicesToAdd.length} products to cart...`
+      );
+      for (let i = 0; i < indicesToAdd.length; i++) {
+        const index = indicesToAdd[i];
+        const name = await productTitles.nth(index).innerText();
+        const price = await productPrices.nth(index).innerText();
+
+        this.logMessage(`[INFO] Adding product: ${name} | Price: ${price}`);
+        await productCards.nth(index).click();
+
+        await addToCartButton.waitFor({ state: "visible", timeout: 5000 });
+
+        this.page.once("dialog", async (dialog) => {
+          this.logMessage(`[INFO] Alert accepted for: ${name}`);
+          await dialog.accept();
+        });
+
+        await addToCartButton.click();
+        await this.page.waitForTimeout(1000); // Consider more robust wait
+
+        addedProducts.push({ name, price });
+
+        if (i < indicesToAdd.length - 1) {
+          await Promise.all([
+            this.page.waitForLoadState("load"),
+            homeButton.click(),
+          ]);
+          await productCards.first().waitFor({ state: "visible", timeout: 10000 });
+        }
+      }
+      this.logMessage(`Successfully added ${addedProducts.length} products to cart.`);
+
+      // Step 2: Go to cart and verify products (Initial Verification)
+      this.logMessage("Navigating to cart for initial verification...");
+      await this.page.locator(cartNavLocator).click(); // Initial navigation to cart
+      await this.page.waitForLoadState("load");
+
+      await this.verifyCartContents(addedProducts, cartProductRowsLocator, cartNameCellSelector, cartPriceCellSelector);
+      this.logMessage("✅ Initial cart contents verified successfully.");
+
+      // Step 3: Reload the page (while on the cart page)
+      this.logMessage("Reloading the cart page to test persistence...");
+      await this.page.reload();
+      await this.page.waitForLoadState("load"); // Ensure page is loaded after reload
+      this.logMessage("Cart page reloaded.");
+
+      // Step 4: Verify products again (Persistence Verification)
+      // No need to navigate to cart again, as we reloaded while on it.
+      this.logMessage("Verifying cart contents after reload...");
+      await this.verifyCartContents(addedProducts, cartProductRowsLocator, cartNameCellSelector, cartPriceCellSelector);
+      this.logMessage(
+        "✅ Cart contents persist after page reload and match expected products."
+      );
+    } catch (error) {
+      const errorMsg = `❌ Test 'addVerifyReloadAndVerifyCartPersistence' failed: ${(error as Error).message}`;
+      this.logMessage(errorMsg, "error");
+      await this.captureScreenshotOnFailure(
+        "addVerifyReloadAndVerifyCartPersistence"
+      );
+      throw new Error(errorMsg); // Re-throw to fail the test
+    }
+  }
+
+private async verifyCartContents(
+    expectedItems: { name: string; price: string }[],
+    cartProductRowsLocator: string,
+    cartNameCellSelector: string,
+    cartPriceCellSelector: string
+  ): Promise<void> {
+    const cartRows = this.page.locator(cartProductRowsLocator);
+    await expect(cartRows.first()).toBeVisible({ timeout: 10000 });
+
+    const cartRowCount = await cartRows.count();
+    const actualCartItems: { name: string; price: string }[] = [];
+
+    for (let i = 0; i < cartRowCount; i++) {
+      const row = cartRows.nth(i);
+      const name = await row.locator(cartNameCellSelector).innerText();
+      const price = await row.locator(cartPriceCellSelector).innerText();
+      actualCartItems.push({ name: name.trim(), price: price.trim() });
+    }
+
+    // Normalize and sort for robust comparison
+    const normalizedExpected = expectedItems.map((item) => ({
+      name: item.name,
+      price: item.price.replace("$", ""),
+    }));
+
+    const normalizedActualCart = actualCartItems.map((item) => ({
+      name: item.name,
+      price: item.price.replace("$", ""),
+    }));
+
+    const sortedExpected = [...normalizedExpected].sort((a, b) =>
+      a.name.localeCompare(b.name)
+    );
+    const sortedActualCart = [...normalizedActualCart].sort((a, b) =>
+      a.name.localeCompare(b.name)
+    );
+
+    expect(sortedActualCart).toEqual(sortedExpected);
+  }
+
+
+
+
+
+
+
+
+
+
+
+
+
 }

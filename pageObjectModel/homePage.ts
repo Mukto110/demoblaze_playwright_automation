@@ -72,8 +72,8 @@ export class HomePage {
     this.footer = `css=div[id='footc']`;
     this.footerText = `xpath=//p[@class='m-0 text-center text-white']`;
     // <--------------------------------------------------------------->
-    this.productContainer = `css=div[class='col-lg-9'] div[id='tbodyid'] div[class='col-lg-4 col-md-6 mb-4']`;
-    this.productTitle = `css=div[id='tbodyid'] div[class='col-lg-4 col-md-6 mb-4'] h4 > a`;
+    this.productContainer = `css=div[class="card h-100"]`;
+    this.productTitle = `css=h4[class="card-title"]`;
     this.productPrice = `css=div[id='tbodyid'] div[class='col-lg-4 col-md-6 mb-4'] h5`;
     this.productImage = `css=div[id='tbodyid'] div[class='col-lg-4 col-md-6 mb-4'] img`;
     this.productDescription = `css=div[id='tbodyid'] div[class='col-lg-4 col-md-6 mb-4'] p`;
