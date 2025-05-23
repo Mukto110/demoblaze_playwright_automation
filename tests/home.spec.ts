@@ -1,6 +1,10 @@
 import { test } from "../utilities/fixtures";
 import { ExpectedValueProvider } from "../utilities/valueProvider";
 import homeData from "../testData/home.json";
+import contactData from "../testData/contact.json";
+import aboutData from "../testData/aboutUs.json";
+import loginData from "../testData/login.json";
+import signupData from "../testData/signup.json";
 
 class HomePageTest extends ExpectedValueProvider {
   constructor() {
@@ -69,6 +73,71 @@ class HomePageTest extends ExpectedValueProvider {
           homePage.navbarSignup,
           homeData.navbar.signup
         );
+      });
+
+      test("Verify navbar links open correct modals ('Contact', 'Login', 'Sign up', 'About Us')", async ({
+        runner,
+        homePage,
+        loginModal,
+        signUpModal,
+        contactModal,
+        aboutModal,
+      }) => {
+        // contact modal
+        await runner.verifyElementIsVisible(homePage.navbarContact);
+        await runner.verifyContainText(
+          homePage.navbarContact,
+          homeData.navbar.contact
+        );
+        await runner.clickOnElement(homePage.navbarContact);
+        await runner.verifyElementIsVisible(contactModal.title);
+        await runner.verifyContainText(
+          contactModal.title,
+          contactData.contactModalTitle
+        );
+        await runner.clickOnElement(contactModal.closeButton);
+
+        // about us modal
+        await runner.verifyElementIsVisible(homePage.navbarAbout);
+        await runner.verifyContainText(
+          homePage.navbarAbout,
+          homeData.navbar.about
+        );
+        await runner.clickOnElement(homePage.navbarAbout);
+        await runner.verifyElementIsVisible(aboutModal.title);
+        await runner.verifyContainText(
+          aboutModal.title,
+          aboutData.aboutUsTitle
+        );
+        await runner.clickOnElement(aboutModal.closeButton);
+
+        // login modal
+        await runner.verifyElementIsVisible(homePage.navbarLogin);
+        await runner.verifyContainText(
+          homePage.navbarLogin,
+          homeData.navbar.login
+        );
+        await runner.clickOnElement(homePage.navbarLogin);
+        await runner.verifyElementIsVisible(loginModal.loginModalTitle);
+        await runner.verifyContainText(
+          loginModal.loginModalTitle,
+          loginData.loginModalTitle
+        );
+        await runner.clickOnElement(loginModal.closeButton);
+
+        // signup modal
+        await runner.verifyElementIsVisible(homePage.navbarSignup);
+        await runner.verifyContainText(
+          homePage.navbarSignup,
+          homeData.navbar.signup
+        );
+        await runner.clickOnElement(homePage.navbarSignup);
+        await runner.verifyElementIsVisible(signUpModal.signUpModalTitle);
+        await runner.verifyContainText(
+          signUpModal.signUpModalTitle,
+          signupData.signUpModalTitle
+        );
+        await runner.clickOnElement(signUpModal.closeButton);
       });
 
       test("Verify hero banner carousel is displayed, functional, and auto changes", async ({
@@ -318,32 +387,43 @@ class HomePageTest extends ExpectedValueProvider {
         );
       });
 
+      test("Verify clicking product title navigates to product detail page", async ({
+        runner,
+        homePage,
+        productDetailPage,
+      }) => {
+        await runner.clickOnElement(homePage.firstProductCardTitle);
+        await runner.wait(1);
+        await runner.verifyUrlContains(
+          homeData.productDetails.firstProduct.urlFragment
+        );
+        await runner.verifyElementIsVisible(productDetailPage.productTitle);
+        await runner.verifyContainText(
+          productDetailPage.productTitle,
+          homeData.productDetails.firstProduct.title
+        );
+        await runner.verifyElementIsVisible(productDetailPage.productPrice);
+        await runner.verifyContainText(
+          productDetailPage.productPrice,
+          homeData.productDetails.firstProduct.price
+        );
+        await runner.goBack();
+        await runner.clickOnElement(homePage.secondProductCardTitle);
+        await runner.wait(1);
+        await runner.verifyUrlContains(
+          homeData.productDetails.secondProduct.urlFragment
+        );
+        await runner.verifyContainText(
+          productDetailPage.productTitle,
+          homeData.productDetails.secondProduct.title
+        );
+        await runner.verifyContainText(
+          productDetailPage.productPrice,
+          homeData.productDetails.secondProduct.price
+        );
+      });
+
       // // ------------------------------------------------------------------------------------------
-
-      // test("Verify clicking product title navigates to product detail page", async ({
-      //   runner,
-      //   homePage,
-      //   productDetailPage,
-      // }) => {
-      //   // await runner.clickOnElement(homePage.firstProductTitle);
-      //   // await runner.verifyElementIsVisible(productDetailPage.productTitle);
-      //   // await runner.verifyElementIsVisible(productDetailPage.productPrice);
-      //   // await runner.verifyElementIsVisible(
-      //   //   productDetailPage.firstProductDescription
-      //   // );
-      // });
-
-      // test("Verify pagination 'Next' and 'Previous' buttons work correctly", async ({
-      //   runner,
-      //   homePage,
-      // }) => {
-      //   // await runner.verifyPaginationWorks({
-      //   //   container: homePage.productCardSelectors.container,
-      //   //   title: homePage.productCardSelectors.title,
-      //   //   nextButton: homePage.paginationNextButton,
-      //   //   previousButton: homePage.paginationPreviousButton,
-      //   // });
-      // });
 
       // test("Verify footer is present with copyright text", async ({
       //   runner,
@@ -354,38 +434,6 @@ class HomePageTest extends ExpectedValueProvider {
       //     homePage.footerText,
       //     homeData.footer.copyright
       //   );
-      // });
-
-      // test("Verify navbar links open correct modals ('Contact', 'Login', 'Sign up', 'About Us')", async ({
-      //   runner,
-      //   homePage,
-      //   loginModal,
-      //   signUpModal,
-      //   contactModal,
-      //   aboutModal,
-      // }) => {
-      //   await runner.verifyElementIsVisible(homePage.navbarContact);
-      //   await runner.clickOnElement(homePage.navbarContact);
-      //   await runner.verifyElementIsVisible(contactModal.title);
-      //   await runner.clickOnElement(contactModal.closeButton);
-      //   await runner.wait(1);
-
-      //   await runner.verifyElementIsVisible(homePage.navbarAbout);
-      //   await runner.clickOnElement(homePage.navbarAbout);
-      //   await runner.verifyElementIsVisible(aboutModal.title);
-      //   await runner.clickOnElement(aboutModal.closeButton);
-      //   await runner.wait(1);
-
-      //   await runner.verifyElementIsVisible(homePage.navbarLogin);
-      //   await runner.clickOnElement(homePage.navbarLogin);
-      //   await runner.verifyElementIsVisible(loginModal.loginModalLabel);
-      //   await runner.clickOnElement(loginModal.closeButton);
-      //   await runner.wait(1);
-
-      //   await runner.verifyElementIsVisible(homePage.navbarSignup);
-      //   await runner.clickOnElement(homePage.navbarSignup);
-      //   await runner.verifyElementIsVisible(signUpModal.signUpModalLabel);
-      //   await runner.clickOnElement(signUpModal.closeButton);
       // });
 
       // test("Verify cart button in navbar navigates to cart page", async ({
