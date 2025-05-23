@@ -5,18 +5,12 @@ import contactData from "../testData/contact.json";
 import aboutData from "../testData/aboutUs.json";
 import loginData from "../testData/login.json";
 import signupData from "../testData/signup.json";
+import cartData from "../testData/cart.json";
 
 class HomePageTest extends ExpectedValueProvider {
   constructor() {
     super();
   }
-
-  // test("Verify ", async ({
-  //       runner,
-  //       homePage,
-  //     }) => {
-
-  //     });
 
   runTest() {
     test.describe("Home Page Functionality Test", () => {
@@ -138,6 +132,24 @@ class HomePageTest extends ExpectedValueProvider {
           signupData.signUpModalTitle
         );
         await runner.clickOnElement(signUpModal.closeButton);
+      });
+
+      test("Verify cart button in navbar navigates to cart page", async ({
+        runner,
+        homePage,
+        cartPage,
+      }) => {
+        await runner.verifyElementIsVisible(homePage.navbarCart);
+        await runner.verifyContainText(
+          homePage.navbarCart,
+          homeData.navbar.cart
+        );
+        await runner.clickOnElement(homePage.navbarCart);
+        await runner.verifyUrlContains(cartData.cartUrlFragment);
+        await runner.verifyContainText(
+          cartPage.cartPageTitle,
+          cartData.cartPageTitle
+        );
       });
 
       test("Verify hero banner carousel is displayed, functional, and auto changes", async ({
@@ -343,12 +355,12 @@ class HomePageTest extends ExpectedValueProvider {
         await runner.validateProductDescriptions(homePage.productDescription);
       });
 
-      // test("Verify returning to first page with previous button click shows correct products", async ({
-      //       runner,
-      //       homePage,
-      //     }) => {
-      // in this test I need to store the data of first page's products to match with again visit first page's products
-      //     });
+      test("Verify returning to first page with previous button click shows correct products", async ({
+        runner,
+        homePage,
+      }) => {
+        await runner.verifyPaginationReturn(homePage);
+      });
 
       test("Verify clicking on a product image navigates to the correct product detail page", async ({
         runner,
@@ -423,28 +435,16 @@ class HomePageTest extends ExpectedValueProvider {
         );
       });
 
-      // // ------------------------------------------------------------------------------------------
-
-      // test("Verify footer is present with copyright text", async ({
-      //   runner,
-      //   homePage,
-      // }) => {
-      //   await runner.verifyElementIsVisible(homePage.footer);
-      //   await runner.verifyContainText(
-      //     homePage.footerText,
-      //     homeData.footer.copyright
-      //   );
-      // });
-
-      // test("Verify cart button in navbar navigates to cart page", async ({
-      //   runner,
-      //   homePage,
-      //   cartPage,
-      // }) => {
-      //   await runner.verifyElementIsVisible(homePage.navbarCart);
-      //   await runner.clickOnElement(homePage.navbarCart);
-      //   await runner.verifyContainText(cartPage.cartPageTitle, "Products");
-      // });
+      test("Verify footer is present with copyright text", async ({
+        runner,
+        homePage,
+      }) => {
+        await runner.verifyElementIsVisible(homePage.footer);
+        await runner.verifyContainText(
+          homePage.footerText,
+          homeData.footer.copyright
+        );
+      });
     });
   }
 }

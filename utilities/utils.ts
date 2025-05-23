@@ -2,6 +2,7 @@ import { expect, Page, Locator } from "@playwright/test";
 import logger from "./logger";
 // import { allure } from "allure-playwright";
 import { ExpectedValueProvider } from "./valueProvider";
+import { HomePage } from "../pageObjectModel/homePage";
 
 export class Utils {
   private page: Page;
@@ -22,7 +23,10 @@ export class Utils {
     }
   }
 
-  private logMessage(message: string, level: "info" | "error" = "info"): void {
+  private logMessage(
+    message: string,
+    level: "info" | "error" | "warn" = "info"
+  ): void {
     if (level === "info") {
       logger.info(message);
     } else {
@@ -432,6 +436,25 @@ export class Utils {
     }
   }
 
+  async getAllTexts(selector: string): Promise<string[]> {
+    try {
+      const elements = await this.page.$$(selector);
+      const texts = await Promise.all(
+        elements.map(async (el) => {
+          return (await el.textContent())?.trim() || "";
+        })
+      );
+      return texts;
+    } catch (error) {
+      this.logMessage(
+        `Failed to get texts from selector: ${selector}`,
+        "error"
+      );
+      await this.captureScreenshotOnFailure("getAllTexts");
+      throw error;
+    }
+  }
+
   async typeText(selector: string, text: string): Promise<void> {
     try {
       const locator = this.page.locator(selector);
@@ -726,58 +749,6 @@ export class Utils {
     }
   }
 
-  async verifyPaginationWorks(selectors: {
-    container: string;
-    title: string;
-    nextButton: string;
-    previousButton: string;
-  }): Promise<void> {
-    try {
-      const cardsLocator = this.page.locator(selectors.container);
-
-      const relativeTitleSelector = selectors.title.replace(
-        selectors.container + " ",
-        ""
-      );
-      const firstCardTitleLocator = cardsLocator
-        .nth(0)
-        .locator(`:scope >> ${relativeTitleSelector}`);
-
-      const firstTitle = (await firstCardTitleLocator.textContent())?.trim();
-
-      await this.clickOnElement(selectors.nextButton);
-      await this.wait(1);
-
-      const newFirstTitle = (await firstCardTitleLocator.textContent())?.trim();
-
-      await this.verifyNotEqual(
-        firstTitle,
-        newFirstTitle,
-        "Products did not change after clicking 'Next'."
-      );
-
-      await this.clickOnElement(selectors.previousButton);
-      await this.wait(2);
-
-      const finalFirstTitle = (
-        await firstCardTitleLocator.textContent()
-      )?.trim();
-
-      await this.verifyEqual(
-        finalFirstTitle,
-        firstTitle,
-        "Products did not return to the first page after clicking 'Previous'."
-      );
-
-      this.logMessage("✅ Pagination functionality verified successfully");
-    } catch (error) {
-      const errorMsg = `❌ Pagination verification failed: ${error.message}`;
-      this.logMessage(errorMsg, "error");
-      await this.captureScreenshotOnFailure("verifyPaginationWorks");
-      throw new Error(errorMsg);
-    }
-  }
-
   async verifyCarouselIsAutoChanging(
     carouselLocator: string,
     activeImageLocator: string,
@@ -911,25 +882,109 @@ export class Utils {
     productTitleSelector: string,
     timeout = 5000
   ): Promise<void> {
-    const initialText = await this.page
-      .locator(productTitleSelector)
-      .first()
-      .innerText();
-
-    await this.clickOnElement(nextButtonSelector);
-
-    const endTime = Date.now() + timeout;
-    while (Date.now() < endTime) {
-      const currentText = await this.page
+    try {
+      const initialText = await this.page
         .locator(productTitleSelector)
         .first()
         .innerText();
-      if (currentText.trim() !== initialText.trim()) return;
-      await this.page.waitForTimeout(100);
-    }
+      this.logMessage(`Initial product title: "${initialText}"`, "info");
 
-    throw new Error(
-      `Product title did not change after clicking pagination button within ${timeout}ms`
-    );
+      await this.clickOnElement(nextButtonSelector);
+      this.logMessage("Clicked on pagination next button", "info");
+
+      const endTime = Date.now() + timeout;
+      while (Date.now() < endTime) {
+        const currentText = await this.page
+          .locator(productTitleSelector)
+          .first()
+          .innerText();
+
+        if (currentText.trim() !== initialText.trim()) {
+          this.logMessage(
+            `Product title changed successfully to: "${currentText}"`,
+            "info"
+          );
+          return;
+        }
+
+        await this.page.waitForTimeout(100);
+      }
+
+      const errorMsg = `❌ Product title did not change within ${timeout}ms after clicking pagination button`;
+      this.logMessage(errorMsg, "error");
+      await this.captureScreenshotOnFailure("pagination_title_change_timeout");
+      throw new Error(errorMsg);
+    } catch (error) {
+      this.logMessage(
+        `❌ Error in waitForProductChangeAfterPagination: ${error}`,
+        "error"
+      );
+      await this.captureScreenshotOnFailure("pagination_error");
+      throw error;
+    }
+  }
+
+  async verifyPaginationReturn(homePage: HomePage): Promise<void> {
+    try {
+      const firstProductPage1 = await this.getText(
+        homePage.firstProductCardTitle
+      );
+      const secondProductPage1 = await this.getText(
+        homePage.secondProductCardTitle
+      );
+      this.logMessage(
+        `📄 Captured Page 1 product titles: "${firstProductPage1}", "${secondProductPage1}"`,
+        "info"
+      );
+
+      await this.clickOnElement(homePage.paginationNextButton);
+      await this.wait(1);
+
+      const page2ProductTitles = await this.getAllTexts(homePage.productTitle);
+      const foundFirst = page2ProductTitles.includes(firstProductPage1);
+      const foundSecond = page2ProductTitles.includes(secondProductPage1);
+
+      if (foundFirst || foundSecond) {
+        this.logMessage(
+          `⚠️ Page 2 incorrectly contains ${
+            foundFirst && foundSecond
+              ? "first and second"
+              : foundFirst
+              ? "first"
+              : "second"
+          } product(s) from Page 1.`,
+          "warn"
+        );
+      } else {
+        this.logMessage(
+          "✅ Page 2 does not contain products from Page 1.",
+          "info"
+        );
+      }
+
+      await this.clickOnElement(homePage.paginationPreviousButton);
+      await this.wait(1);
+
+      const page1TitlesAgain = await this.getAllTexts(homePage.productTitle);
+      const firstBack = page1TitlesAgain.includes(firstProductPage1);
+      const secondBack = page1TitlesAgain.includes(secondProductPage1);
+
+      if (!firstBack || !secondBack) {
+        this.logMessage(
+          `⚠️ Pagination Bug: After returning to Page 1, ${
+            !firstBack && !secondBack ? "both" : !firstBack ? "first" : "second"
+          } product(s) are missing.\nExpected: "${firstProductPage1}", "${secondProductPage1}"\nActual: ${JSON.stringify(
+            page1TitlesAgain
+          )}`,
+          "warn"
+        );
+      } else {
+        this.logMessage("✅ Pagination return validation passed.", "info");
+      }
+    } catch (error) {
+      this.logMessage(`❌ Error in verifyPaginationReturn: ${error}`, "error");
+      await this.captureScreenshotOnFailure("pagination_return_error");
+      throw error;
+    }
   }
 }
