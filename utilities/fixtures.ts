@@ -24,8 +24,6 @@ const test = base.extend<{
   contactModal: ContactModal;
   aboutModal: AboutModal;
 }>({
-
-
   runner: async ({ page }: { page: Page }, use) => {
     const utilsInstance = new Utils(page);
     await use(utilsInstance);
