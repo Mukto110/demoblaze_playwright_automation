@@ -13,7 +13,6 @@ class CartPage extends ExpectedValueProvider {
         await runner.verifyElementIsVisible(homePage.homePageLogo);
       });
 
-
       test("Verify that clicking the Cart button in the navbar navigates to the cart page ", async ({
         runner,
         homePage,
@@ -54,17 +53,21 @@ class CartPage extends ExpectedValueProvider {
             homePage.productPrice,
             homePage.productImage
           );
-        await runner.waitUntilSeconds(2)
+        await runner.waitUntilSeconds(2);
 
-        await runner.validatingProductUrl();
-        await runner.validateProductDetailsOnDetailPage(firstProductDetails,productDetailPage.productTitle,productDetailPage.productPrice,productDetailPage.productImg)
+        await runner.verifyUrlContains(envData.productUrl);
+        await runner.validateProductDetailsOnDetailPage(
+          firstProductDetails,
+          productDetailPage.productTitle,
+          productDetailPage.productPrice,
+          productDetailPage.productImg
+        );
 
         clickedProductDetails.push(firstProductDetails);
 
-        await runner.validateAndClickButton(
+        await runner.validateAndClick(
           productDetailPage.addToCartButton,
-          "Add to cart button",
-          { expectedText: "Add to cart", waitForLoadState: "load" }
+          "Add to cart"
         );
         await runner.acceptWebAlert("Product added");
 
@@ -99,8 +102,8 @@ class CartPage extends ExpectedValueProvider {
             homePage.productPrice,
             homePage.productImage
           );
-        await runner.waitUntilSeconds(2)
-        await runner.validatingProductUrl();
+        await runner.waitUntilSeconds(2);
+        await runner.verifyUrlContains(envData.productUrl);
         clickedProductDetails.push(firstProductDetails);
         await runner.validateProductDetailsOnDetailPage(
           firstProductDetails,
@@ -127,8 +130,8 @@ class CartPage extends ExpectedValueProvider {
             homePage.productPrice,
             homePage.productImage
           );
-        await runner.waitUntilSeconds(2)
-        await runner.validatingProductUrl();
+        await runner.waitUntilSeconds(2);
+        await runner.verifyUrlContains(envData.productUrl);
         await runner.validateProductDetailsOnDetailPage(
           secondProductDetails,
           productDetailPage.productTitle,
@@ -155,7 +158,7 @@ class CartPage extends ExpectedValueProvider {
           cartPage.totalPrice
         );
       });
-      test("Verify that after reload cart remains same", async ({
+      test("Verify that after reload cart remains same,delete a product succesfully", async ({
         runner,
         homePage,
         cartPage,
@@ -175,8 +178,8 @@ class CartPage extends ExpectedValueProvider {
             homePage.productPrice,
             homePage.productImage
           );
-        await runner.waitUntilSeconds(2)
-        await runner.validatingProductUrl();
+        await runner.waitUntilSeconds(3);
+        await runner.verifyUrlContains(envData.productUrl);
         await runner.validateProductDetailsOnDetailPage(
           firstProductDetails,
           productDetailPage.productTitle,
@@ -203,8 +206,8 @@ class CartPage extends ExpectedValueProvider {
             homePage.productPrice,
             homePage.productImage
           );
-        await runner.waitUntilSeconds(2)
-        await runner.validatingProductUrl();
+        await runner.waitUntilSeconds(2);
+        await runner.verifyUrlContains(envData.productUrl);
         await runner.validateProductDetailsOnDetailPage(
           secondProductDetails,
           productDetailPage.productTitle,
@@ -235,6 +238,25 @@ class CartPage extends ExpectedValueProvider {
         await runner.validateAndClick(homePage.navbarCart, "Cart");
         await runner.validateProductsInCart(
           clickedProductDetails,
+          cartPage.cartedProductsDetails,
+          cartPage.cartedProductsTitle,
+          cartPage.cartedProductsPrice,
+          cartPage.cartedProductsImg,
+          cartPage.totalPrice
+        );
+        const deletedProductTitle = await runner.deleteProductFromCartByIndex(
+          0,
+          cartPage.cartedProductsDetails
+        );
+        const updatedExpectedProducts = clickedProductDetails.filter(
+          (clickedProductDetails: any) =>
+            clickedProductDetails.title !== deletedProductTitle
+        );
+
+        // console.log(updatedExpectedProducts)
+        await runner.waitUntilSeconds(2);
+        await runner.validateProductsInCart(
+          updatedExpectedProducts,
           cartPage.cartedProductsDetails,
           cartPage.cartedProductsTitle,
           cartPage.cartedProductsPrice,

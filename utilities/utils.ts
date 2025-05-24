@@ -1073,13 +1073,7 @@ async clickItemByIndex(
       throw new Error(errorMsg);
     }
   }
-  private getUniqueRandomIndices(count: number, max: number): number[] {
-    const indices = new Set<number>();
-    while (indices.size < Math.min(count, max)) {
-      indices.add(Math.floor(Math.random() * max));
-    }
-    return [...indices];
-  }
+
 async selectRandomItemAndClick(
     itemContainerLocator: string, // E.g., '.product-card', '.search-result-item' - used for total count
     clickableElementLocator: string // E.g., '.product-card-link', '.item-title' - used for the actual click
@@ -1090,7 +1084,7 @@ async selectRandomItemAndClick(
       throw new Error(`No items found using locator: ${itemContainerLocator}. Cannot select random item.`);
     }
 
-    const randomIndex = this.getUniqueRandomIndices(1, totalItems)[0];
+    const randomIndex = Math.floor(Math.random() * totalItems);
     this.logMessage(`[INFO] Randomly selected item at index: ${randomIndex}.`);
 
     // Reuse the atomic clickItemByIndex method
@@ -1220,7 +1214,7 @@ public async selectAndCaptureRandomProductDetailsAndClick(
       throw new Error(`No items found using locator: ${itemContainerLocator}. Cannot select random product.`);
     }
 
-    const randomIndex = this.getUniqueRandomIndices(1, totalItems)[0];
+    const randomIndex = Math.floor(Math.random() * totalItems);
     this.logMessage(`[INFO] Randomly selected product at index: ${randomIndex}.`);
 
     // --- Capture details BEFORE the click ---
@@ -1397,6 +1391,61 @@ async validateProductDetailsOnDetailPage(
       throw new Error(errorMsg);
     }
   }
+ async deleteProductFromCartByIndex(
+    productIndexToDelete: number,
+    cartRowLocator: string
+  ): Promise<string> {
+    const defaultTitleInRowLocator = 'td:nth-child(2)'; // Common DemoBlaze title column
+    const defaultDeleteButtonInRowLocator = 'td:nth-child(4) a'; // Common DemoBlaze delete button column
+
+    this.logMessage(`[INFO] Attempting to delete product at index ${productIndexToDelete} from the cart.`);
+    let deletedProductTitle = 'Unknown Product'; // Initialize for error logging
+
+    try {
+      // 1. Get the specific cart row by index
+      const targetCartRow = this.page.locator(cartRowLocator).nth(productIndexToDelete);
+      await expect(targetCartRow).toBeVisible({ timeout: 10000 });
+      this.logMessage(`[INFO] Cart row at index ${productIndexToDelete} found and visible.`);
+
+      // 2. Get the title of the product about to be deleted (THIS IS KEY)
+      const titleElement = targetCartRow.locator(defaultTitleInRowLocator);
+      await expect(titleElement).toBeVisible();
+      deletedProductTitle = await titleElement.innerText();
+      this.logMessage(`[INFO] Product to be deleted: "${deletedProductTitle}" at index ${productIndexToDelete}.`);
+
+      // 3. Locate and click the delete button for the target product
+      const deleteButton = targetCartRow.locator(defaultDeleteButtonInRowLocator);
+      await expect(deleteButton).toBeVisible();
+      this.logMessage(`[INFO] Clicking delete button for "${deletedProductTitle}".`);
+
+      await Promise.all([
+        this.page.waitForResponse(response => response.url().includes('deleteitem') && response.status() === 200),
+        deleteButton.click(),
+      ]);
+
+      this.logMessage(`✅ Successfully clicked delete for "${deletedProductTitle}".`);
+
+      // --- CRUCIAL CHANGE: Validate the product is gone by its content ---
+      // Instead of checking if the old row position is not visible,
+      // we check if ANY element with the DELETED PRODUCT'S TITLE is visible in the cart.
+      const deletedProductTitleLocator = this.page.locator(cartRowLocator)
+                                             .locator(defaultTitleInRowLocator, { hasText: deletedProductTitle });
+
+      await expect(deletedProductTitleLocator).not.toBeVisible({ timeout: 5000 });
+      this.logMessage(`✅ Verified product with title "${deletedProductTitle}" is no longer visible anywhere in the cart.`);
+      // --- END CRUCIAL CHANGE ---
+
+      this.logMessage(`✅ Product "${deletedProductTitle}" successfully deleted from cart.`);
+      return deletedProductTitle; // Return the title of the deleted product
+    } catch (error: any) {
+      const errorMsg = `❌ Failed to delete product at index ${productIndexToDelete} (likely "${deletedProductTitle}") from cart: ${error.message}`;
+      this.logMessage(errorMsg, 'error');
+      await this.captureScreenshotOnFailure(`DeleteProductByIndex_Failure`);
+      throw new Error(errorMsg);
+    }
+  }
+
+
 
 
 
