@@ -148,7 +148,7 @@ class HomePageTest extends ExpectedValueProvider {
         await runner.verifyUrlContains(cartData.cartUrlFragment);
         await runner.verifyContainText(
           cartPage.cartPageTitle,
-          cartData.cartPageTitle
+          cartData.cartPageHeader
         );
       });
 
