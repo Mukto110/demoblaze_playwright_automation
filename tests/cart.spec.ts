@@ -12,9 +12,7 @@ class CartPage extends ExpectedValueProvider {
         await runner.navigateTo(envData.baseUrl);
         await runner.verifyElementIsVisible(homePage.homePageLogo);
       });
-      //       test.afterEach(async ({ runner }) => {
-      //   await runner.clearSessionData();
-      // });
+
 
       test("Verify that clicking the Cart button in the navbar navigates to the cart page ", async ({
         runner,
@@ -22,15 +20,18 @@ class CartPage extends ExpectedValueProvider {
         cartPage,
         envData,
       }) => {
-        await runner.validateAndClick(homePage.navbarCart,'Cart');
+        await runner.validateAndClick(homePage.navbarCart, "Cart");
         await runner.verifyUrlContains(envData.cartUrl);
         await runner.verifyContainText(cartPage.cartPageTitle, "Products");
-        await runner.verifyContainText(cartPage.picSection,'Pic');
-        await runner.verifyContainText(cartPage.titleSection,'Title');
-        await runner.verifyContainText(cartPage.priceSection,'Price');
-        await runner.verifyContainText(cartPage.closeSection,'x');
-        await runner.verifyContainText(cartPage.totalText,'Total');
-        await runner.verifyContainText(cartPage.placeOrderButton,'Place Order');
+        await runner.verifyContainText(cartPage.picSection, "Pic");
+        await runner.verifyContainText(cartPage.titleSection, "Title");
+        await runner.verifyContainText(cartPage.priceSection, "Price");
+        await runner.verifyContainText(cartPage.closeSection, "x");
+        await runner.verifyContainText(cartPage.totalText, "Total");
+        await runner.verifyContainText(
+          cartPage.placeOrderButton,
+          "Place Order"
+        );
       });
 
       test("Verify that single product can be added to the cart from the product detail page", async ({
@@ -40,35 +41,43 @@ class CartPage extends ExpectedValueProvider {
         envData,
         productDetailPage,
       }) => {
-        await runner.validateProductContainers(
-          homePage.productContainer
-        );
-        await runner.validateProductTitles(
-          homePage.productTitle
-        );
-        await runner.validateProductPrices(
-          homePage.productPrice
-        );
-        await runner.validateProductDescriptions(
-          homePage.productDescription
-        );
+        await runner.validateProductContainers(homePage.productContainer);
+        await runner.validateProductTitles(homePage.productTitle);
+        await runner.validateProductPrices(homePage.productPrice);
+        await runner.validateProductDescriptions(homePage.productDescription);
         const clickedProductDetails: any = [];
-         const firstProductDetails= await runner.selectAndCaptureRandomProductDetailsAndClick(homePage.productContainer,homePage.productTitle,homePage.productTitle,homePage.productPrice,homePage.productImage)
-        await runner.validatingProductUrl()
+        const firstProductDetails =
+          await runner.selectAndCaptureRandomProductDetailsAndClick(
+            homePage.productContainer,
+            homePage.productTitle,
+            homePage.productTitle,
+            homePage.productPrice,
+            homePage.productImage
+          );
+        await runner.waitUntilSeconds(2)
+
+        await runner.validatingProductUrl();
+        await runner.validateProductDetailsOnDetailPage(firstProductDetails,productDetailPage.productTitle,productDetailPage.productPrice,productDetailPage.productImg)
+
         clickedProductDetails.push(firstProductDetails);
 
-        await runner.validateAndClickButton(productDetailPage.addToCartButton,"Add to cart button",{expectedText:'Add to cart', waitForLoadState: 'load'})
-        await runner.acceptWebAlert('Product added')
+        await runner.validateAndClickButton(
+          productDetailPage.addToCartButton,
+          "Add to cart button",
+          { expectedText: "Add to cart", waitForLoadState: "load" }
+        );
+        await runner.acceptWebAlert("Product added");
 
-
-        console.log(clickedProductDetails)
-        await runner.validateAndClick(homePage.navbarCart,'Cart')
-        await runner.validateProductsInCart(clickedProductDetails,cartPage.cartedProductsDetails,cartPage.cartedProductsTitle,cartPage.cartedProductsPrice,cartPage.cartedProductsImg,cartPage.totalPrice)
-
-
-
-
-
+        console.log(clickedProductDetails);
+        await runner.validateAndClick(homePage.navbarCart, "Cart");
+        await runner.validateProductsInCart(
+          clickedProductDetails,
+          cartPage.cartedProductsDetails,
+          cartPage.cartedProductsTitle,
+          cartPage.cartedProductsPrice,
+          cartPage.cartedProductsImg,
+          cartPage.totalPrice
+        );
       });
       test("Verify that multiple products can be added to the cart from the product detail page", async ({
         runner,
@@ -77,53 +86,162 @@ class CartPage extends ExpectedValueProvider {
         envData,
         productDetailPage,
       }) => {
-        await runner.validateProductContainers(
-          homePage.productContainer
-        );
-        await runner.validateProductTitles(
-          homePage.productTitle
-        );
-        await runner.validateProductPrices(
-          homePage.productPrice
-        );
-        await runner.validateProductDescriptions(
-          homePage.productDescription
-        );
+        await runner.validateProductContainers(homePage.productContainer);
+        await runner.validateProductTitles(homePage.productTitle);
+        await runner.validateProductPrices(homePage.productPrice);
+        await runner.validateProductDescriptions(homePage.productDescription);
         const clickedProductDetails: any = [];
-         const firstProductDetails= await runner.selectAndCaptureRandomProductDetailsAndClick(homePage.productContainer,homePage.productTitle,homePage.productTitle,homePage.productPrice,homePage.productImage)
-        await runner.validatingProductUrl()
+        const firstProductDetails =
+          await runner.selectAndCaptureRandomProductDetailsAndClick(
+            homePage.productContainer,
+            homePage.productTitle,
+            homePage.productTitle,
+            homePage.productPrice,
+            homePage.productImage
+          );
+        await runner.waitUntilSeconds(2)
+        await runner.validatingProductUrl();
         clickedProductDetails.push(firstProductDetails);
-
-        await runner.validateAndClickButton(productDetailPage.addToCartButton,"Add to cart button",{expectedText:'Add to cart', waitForLoadState: 'load'})
-        await runner.acceptWebAlert('Product added')
-        await runner.clickOnElement(homePage.navbarHome)
-
-        await runner.validateProductContainers(
-          homePage.productContainer
+        await runner.validateProductDetailsOnDetailPage(
+          firstProductDetails,
+          productDetailPage.productTitle,
+          productDetailPage.productPrice,
+          productDetailPage.productImg
         );
 
+        await runner.validateAndClickButton(
+          productDetailPage.addToCartButton,
+          "Add to cart button",
+          { expectedText: "Add to cart", waitForLoadState: "load" }
+        );
+        await runner.acceptWebAlert("Product added");
+        await runner.clickOnElement(homePage.navbarHome);
 
-         const secondProductDetails= await runner.selectAndCaptureRandomProductDetailsAndClick(homePage.productContainer,homePage.productTitle,homePage.productTitle,homePage.productPrice,homePage.productImage)
-        await runner.validatingProductUrl()
+        await runner.validateProductContainers(homePage.productContainer);
+
+        const secondProductDetails =
+          await runner.selectAndCaptureRandomProductDetailsAndClick(
+            homePage.productContainer,
+            homePage.productTitle,
+            homePage.productTitle,
+            homePage.productPrice,
+            homePage.productImage
+          );
+        await runner.waitUntilSeconds(2)
+        await runner.validatingProductUrl();
+        await runner.validateProductDetailsOnDetailPage(
+          secondProductDetails,
+          productDetailPage.productTitle,
+          productDetailPage.productPrice,
+          productDetailPage.productImg
+        );
         clickedProductDetails.push(secondProductDetails);
 
-        await runner.validateAndClickButton(productDetailPage.addToCartButton,"Add to cart button",{expectedText:'Add to cart', waitForLoadState: 'load'})
-        await runner.acceptWebAlert('Product added')
+        await runner.validateAndClickButton(
+          productDetailPage.addToCartButton,
+          "Add to cart button",
+          { expectedText: "Add to cart", waitForLoadState: "load" }
+        );
+        await runner.acceptWebAlert("Product added");
 
-
-        console.log(clickedProductDetails)
-        await runner.validateAndClick(homePage.navbarCart,'Cart')
-        await runner.validateProductsInCart(clickedProductDetails,cartPage.cartedProductsDetails,cartPage.cartedProductsTitle,cartPage.cartedProductsPrice,cartPage.cartedProductsImg,cartPage.totalPrice)
-
-
-
-
-
+        console.log(clickedProductDetails);
+        await runner.validateAndClick(homePage.navbarCart, "Cart");
+        await runner.validateProductsInCart(
+          clickedProductDetails,
+          cartPage.cartedProductsDetails,
+          cartPage.cartedProductsTitle,
+          cartPage.cartedProductsPrice,
+          cartPage.cartedProductsImg,
+          cartPage.totalPrice
+        );
       });
+      test("Verify that after reload cart remains same", async ({
+        runner,
+        homePage,
+        cartPage,
+        envData,
+        productDetailPage,
+      }) => {
+        await runner.validateProductContainers(homePage.productContainer);
+        await runner.validateProductTitles(homePage.productTitle);
+        await runner.validateProductPrices(homePage.productPrice);
+        await runner.validateProductDescriptions(homePage.productDescription);
+        const clickedProductDetails: any = [];
+        const firstProductDetails =
+          await runner.selectAndCaptureRandomProductDetailsAndClick(
+            homePage.productContainer,
+            homePage.productTitle,
+            homePage.productTitle,
+            homePage.productPrice,
+            homePage.productImage
+          );
+        await runner.waitUntilSeconds(2)
+        await runner.validatingProductUrl();
+        await runner.validateProductDetailsOnDetailPage(
+          firstProductDetails,
+          productDetailPage.productTitle,
+          productDetailPage.productPrice,
+          productDetailPage.productImg
+        );
+        clickedProductDetails.push(firstProductDetails);
 
+        await runner.validateAndClickButton(
+          productDetailPage.addToCartButton,
+          "Add to cart button",
+          { expectedText: "Add to cart", waitForLoadState: "load" }
+        );
+        await runner.acceptWebAlert("Product added");
+        await runner.clickOnElement(homePage.navbarHome);
 
+        await runner.validateProductContainers(homePage.productContainer);
 
+        const secondProductDetails =
+          await runner.selectAndCaptureRandomProductDetailsAndClick(
+            homePage.productContainer,
+            homePage.productTitle,
+            homePage.productTitle,
+            homePage.productPrice,
+            homePage.productImage
+          );
+        await runner.waitUntilSeconds(2)
+        await runner.validatingProductUrl();
+        await runner.validateProductDetailsOnDetailPage(
+          secondProductDetails,
+          productDetailPage.productTitle,
+          productDetailPage.productPrice,
+          productDetailPage.productImg
+        );
+        clickedProductDetails.push(secondProductDetails);
 
+        await runner.validateAndClickButton(
+          productDetailPage.addToCartButton,
+          "Add to cart button",
+          { expectedText: "Add to cart", waitForLoadState: "load" }
+        );
+        await runner.acceptWebAlert("Product added");
+
+        console.log(clickedProductDetails);
+        await runner.validateAndClick(homePage.navbarCart, "Cart");
+        await runner.validateProductsInCart(
+          clickedProductDetails,
+          cartPage.cartedProductsDetails,
+          cartPage.cartedProductsTitle,
+          cartPage.cartedProductsPrice,
+          cartPage.cartedProductsImg,
+          cartPage.totalPrice
+        );
+        await runner.validateAndClick(homePage.navbarHome, "Home (current)");
+        await runner.refreshPage();
+        await runner.validateAndClick(homePage.navbarCart, "Cart");
+        await runner.validateProductsInCart(
+          clickedProductDetails,
+          cartPage.cartedProductsDetails,
+          cartPage.cartedProductsTitle,
+          cartPage.cartedProductsPrice,
+          cartPage.cartedProductsImg,
+          cartPage.totalPrice
+        );
+      });
     });
   }
 }
