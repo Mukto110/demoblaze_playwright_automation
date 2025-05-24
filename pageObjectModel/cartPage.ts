@@ -24,7 +24,7 @@ export class CartPage {
   readonly purchaseCofimationMessageAlert: string;
   readonly purchaseCofimationDetailsInAlert: string;
   readonly okButtonInAlert: string;
-// --------------------------------------------
+  // --------------------------------------------
   readonly cartedProductsDetails: string;
   readonly cartedProductsImg: string;
   readonly cartedProductsTitle: string;

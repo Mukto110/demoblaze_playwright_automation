@@ -1238,6 +1238,68 @@ public async selectAndCaptureRandomProductDetailsAndClick(
 
     return { index: randomIndex, title, price, imageSrc };
   }
+async validateProductDetailsOnDetailPage(
+    expectedProductDetails: { title: string; price: string; imageSrc: string | null },
+    titleLocator: string,
+    priceLocator: string,
+    imageContainerLocator: string
+  ): Promise<void> {
+    const scenarioName = "Product Details Page Validation";
+    this.logMessage(`[INFO] Starting product details validation for: "${expectedProductDetails.title}" on detail page.`);
+
+    try {
+      // 1. Validate Title
+      const titleElement = this.page.locator(titleLocator);
+      await expect(titleElement).toBeVisible({ timeout: 10000 });
+      await expect(titleElement).toHaveText(expectedProductDetails.title);
+      this.logMessage(`✅ Title matches: "${expectedProductDetails.title}"`);
+
+      // 2. Validate Price
+      const priceElement = this.page.locator(priceLocator);
+      await expect(priceElement).toBeVisible();
+
+      const actualPriceText = await priceElement.innerText();
+
+      // --- MODIFICATION STARTS HERE ---
+      // A more robust regex to remove '$', whitespace, and the "(includes tax)" or "*includes tax" part
+      const cleanPriceRegex = /\s*[\$\(\*]\s*includes tax\)?\s*|[\$\*\s]/g; // Matches '$', '*', '(', 'includes tax', ')', and extra spaces
+      const normalizedActualPrice = actualPriceText.replace(cleanPriceRegex, '').trim();
+      const normalizedExpectedPrice = expectedProductDetails.price.replace(cleanPriceRegex, '').trim();
+      // --- MODIFICATION ENDS HERE ---
+
+      expect(normalizedActualPrice).toEqual(normalizedExpectedPrice);
+      this.logMessage(`✅ Price matches: "${normalizedExpectedPrice}" (Actual: "${actualPriceText}")`);
+
+      // 3. Validate Image
+      const imageContainerElement = this.page.locator(imageContainerLocator);
+      this.logMessage(`[DEBUG] Attempting to find image container with locator: "${imageContainerLocator}"`);
+      await expect(imageContainerElement).toBeVisible({ timeout: 10000 });
+      this.logMessage(`[DEBUG] Image container found and visible: "${imageContainerLocator}"`);
+
+      const imageElement = imageContainerElement.locator('img').or(imageContainerElement);
+      this.logMessage(`[DEBUG] Attempting to find <img> tag within container.`);
+      await expect(imageElement).toBeVisible({ timeout: 10000 });
+      this.logMessage(`[DEBUG] <img> tag found and visible.`);
+
+      const actualImageSrc = await imageElement.getAttribute('src');
+      this.logMessage(`[DEBUG] Actual image src attribute: "${actualImageSrc}"`);
+
+      const expectedFileName = expectedProductDetails.imageSrc ?
+        expectedProductDetails.imageSrc.split('/').pop() : '';
+      this.logMessage(`[DEBUG] Expected image file name: "${expectedFileName}"`);
+
+      expect(actualImageSrc).toContain(expectedFileName);
+      this.logMessage(`✅ Image matches (contains "${expectedFileName}"): "${actualImageSrc}"`);
+
+      this.logMessage(`✅ All product details validated successfully for "${expectedProductDetails.title}".`);
+    } catch (error: any) {
+      const errorMsg = `❌ Product details validation failed for "${expectedProductDetails.title}": ${error.message}`;
+      this.logMessage(errorMsg, 'error');
+      await this.captureScreenshotOnFailure(scenarioName);
+      throw new Error(errorMsg);
+    }
+  }
+
  async validateProductsInCart(
     expectedProducts: ProductDetails[],
     cartRowLocator: string,
@@ -1320,6 +1382,18 @@ public async selectAndCaptureRandomProductDetailsAndClick(
       // If captureScreenshotOnFailure needs a name, you might pass a default or timestamp
       // or ensure it's called from the test's outer try/catch
       await this.captureScreenshotOnFailure('CartValidationFailure'); // Example: Use a default name
+      throw new Error(errorMsg);
+    }
+  }
+  async waitUntilSeconds(seconds: number): Promise<void> {
+    try {
+      const milliseconds = seconds * 1000;
+      await this.page.waitForTimeout(milliseconds);
+      this.logMessage(`Waited for ${seconds} second(s)`);
+    } catch (error) {
+      const errorMsg = `Failed to wait for ${seconds} second(s)`;
+      this.logMessage(errorMsg, "error");
+      await this.captureScreenshotOnFailure("waitUntilSeconds");
       throw new Error(errorMsg);
     }
   }
