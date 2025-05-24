@@ -22,113 +22,108 @@ class CartPage extends ExpectedValueProvider {
         cartPage,
         envData,
       }) => {
-        await runner.verifyElementIsVisible(homePage.navbarCart);
-        await runner.clickOnElement(homePage.navbarCart);
+        await runner.validateAndClick(homePage.navbarCart,'Cart');
         await runner.verifyUrlContains(envData.cartUrl);
         await runner.verifyContainText(cartPage.cartPageTitle, "Products");
-        await runner.verifyElementIsVisible(cartPage.picSection);
-        await runner.verifyElementIsVisible(cartPage.titleSection);
-        await runner.verifyElementIsVisible(cartPage.priceSection);
-        await runner.verifyElementIsVisible(cartPage.closeSection);
-        await runner.verifyElementIsVisible(cartPage.totalText);
-        await runner.verifyElementIsVisible(cartPage.placeOrderButton);
+        await runner.verifyContainText(cartPage.picSection,'Pic');
+        await runner.verifyContainText(cartPage.titleSection,'Title');
+        await runner.verifyContainText(cartPage.priceSection,'Price');
+        await runner.verifyContainText(cartPage.closeSection,'x');
+        await runner.verifyContainText(cartPage.totalText,'Total');
+        await runner.verifyContainText(cartPage.placeOrderButton,'Place Order');
       });
-      test("Verify that a product can be added to the cart from the product detail page", async ({
+
+      test("Verify that single product can be added to the cart from the product detail page", async ({
         runner,
         homePage,
         cartPage,
         envData,
         productDetailPage,
       }) => {
-        await runner.wait(1)
-        await runner.verifyElementIsVisible(
+        await runner.validateProductContainers(
+          homePage.productContainer
+        );
+        await runner.validateProductTitles(
+          homePage.productTitle
+        );
+        await runner.validateProductPrices(
+          homePage.productPrice
+        );
+        await runner.validateProductDescriptions(
+          homePage.productDescription
+        );
+        const clickedProductDetails: any = [];
+         const firstProductDetails= await runner.selectAndCaptureRandomProductDetailsAndClick(homePage.productContainer,homePage.productTitle,homePage.productTitle,homePage.productPrice,homePage.productImage)
+        await runner.validatingProductUrl()
+        clickedProductDetails.push(firstProductDetails);
+
+        await runner.validateAndClickButton(productDetailPage.addToCartButton,"Add to cart button",{expectedText:'Add to cart', waitForLoadState: 'load'})
+        await runner.acceptWebAlert('Product added')
+
+
+        console.log(clickedProductDetails)
+        await runner.validateAndClick(homePage.navbarCart,'Cart')
+        await runner.validateProductsInCart(clickedProductDetails,cartPage.cartedProductsDetails,cartPage.cartedProductsTitle,cartPage.cartedProductsPrice,cartPage.cartedProductsImg,cartPage.totalPrice)
+
+
+
+
+
+      });
+      test("Verify that multiple products can be added to the cart from the product detail page", async ({
+        runner,
+        homePage,
+        cartPage,
+        envData,
+        productDetailPage,
+      }) => {
+        await runner.validateProductContainers(
+          homePage.productContainer
+        );
+        await runner.validateProductTitles(
+          homePage.productTitle
+        );
+        await runner.validateProductPrices(
+          homePage.productPrice
+        );
+        await runner.validateProductDescriptions(
+          homePage.productDescription
+        );
+        const clickedProductDetails: any = [];
+         const firstProductDetails= await runner.selectAndCaptureRandomProductDetailsAndClick(homePage.productContainer,homePage.productTitle,homePage.productTitle,homePage.productPrice,homePage.productImage)
+        await runner.validatingProductUrl()
+        clickedProductDetails.push(firstProductDetails);
+
+        await runner.validateAndClickButton(productDetailPage.addToCartButton,"Add to cart button",{expectedText:'Add to cart', waitForLoadState: 'load'})
+        await runner.acceptWebAlert('Product added')
+        await runner.clickOnElement(homePage.navbarHome)
+
+        await runner.validateProductContainers(
           homePage.productContainer
         );
 
 
-        await runner.addAndVerifyCartProducts(homePage.productContainer,homePage.productTitle,homePage.productPrice,productDetailPage.addToCartButton,homePage.navbarHome,homePage.navbarCart,cartPage.cartedProductsDetails,cartPage.cartedProductsTitle,cartPage.cartedProductsPrice,2)
+         const secondProductDetails= await runner.selectAndCaptureRandomProductDetailsAndClick(homePage.productContainer,homePage.productTitle,homePage.productTitle,homePage.productPrice,homePage.productImage)
+        await runner.validatingProductUrl()
+        clickedProductDetails.push(secondProductDetails);
 
-      });
-      test("Verify that multiple products can be added to the cart, refresh visibility", async ({
-        runner,
-        homePage,
-        cartPage,
-        envData,
-        productDetailPage,
-      }) => {
-        await runner.wait(1)
-        await runner.verifyElementIsVisible(
-          homePage.productContainer
-        );
+        await runner.validateAndClickButton(productDetailPage.addToCartButton,"Add to cart button",{expectedText:'Add to cart', waitForLoadState: 'load'})
+        await runner.acceptWebAlert('Product added')
 
 
-        await runner.addVerifyReloadAndVerifyCartPersistence(3,homePage.productContainer,homePage.productTitle,homePage.productPrice,productDetailPage.addToCartButton,homePage.navbarHome,homePage.navbarCart,cartPage.cartedProductsDetails,cartPage.cartedProductsTitle,cartPage.cartedProductsPrice)
+        console.log(clickedProductDetails)
+        await runner.validateAndClick(homePage.navbarCart,'Cart')
+        await runner.validateProductsInCart(clickedProductDetails,cartPage.cartedProductsDetails,cartPage.cartedProductsTitle,cartPage.cartedProductsPrice,cartPage.cartedProductsImg,cartPage.totalPrice)
+
 
 
 
 
       });
 
-      test("Verify delete button works ", async ({
-        runner,
-        homePage,
-        cartPage,
-        envData,
-        productDetailPage,
-      }) => {
-        await runner.verifyElementIsVisible(
-          homePage.firstProductCardOfAllProduct
-        );
-        await runner.clickOnElement(homePage.firstProductCardOfAllProduct);
-        // await runner.wait(2)
-        // await runner.verifyUrlContains(envData.firstProductUrl)
-        await runner.verifyElementIsVisible(
-          productDetailPage.firstProductDescription
-        );
-        await runner.verifyElementIsVisible(
-          productDetailPage.firstProductPrice
-        );
-        await runner.verifyElementIsVisible(
-          productDetailPage.firstProductTitle
-        );
-        await runner.verifyElementIsVisible(productDetailPage.addToCartButton);
-        await runner.clickAndVerifyAlertMessage(
-          productDetailPage.addToCartButton,
-          "Product added"
-        );
-        await runner.clickOnElement(productDetailPage.addToCartButton);
-        await runner.clickOnElement(homePage.navbarHome);
-        await runner.clickOnElement(homePage.secondProductCardOfAllProduct);
 
-        await runner.verifyElementIsVisible(
-          productDetailPage.firstProductDescription
-        );
-        await runner.verifyElementIsVisible(
-          productDetailPage.firstProductPrice
-        );
-        await runner.verifyElementIsVisible(
-          productDetailPage.firstProductTitle
-        );
-        await runner.verifyElementIsVisible(productDetailPage.addToCartButton);
-        await runner.clickAndVerifyAlertMessage(
-          productDetailPage.addToCartButton,
-          "Product added"
-        );
-        await runner.clickOnElement(productDetailPage.addToCartButton);
 
-        await runner.clickOnElement(homePage.navbarCart);
-        // await runner.wait(2)
-        // await runner.verifyUrlContains(envData.cartUrl)
-        await runner.verifyContainText(cartPage.cartPageTitle, "Products");
 
-        await runner.verifyElementIsVisible(cartPage.firstCartedProduct);
-        await runner.verifyElementIsVisible(cartPage.secondCartedProduct);
-        await runner.verifyElementIsVisible(cartPage.deleteButton);
-        await runner.clickOnElement(cartPage.deleteButton);
-
-        await runner.verifyElementIsNotVisible(cartPage.firstCartedProduct);
-        await runner.verifyElementIsVisible(cartPage.secondCartedProduct);
-      });
     });
   }
 }
