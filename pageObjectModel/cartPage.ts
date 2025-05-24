@@ -26,8 +26,11 @@ export class CartPage {
   readonly okButtonInAlert: string;
 // --------------------------------------------
   readonly cartedProductsDetails: string;
+  readonly cartedProductsImg: string;
   readonly cartedProductsTitle: string;
   readonly cartedProductsPrice: string;
+  readonly cartedProductsDeleteButtonFirst: string;
+  readonly totalPrice: string;
 
   constructor(page: Page) {
     this.cartPageTitle = `css=div[class='col-lg-8'] h2`;
@@ -54,7 +57,10 @@ export class CartPage {
     this.purchaseCofimationDetailsInAlert = `css=p[class="lead text-muted "]`;
     this.okButtonInAlert = `css=button[class="confirm btn btn-lg btn-primary"]`;
     this.cartedProductsDetails = `css=tr[class="success"]`;
-    this.cartedProductsTitle = `css=td:nth-child(2)`;
-    this.cartedProductsPrice = `css=td:nth-child(3)`;
+    this.cartedProductsImg = `css= td:nth-child(1) `;
+    this.cartedProductsTitle = `css= td:nth-child(2)`;
+    this.cartedProductsPrice = `css=  td:nth-child(3)`;
+    this.cartedProductsDeleteButtonFirst = `css= td:nth-child(4) a`;
+    this.totalPrice = `css= h3[id="totalp"]`;
   }
 }
