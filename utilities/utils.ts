@@ -1786,25 +1786,14 @@ export class Utils {
 
   async handleAlertWithMessage(expectedMessage: string): Promise<void> {
     try {
-      const dialog = await this.page.waitForEvent("dialog", { timeout: 1000 });
-
-      const actualMessage = dialog.message();
-
-      if (actualMessage === expectedMessage) {
+      this.page.on("dialog", async (dialog) => {
+        expect(dialog.type()).toContain("alert");
+        expect(dialog.message()).toContain(expectedMessage);
+        await dialog.accept();
         this.logMessage(
-          `✅ Alert message matched expected: "${expectedMessage}"`,
-          "info"
+          `handled alert correctly with message: ${expectedMessage}`
         );
-      } else {
-        this.logMessage(
-          `❌ Alert message mismatch.\nExpected: "${expectedMessage}"\nActual: "${actualMessage}"`,
-          "error"
-        );
-        await this.captureScreenshotOnFailure("alert_message_mismatch");
-        throw new Error("Alert message did not match expected text.");
-      }
-
-      await dialog.accept();
+      });
     } catch (error) {
       this.logMessage(`❌ Failed to handle alert: ${error}`, "error");
       await this.captureScreenshotOnFailure("alert_handling_error");

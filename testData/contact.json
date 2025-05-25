@@ -1,3 +1,8 @@
 {
-    "contactModalTitle": "New message"
+    "contactModalHeader": "New message",
+    "labels": {
+        "emailLabe": "Contact Email:",
+        "nameLabel": "Contact Name:",
+        "messageLabel": "Message:"
+    }
 }

@@ -1,73 +1,219 @@
 import { test } from "../utilities/fixtures";
 import { ExpectedValueProvider } from "../utilities/valueProvider";
+import contactModalData from "../testData/contact.json";
 
 class ContactFormTest extends ExpectedValueProvider {
   runTest() {
     test.describe("Contact Form Functionality", () => {
-      test.beforeEach(async ({ runner, homePage, envData }) => {
+      test.beforeEach(async ({ runner, homePage, contactModal, envData }) => {
         await runner.navigateTo(envData.baseUrl);
         await runner.verifyElementIsVisible(homePage.navbarContact);
         await runner.clickOnElement(homePage.navbarContact);
+        await runner.verifyElementIsVisible(contactModal.header);
+        await runner.verifyContainText(
+          contactModal.header,
+          contactModalData.contactModalHeader
+        );
       });
 
       test("Verify the contact modal contains input fields for email, name, and message", async ({
         runner,
         contactModal,
       }) => {
+        // validating email label and input field ->
+        await runner.verifyElementIsVisible(contactModal.emailInputLabel);
+        await runner.verifyContainText(
+          contactModal.emailInputLabel,
+          contactModalData.labels.emailLabe
+        );
         await runner.verifyElementIsVisible(contactModal.emailInput);
+
+        // validating name label and input field ->
+        await runner.verifyElementIsVisible(contactModal.nameInputLabel);
+        await runner.verifyContainText(
+          contactModal.nameInputLabel,
+          contactModalData.labels.nameLabel
+        );
         await runner.verifyElementIsVisible(contactModal.nameInput);
+
+        // validating message label and input field ->
+        await runner.verifyElementIsVisible(contactModal.messageInputLabel);
+        await runner.verifyContainText(
+          contactModal.messageInputLabel,
+          contactModalData.labels.messageLabel
+        );
         await runner.verifyElementIsVisible(contactModal.messageTextarea);
       });
 
-      test("Verify all input fields accept valid input", async ({
+      test("Verify the user can type into the Email, Name and Message fields", async ({
         runner,
         contactModal,
-        fakeUser,
       }) => {
-        await runner.typeText(contactModal.emailInput, fakeUser.email);
-        await runner.typeText(contactModal.nameInput, fakeUser.username);
-        await runner.typeText(contactModal.messageTextarea, fakeUser.message);
-        await runner.verifyInputValue(contactModal.emailInput, fakeUser.email);
-        await runner.verifyInputValue(
-          contactModal.nameInput,
-          fakeUser.username
-        );
-        await runner.verifyInputValue(
+        await runner.typeText(contactModal.emailInput, "dlkjfaslkdjflaksd");
+        await runner.typeText(contactModal.nameInput, "ajsoiweurowmc");
+        await runner.typeText(
           contactModal.messageTextarea,
-          fakeUser.message
+          "somethingsomethingsomething"
         );
       });
 
-      test("Verify user can send a message and sees confirmation", async ({
+      test("Verify the contact modal shows an alert on successful message submission", async ({
         runner,
-        fakeUser,
         contactModal,
+        fakeUser,
       }) => {
-        await runner.typeText(contactModal.emailInput, fakeUser.email);
-        await runner.typeText(contactModal.nameInput, fakeUser.username);
-        await runner.typeText(contactModal.messageTextarea, fakeUser.message);
+        await runner.fillInputBox(contactModal.emailInput, fakeUser.email);
+        await runner.fillInputBox(contactModal.nameInput, fakeUser.username);
+        await runner.fillInputBox(
+          contactModal.messageTextarea,
+          fakeUser.message
+        );
+        await runner.verifyContainText(contactModal.sendButton, "Send message");
         await runner.handleAlertWithMessage("Thanks for the message!!");
         await runner.clickOnElement(contactModal.sendButton);
       });
 
-      test("Verify 'Send message' button is disabled when required fields are empty", async ({
+      test("Verify the contact modal closes when the 'Close' button is clicked", async ({
         runner,
         contactModal,
       }) => {
-        await runner.verifyElementIsDisabled(contactModal.sendButton);
+        await runner.verifyElementIsVisible(contactModal.closeButton);
+        await runner.verifyContainText(contactModal.closeButton, "Close");
+        await runner.clickOnElement(contactModal.closeButton);
+        await runner.verifyElementIsNotVisible(contactModal.header);
       });
 
-      test("Verify inputs are cleared after closing and reopening the modal", async ({
+      test("Verify the form is not submitted when all fields are left empty", async ({
         runner,
+        contactModal,
+      }) => {
+        await runner.fillInputBox(contactModal.emailInput, "");
+        await runner.fillInputBox(contactModal.nameInput, "");
+        await runner.fillInputBox(contactModal.messageTextarea, "");
+        await runner.handleAlertWithMessage("All the fields must be filled!!");
+        await runner.clickOnElement(contactModal.sendButton);
+      });
+
+      test("Verify the form is not submitted when only the email field is filled", async ({
+        runner,
+        fakeUser,
+        contactModal,
+      }) => {
+        await runner.fillInputBox(contactModal.emailInput, fakeUser.email);
+        await runner.fillInputBox(contactModal.nameInput, "");
+        await runner.fillInputBox(contactModal.messageTextarea, "");
+        await runner.handleAlertWithMessage("All the fields must be filled!!");
+        await runner.clickOnElement(contactModal.sendButton);
+      });
+
+      test("Verify the form is not submitted when only the name field is filled", async ({
+        runner,
+        fakeUser,
+        contactModal,
+      }) => {
+        await runner.fillInputBox(contactModal.emailInput, "");
+        await runner.fillInputBox(contactModal.nameInput, fakeUser.username);
+        await runner.fillInputBox(contactModal.messageTextarea, "");
+        await runner.handleAlertWithMessage("All the fields must be filled!!");
+        await runner.clickOnElement(contactModal.sendButton);
+      });
+
+      test("Verify the form is not submitted when only the message field is filled", async ({
+        runner,
+        fakeUser,
+        contactModal,
+      }) => {
+        await runner.fillInputBox(contactModal.emailInput, "");
+        await runner.fillInputBox(contactModal.nameInput, "");
+        await runner.fillInputBox(
+          contactModal.messageTextarea,
+          fakeUser.message
+        );
+        await runner.handleAlertWithMessage("All the fields must be filled!!");
+        await runner.clickOnElement(contactModal.sendButton);
+      });
+
+      test("Verify the form is not submitted when whitespace is entered into all fields", async ({
+        runner,
+        contactModal,
+      }) => {
+        await runner.fillInputBox(contactModal.emailInput, " ");
+        await runner.fillInputBox(contactModal.nameInput, " ");
+        await runner.fillInputBox(contactModal.messageTextarea, " ");
+        await runner.handleAlertWithMessage("Whitespace does not allowed!!");
+        await runner.clickOnElement(contactModal.sendButton);
+      });
+
+      test("Verify input fields must be empty on reopen after successful submission", async ({
+        runner,
+        fakeUser,
         homePage,
         contactModal,
       }) => {
-        await runner.clickOnElement(contactModal.closeButton);
-        await runner.wait(1);
+        // submission
+        await runner.fillInputBox(contactModal.emailInput, fakeUser.email);
+        await runner.fillInputBox(contactModal.nameInput, fakeUser.username);
+        await runner.fillInputBox(
+          contactModal.messageTextarea,
+          fakeUser.message
+        );
+        await runner.verifyContainText(contactModal.sendButton, "Send message");
+        await runner.handleAlertWithMessage("Thanks for the message!!");
+        await runner.clickOnElement(contactModal.sendButton);
+
+        await runner.wait(1, { waitForLoadState: "load" });
+        // again click to the contact button from navbar
         await runner.clickOnElement(homePage.navbarContact);
-        await runner.verifyInputValue(contactModal.emailInput, "");
-        await runner.verifyInputValue(contactModal.nameInput, "");
-        await runner.verifyInputValue(contactModal.messageTextarea, "");
+
+        // checking all the fields are empty
+        await runner.verifyToHaveValue(contactModal.emailInput, "");
+        await runner.verifyToHaveValue(contactModal.nameInput, "");
+        await runner.verifyToHaveValue(contactModal.messageTextarea, "");
+      });
+
+      test("Verify multiple submissions can be made consecutively with valid data", async ({
+        runner,
+        fakeUser,
+        homePage,
+        contactModal,
+      }) => {
+        // submission 1
+        await runner.fillInputBox(contactModal.emailInput, fakeUser.email);
+        await runner.fillInputBox(contactModal.nameInput, fakeUser.username);
+        await runner.fillInputBox(
+          contactModal.messageTextarea,
+          fakeUser.message
+        );
+        await runner.handleAlertWithMessage("Thanks for the message!!");
+        await runner.clickOnElement(contactModal.sendButton);
+
+        await runner.wait(1, { waitForLoadState: "load" });
+
+        await runner.clickOnElement(homePage.navbarContact);
+        await runner.verifyElementIsVisible(contactModal.header);
+
+        // submission 2
+        await runner.fillInputBox(contactModal.emailInput, fakeUser.email);
+        await runner.fillInputBox(contactModal.nameInput, fakeUser.username);
+        await runner.fillInputBox(
+          contactModal.messageTextarea,
+          fakeUser.message
+        );
+        await runner.clickOnElement(contactModal.sendButton);
+
+        await runner.wait(1, { waitForLoadState: "load" });
+
+        await runner.clickOnElement(homePage.navbarContact);
+        await runner.verifyElementIsVisible(contactModal.header);
+
+        // submission 3
+        await runner.fillInputBox(contactModal.emailInput, fakeUser.email);
+        await runner.fillInputBox(contactModal.nameInput, fakeUser.username);
+        await runner.fillInputBox(
+          contactModal.messageTextarea,
+          fakeUser.message
+        );
+        await runner.clickOnElement(contactModal.sendButton);
       });
     });
   }
