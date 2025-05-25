@@ -19,6 +19,11 @@ export class HomePage {
   readonly paginationNextButton: string;
   readonly firstProductImage: string;
   readonly secondProductImage: string;
+  readonly carousel: string;
+  readonly carouselImages: string;
+  readonly activeCarouselImage: string;
+  readonly carouselNextButton: string;
+  readonly carouselPreviousButton: string;
   // --------------------------------------------
   readonly macbookLaptopCard: string;
   readonly firstProductCardOfMonitors: string;
@@ -26,10 +31,6 @@ export class HomePage {
   readonly firstProductTitle: string;
   readonly firstProductPrice: string;
   readonly firstProductDescription: string;
-  readonly carousel: string;
-  readonly activeCarouselImage: string;
-  readonly carouselNextButton: string;
-  readonly carouselPreviousButton: string;
 
   readonly footer: string;
   readonly footerText: string;
@@ -40,9 +41,9 @@ export class HomePage {
   readonly productDescription: string;
 
   constructor(page: Page) {
-    this.homePageLogo = `css=a[id='nava']`;
-    this.homePageLogoImage = `css=[id='nava'] img`;
-    this.navbarHome = `css=ul[class='navbar-nav ml-auto'] [href='index.html']`;
+    this.homePageLogo = `css=nav[id='narvbarx'] a[id='nava']`;
+    this.homePageLogoImage = `css=nav[id='narvbarx'] a[id='nava'] img`;
+    this.navbarHome = `css=ul[class='navbar-nav ml-auto'] a[href='index.html']`;
     this.navbarContact = `css=a[data-target='#exampleModal']`;
     this.navbarAbout = `css=a[data-target='#videoModal']`;
     this.navbarCart = `css=a[id='cartur']`;
@@ -58,6 +59,11 @@ export class HomePage {
     this.paginationNextButton = `css=li[class='page-item'] button[id='next2']`;
     this.firstProductImage = `css=div[id='tbodyid'] div:nth-child(1) div:nth-child(1) a:nth-child(1) img:nth-child(1)`;
     this.secondProductImage = `css=div[id='tbodyid'] div:nth-child(2) div:nth-child(1) a:nth-child(1) img:nth-child(1)`;
+    this.carousel = `css=div[id='contcar'] div[id='carouselExampleIndicators']`;
+    this.carouselImages = `css=div[class='carousel-inner'] div img`;
+    this.activeCarouselImage = `css=.carousel-item.active img`;
+    this.carouselNextButton = `css=li[class='page-item'] button[id='next2']`;
+    this.carouselPreviousButton = `css=li[class='page-item'] button[id='prev2']`;
     // -----------------------------------------------------------------------------------
     this.macbookLaptopCard = `css=body > div:nth-child(6) > div:nth-child(1) > div:nth-child(2) > div:nth-child(1) > div:nth-child(3)`;
     this.firstProductCardOfMonitors = `css=body > div:nth-child(6) > div:nth-child(1) > div:nth-child(2) > div:nth-child(1) > div:nth-child(1)`;
@@ -66,9 +72,6 @@ export class HomePage {
     this.firstProductPrice = `css=body > div:nth-child(6) > div:nth-child(1) > div:nth-child(2) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(2) > h5:nth-child(2)`;
     this.firstProductDescription = `css=body > div:nth-child(6) > div:nth-child(1) > div:nth-child(2) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(2) > p:nth-child(3)`;
     this.carousel = `css=div[id='carouselExampleIndicators']`;
-    this.activeCarouselImage = `css=.carousel-item.active img`;
-    this.carouselNextButton = `css=span[class='carousel-control-next-icon']`;
-    this.carouselPreviousButton = `css=.carousel-control-prev-icon`;
     this.footer = `css=div[id='footc']`;
     this.footerText = `xpath=//p[@class='m-0 text-center text-white']`;
     // <--------------------------------------------------------------->

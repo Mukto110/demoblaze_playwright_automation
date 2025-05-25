@@ -12,21 +12,9 @@
 
   "categories": {
     "header": "CATEGORIES",
-    "phones": {
-      "name": "Phones",
-      "firstProduct": "Samsung galaxy s6",
-      "secondProduct": "Nokia lumia 1520"
-    },
-    "laptops": {
-      "name": "Laptops",
-      "firstProduct": "Sony vaio i5",
-      "secondProduct": "Sony vaio i7"
-    },
-    "monitors": {
-      "name": "Monitors",
-      "firstProduct": "Apple monitor 24",
-      "secondProduct": "ASUS Full HD"
-    }
+    "phones": "Phones",
+    "laptops": "Laptops",
+    "monitors": "Monitors"
   },
 
   "productCardTitles": {

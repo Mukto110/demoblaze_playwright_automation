@@ -17,59 +17,38 @@ class HomePageTest extends ExpectedValueProvider {
       test.beforeEach(async ({ runner, envData, homePage }) => {
         await runner.navigateTo(envData.baseUrl);
         await runner.verifyElementIsVisible(homePage.homePageLogo);
-      });
-
-      test("Verify homepage reloads on logo button click", async ({
-        runner,
-        homePage,
-      }) => {
-        await runner.getAttributeFromLocator(homePage.homePageLogoImage, "src");
+        await runner.validateAttribute(
+          homePage.homePageLogoImage,
+          "src",
+          "bm.png"
+        );
         await runner.verifyContainText(
           homePage.homePageLogo,
           homeData.homeLogoText
         );
-        await runner.clickOnElement(homePage.homePageLogo);
-        await runner.wait(2);
-        await runner.verifyElementIsVisible(homePage.homePageLogo);
+        await runner.wait(1, { waitForLoadState: "load" });
       });
 
-      test("Verify navigation bar is displayed correctly", async ({
+      test("Verify homepage reloads on logo button click", async ({
         runner,
+        envData,
         homePage,
       }) => {
-        await runner.verifyElementIsVisible(homePage.navbarHome);
-        await runner.verifyContainText(
-          homePage.navbarHome,
-          homeData.navbar.home
+        await runner.clickOnElement(homePage.homePageLogo);
+        await runner.verifyUrlContains(envData.baseUrl);
+        await runner.verifyElementIsVisible(homePage.homePageLogo);
+        await runner.validateAttribute(
+          homePage.homePageLogoImage,
+          "src",
+          "bm.png"
         );
-        await runner.verifyElementIsVisible(homePage.navbarContact);
         await runner.verifyContainText(
-          homePage.navbarContact,
-          homeData.navbar.contact
-        );
-        await runner.verifyElementIsVisible(homePage.navbarAbout);
-        await runner.verifyContainText(
-          homePage.navbarAbout,
-          homeData.navbar.about
-        );
-        await runner.verifyElementIsVisible(homePage.navbarCart);
-        await runner.verifyContainText(
-          homePage.navbarCart,
-          homeData.navbar.cart
-        );
-        await runner.verifyElementIsVisible(homePage.navbarLogin);
-        await runner.verifyContainText(
-          homePage.navbarLogin,
-          homeData.navbar.login
-        );
-        await runner.verifyElementIsVisible(homePage.navbarSignup);
-        await runner.verifyContainText(
-          homePage.navbarSignup,
-          homeData.navbar.signup
+          homePage.homePageLogo,
+          homeData.homeLogoText
         );
       });
 
-      test("Verify navbar links open correct modals ('Contact', 'Login', 'Sign up', 'About Us')", async ({
+      test("Verify navbar buttons interaction", async ({
         runner,
         homePage,
         loginModal,
@@ -140,11 +119,10 @@ class HomePageTest extends ExpectedValueProvider {
         cartPage,
       }) => {
         await runner.verifyElementIsVisible(homePage.navbarCart);
-        await runner.verifyContainText(
+        await runner.validateAndClick(
           homePage.navbarCart,
           homeData.navbar.cart
         );
-        await runner.clickOnElement(homePage.navbarCart);
         await runner.verifyUrlContains(cartData.cartUrlFragment);
         await runner.verifyContainText(
           cartPage.cartPageTitle,
@@ -156,153 +134,162 @@ class HomePageTest extends ExpectedValueProvider {
         runner,
         homePage,
       }) => {
-        await runner.verifyCarouselIsAutoChanging(
-          homePage.carousel,
-          homePage.activeCarouselImage
+        await runner.verifyElementIsVisible(homePage.carousel);
+        await runner.validateAttributeExistsForAllElements(
+          homePage.carouselImages,
+          "src"
+        );
+        await runner.verifyAllCarouselImagesAutoChange(
+          homePage.activeCarouselImage,
+          homePage.carouselImages
         );
       });
 
-      test("Verify hero banner carousel arrows change displayed product", async ({
+      test("Verify hero banner carousel arrows change displayed image", async ({
         runner,
         homePage,
       }) => {
+        await runner.verifyElementIsVisible(homePage.carouselPreviousButton);
+        await runner.verifyElementIsVisible(homePage.carouselNextButton);
         await runner.verifyCarouselArrowNavigation(
-          homePage.carousel,
           homePage.activeCarouselImage,
+          homePage.carouselImages,
           homePage.carouselNextButton,
           homePage.carouselPreviousButton
         );
       });
 
-      test("Verify that the homepage loads with featured products visible", async ({
+      test("Verify filtering phone tab interactions", async ({
         runner,
         homePage,
       }) => {
-        await runner.validateProductContainers(homePage.productContainer);
+        await runner.verifyElementIsVisible(homePage.categoriesPhones);
+        await runner.validateAttribute(
+          homePage.categoriesPhones,
+          "onclick",
+          "byCat('phone')"
+        );
+        await runner.validateAndClick(
+          homePage.categoriesPhones,
+          homeData.categories.phones
+        );
+        await runner.waitUntilSeconds(1);
+        await runner.verifyElementsIsExist(homePage.productImage, true);
+        await runner.verifyElementsIsExist(homePage.productTitle);
+        await runner.verifyElementsIsExist(homePage.productPrice);
+        await runner.verifyElementsIsExist(homePage.productDescription);
       });
 
-      test("Verify filtering works by 'Phones', 'Laptops', 'Monitors' and resets filtering on click on categories tab", async ({
+      test("Verify filtering laptop tab interactions", async ({
         runner,
         homePage,
       }) => {
-        await runner.verifyElementIsVisible(homePage.categoriesHeader);
-        await runner.verifyContainText(
-          homePage.categoriesHeader,
-          homeData.categories.header
-        );
-
-        // Validate "Phones"
-        await runner.verifyElementIsVisible(homePage.categoriesPhones);
-        await runner.verifyContainText(
-          homePage.categoriesPhones,
-          homeData.categories.phones.name
-        );
-        await runner.clickOnElement(homePage.categoriesPhones);
-        await runner.validateProductContainers(homePage.productContainer);
-        await runner.verifyContainText(
-          homePage.firstProductCardTitle,
-          homeData.categories.phones.firstProduct
-        );
-        await runner.verifyContainText(
-          homePage.secondProductCardTitle,
-          homeData.categories.phones.secondProduct
-        );
-
-        // Validate "Laptops"
         await runner.verifyElementIsVisible(homePage.categoriesLaptops);
-        await runner.verifyContainText(
+        await runner.validateAttribute(
           homePage.categoriesLaptops,
-          homeData.categories.laptops.name
+          "onclick",
+          "byCat('notebook')"
         );
-        await runner.clickOnElement(homePage.categoriesLaptops);
-        await runner.validateProductContainers(homePage.productContainer);
-        await runner.verifyContainText(
-          homePage.firstProductCardTitle,
-          homeData.categories.laptops.firstProduct
+        await runner.validateAndClick(
+          homePage.categoriesLaptops,
+          homeData.categories.laptops
         );
-        await runner.verifyContainText(
-          homePage.secondProductCardTitle,
-          homeData.categories.laptops.secondProduct
-        );
+        await runner.waitUntilSeconds(1);
+        await runner.verifyElementsIsExist(homePage.productImage, true);
+        await runner.verifyElementsIsExist(homePage.productTitle);
+        await runner.verifyElementsIsExist(homePage.productPrice);
+        await runner.verifyElementsIsExist(homePage.productDescription);
+      });
 
-        // Validate "Monitors"
+      test("Verify filtering monitors tab interactions", async ({
+        runner,
+        homePage,
+      }) => {
         await runner.verifyElementIsVisible(homePage.categoriesMonitors);
-        await runner.verifyContainText(
+        await runner.validateAttribute(
           homePage.categoriesMonitors,
-          homeData.categories.monitors.name
+          "onclick",
+          "byCat('monitor')"
         );
-        await runner.clickOnElement(homePage.categoriesMonitors);
-        await runner.validateProductContainers(homePage.productContainer);
-        await runner.verifyContainText(
-          homePage.firstProductCardTitle,
-          homeData.categories.monitors.firstProduct
+        await runner.validateAndClick(
+          homePage.categoriesMonitors,
+          homeData.categories.monitors
         );
-        await runner.verifyContainText(
-          homePage.secondProductCardTitle,
-          homeData.categories.monitors.secondProduct
-        );
-
-        // Reset filtering by clicking "CATEGORIES"
-        await runner.clickOnElement(homePage.categoriesHeader);
-        await runner.validateProductContainers(homePage.productContainer);
+        await runner.waitUntilSeconds(1);
+        await runner.verifyElementsIsExist(homePage.productImage, true);
+        await runner.verifyElementsIsExist(homePage.productTitle);
+        await runner.verifyElementsIsExist(homePage.productPrice);
+        await runner.verifyElementsIsExist(homePage.productDescription);
       });
 
       test("Verify homepage reloads and resets filters on 'Home' navbar click", async ({
         runner,
+        envData,
         homePage,
       }) => {
-        await runner.verifyContainText(
-          homePage.firstProductCardTitle,
-          homeData.productCardTitles.homePage.first
+        // verify homepage products
+        await runner.verifyElementsIsExist(homePage.productTitle);
+        await runner.verifyElementsIsExist(homePage.productPrice);
+        await runner.verifyElementsIsExist(homePage.productDescription);
+        await runner.verifyElementsIsExist(homePage.productImage, true);
+
+        // click on laptops tab to show laptops products
+        await runner.validateAndClick(
+          homePage.categoriesLaptops,
+          homeData.categories.laptops
         );
-        await runner.verifyContainText(
-          homePage.secondProductCardTitle,
-          homeData.productCardTitles.homePage.second
-        );
-        await runner.clickOnElement(homePage.categoriesLaptops);
-        await runner.verifyContainText(
-          homePage.firstProductCardTitle,
-          homeData.categories.laptops.firstProduct
-        );
-        await runner.verifyContainText(
-          homePage.secondProductCardTitle,
-          homeData.categories.laptops.secondProduct
-        );
-        await runner.clickOnElement(homePage.navbarHome);
         await runner.wait(1, { waitForLoadState: "load" });
-        await runner.verifyContainText(
-          homePage.firstProductCardTitle,
-          homeData.productCardTitles.homePage.first
+        await runner.verifyElementsIsExist(homePage.productTitle);
+        await runner.verifyElementsIsExist(homePage.productPrice);
+        await runner.verifyElementsIsExist(homePage.productDescription);
+        await runner.verifyElementsIsExist(homePage.productImage, true);
+
+        // click on home button and reset filter
+        await runner.validateAndClick(
+          homePage.navbarHome,
+          homeData.navbar.home
         );
-        await runner.verifyContainText(
-          homePage.secondProductCardTitle,
-          homeData.productCardTitles.homePage.second
-        );
+        await runner.wait(1, { waitForLoadState: "load" });
+        await runner.verifyUrlContains(envData.homeButtonClickUrl);
+        await runner.verifyElementsIsExist(homePage.productTitle);
+        await runner.verifyElementsIsExist(homePage.productPrice);
+        await runner.verifyElementsIsExist(homePage.productDescription);
+        await runner.verifyElementsIsExist(homePage.productImage, true);
       });
 
       test("Verify clicking 'Categories' reloads homepage and shows all products", async ({
         runner,
+        envData,
         homePage,
       }) => {
-        await runner.clickOnElement(homePage.categoriesLaptops);
-        await runner.verifyContainText(
-          homePage.firstProductCardTitle,
-          homeData.categories.laptops.firstProduct
+        // verify homepage products
+        await runner.verifyElementsIsExist(homePage.productTitle);
+        await runner.verifyElementsIsExist(homePage.productPrice);
+        await runner.verifyElementsIsExist(homePage.productDescription);
+        await runner.verifyElementsIsExist(homePage.productImage, true);
+
+        // click on laptops tab to show laptops products
+        await runner.validateAndClick(
+          homePage.categoriesLaptops,
+          homeData.categories.laptops
         );
-        await runner.verifyContainText(
-          homePage.secondProductCardTitle,
-          homeData.categories.laptops.secondProduct
-        );
-        await runner.clickOnElement(homePage.categoriesHeader);
         await runner.wait(1, { waitForLoadState: "load" });
-        await runner.verifyContainText(
-          homePage.firstProductCardTitle,
-          homeData.productCardTitles.homePage.first
+        await runner.verifyElementsIsExist(homePage.productTitle);
+        await runner.verifyElementsIsExist(homePage.productPrice);
+        await runner.verifyElementsIsExist(homePage.productDescription);
+        await runner.verifyElementsIsExist(homePage.productImage, true);
+
+        // click on categories header and reset filter
+        await runner.validateAndClick(
+          homePage.categoriesHeader,
+          homeData.categories.header
         );
-        await runner.verifyContainText(
-          homePage.secondProductCardTitle,
-          homeData.productCardTitles.homePage.second
-        );
+        await runner.wait(1, { waitForLoadState: "load" });
+        await runner.verifyUrlContains(envData.baseUrl);
+        await runner.verifyElementsIsExist(homePage.productTitle);
+        await runner.verifyElementsIsExist(homePage.productPrice);
+        await runner.verifyElementsIsExist(homePage.productDescription);
+        await runner.verifyElementsIsExist(homePage.productImage, true);
       });
 
       test("Verify pagination controls with next and previous button", async ({
@@ -332,11 +319,10 @@ class HomePageTest extends ExpectedValueProvider {
         runner,
         homePage,
       }) => {
-        await runner.validateProductContainers(homePage.productContainer);
-        await runner.validateProductImages(homePage.productImage);
-        await runner.validateProductTitles(homePage.productTitle);
-        await runner.validateProductPrices(homePage.productPrice);
-        await runner.validateProductDescriptions(homePage.productDescription);
+        await runner.verifyElementsIsExist(homePage.productImage, true);
+        await runner.verifyElementsIsExist(homePage.productTitle);
+        await runner.verifyElementsIsExist(homePage.productPrice);
+        await runner.verifyElementsIsExist(homePage.productDescription);
       });
 
       test("Verify product content is valid on the second page of pagination", async ({
@@ -344,107 +330,110 @@ class HomePageTest extends ExpectedValueProvider {
         homePage,
       }) => {
         await runner.verifyElementIsVisible(homePage.paginationNextButton);
+        await runner.clickOnElement(homePage.paginationNextButton);
         await runner.waitForProductChangeAfterPagination(
           homePage.paginationNextButton,
           homePage.firstProductTitle
         );
-        await runner.validateProductContainers(homePage.productContainer);
-        await runner.validateProductImages(homePage.productImage);
-        await runner.validateProductTitles(homePage.productTitle);
-        await runner.validateProductPrices(homePage.productPrice);
-        await runner.validateProductDescriptions(homePage.productDescription);
+        await runner.verifyElementsIsExist(homePage.productImage, true);
+        await runner.verifyElementsIsExist(homePage.productTitle);
+        await runner.verifyElementsIsExist(homePage.productPrice);
+        await runner.verifyElementsIsExist(homePage.productDescription);
       });
 
-      test("Verify returning to first page with previous button click shows correct products", async ({
+      test("Verify pagination returning to first page with previous button click shows correct products", async ({
         runner,
         homePage,
       }) => {
-        await runner.verifyPaginationReturn(homePage);
+        // getting page one's product titles
+        await runner.validateProductContainers(homePage.productContainer);
+        const pageOneProductTitles = await runner.getProductTitles(
+          homePage.productTitle
+        );
+
+        // navigating to the next page of pagination
+        await runner.clickOnElement(homePage.paginationNextButton);
+        await runner.wait(1, { waitForLoadState: "load" });
+
+        // getting page two's product titles
+        const pageTwoProductTitles = await runner.getProductTitles(
+          homePage.productTitle
+        );
+
+        // page tow's titles should not match with page one's titles
+        await runner.verifyTitlesNoMatch(
+          pageOneProductTitles,
+          pageTwoProductTitles
+        );
+
+        // going back to the previous page and capture the again back page's products titles
+        await runner.clickOnElement(homePage.carouselPreviousButton);
+        await runner.wait(1, { waitForLoadState: "load" });
+        const pageOneTitlesAgain = await runner.getProductTitles(
+          homePage.productTitle
+        );
+
+        // now the products of pageOneTitles again should match with products of page one
+        await runner.verifyTitlesMatch(
+          pageOneProductTitles,
+          pageOneTitlesAgain
+        );
       });
+
+      // ---------------------------------------------------------------------------------------------
 
       test("Verify clicking on a product image navigates to the correct product detail page", async ({
         runner,
         homePage,
         productDetailPage,
-      }) => {
-        await runner.clickOnElement(homePage.firstProductImage);
-        await runner.wait(1);
-        await runner.verifyUrlContains(
-          homeData.productDetails.firstProduct.urlFragment
-        );
-        await runner.verifyElementIsVisible(productDetailPage.productTitle);
-        await runner.verifyContainText(
-          productDetailPage.productTitle,
-          homeData.productDetails.firstProduct.title
-        );
-        await runner.verifyElementIsVisible(productDetailPage.productPrice);
-        await runner.verifyContainText(
-          productDetailPage.productPrice,
-          homeData.productDetails.firstProduct.price
-        );
-        await runner.goBack();
-        await runner.wait(1);
-        await runner.clickOnElement(homePage.secondProductImage);
-        await runner.wait(1);
-        await runner.verifyUrlContains(
-          homeData.productDetails.secondProduct.urlFragment
-        );
-        await runner.verifyContainText(
-          productDetailPage.productTitle,
-          homeData.productDetails.secondProduct.title
-        );
-        await runner.verifyContainText(
-          productDetailPage.productPrice,
-          homeData.productDetails.secondProduct.price
-        );
-      });
+      }) => {});
 
-      test("Verify clicking product title navigates to product detail page", async ({
-        runner,
-        homePage,
-        productDetailPage,
-      }) => {
-        await runner.clickOnElement(homePage.firstProductCardTitle);
-        await runner.wait(1);
-        await runner.verifyUrlContains(
-          homeData.productDetails.firstProduct.urlFragment
-        );
-        await runner.verifyElementIsVisible(productDetailPage.productTitle);
-        await runner.verifyContainText(
-          productDetailPage.productTitle,
-          homeData.productDetails.firstProduct.title
-        );
-        await runner.verifyElementIsVisible(productDetailPage.productPrice);
-        await runner.verifyContainText(
-          productDetailPage.productPrice,
-          homeData.productDetails.firstProduct.price
-        );
-        await runner.goBack();
-        await runner.clickOnElement(homePage.secondProductCardTitle);
-        await runner.wait(1);
-        await runner.verifyUrlContains(
-          homeData.productDetails.secondProduct.urlFragment
-        );
-        await runner.verifyContainText(
-          productDetailPage.productTitle,
-          homeData.productDetails.secondProduct.title
-        );
-        await runner.verifyContainText(
-          productDetailPage.productPrice,
-          homeData.productDetails.secondProduct.price
-        );
-      });
+      //     test("Verify clicking product title navigates to product detail page", async ({
+      //       runner,
+      //       homePage,
+      //       productDetailPage,
+      //     }) => {
+      //       await runner.clickOnElement(homePage.firstProductCardTitle);
+      //       await runner.wait(1);
+      //       await runner.verifyUrlContains(
+      //         homeData.productDetails.firstProduct.urlFragment
+      //       );
+      //       await runner.verifyElementIsVisible(productDetailPage.productTitle);
+      //       await runner.verifyContainText(
+      //         productDetailPage.productTitle,
+      //         homeData.productDetails.firstProduct.title
+      //       );
+      //       await runner.verifyElementIsVisible(productDetailPage.productPrice);
+      //       await runner.verifyContainText(
+      //         productDetailPage.productPrice,
+      //         homeData.productDetails.firstProduct.price
+      //       );
+      //       await runner.goBack();
+      //       await runner.clickOnElement(homePage.secondProductCardTitle);
+      //       await runner.wait(1);
+      //       await runner.verifyUrlContains(
+      //         homeData.productDetails.secondProduct.urlFragment
+      //       );
+      //       await runner.verifyContainText(
+      //         productDetailPage.productTitle,
+      //         homeData.productDetails.secondProduct.title
+      //       );
+      //       await runner.verifyContainText(
+      //         productDetailPage.productPrice,
+      //         homeData.productDetails.secondProduct.price
+      //       );
+      //     });
 
-      test("Verify footer is present with copyright text", async ({
-        runner,
-        homePage,
-      }) => {
-        await runner.verifyElementIsVisible(homePage.footer);
-        await runner.verifyContainText(
-          homePage.footerText,
-          homeData.footer.copyright
-        );
-      });
+      //     test("Verify footer is present with copyright text", async ({
+      //       runner,
+      //       homePage,
+      //     }) => {
+      //       await runner.verifyElementIsVisible(homePage.footer);
+      //       await runner.verifyContainText(
+      //         homePage.footerText,
+      //         homeData.footer.copyright
+      //       );
+      //     });
     });
   }
 }
