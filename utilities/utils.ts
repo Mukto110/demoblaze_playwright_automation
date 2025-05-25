@@ -149,27 +149,91 @@ export class Utils {
   }
 
   async validateAndClick(
-    identifier: string,
-    expectedText: string
+     buttonLocator: string,
+    options?: ButtonClickOptions
   ): Promise<void> {
-    try {
-      await this.page.locator(identifier).focus();
-      await expect.soft(this.page.locator(identifier)).toBeVisible();
-      const actualText = await this.page.locator(identifier).textContent();
+    const opts: ButtonClickOptions = {
+      waitForNavigation: true, // Default to waiting for navigation
+      waitForLoadState: "load", // Default load state
+      ...options,
+    };
 
-      if (actualText && actualText.trim() === expectedText) {
-        await this.page.locator(identifier).click();
+    // Use the buttonLocator directly for logging
+    const logIdentifier = `button located by "${buttonLocator}"`; // Derived identifier for logging
+
+    this.logMessage(
+      `[INFO] Validating and attempting to click ${logIdentifier}.`
+    );
+    try {
+      const button = this.page.locator(buttonLocator);
+
+      // --- Pre-Click Validations (Industry Standard) ---
+      await expect(button).toBeVisible({ timeout: 10000 });
+      this.logMessage(`✅ ${logIdentifier} is visible.`);
+
+      await expect(button).toBeEnabled({ timeout: 5000 });
+      this.logMessage(`✅ ${logIdentifier} is enabled.`);
+
+      if (opts.expectedText) {
+        await expect(button).toHaveText(opts.expectedText, { timeout: 5000 });
         this.logMessage(
-          `Validated and clicked on ${identifier} with expected text "${expectedText}"`
+          `✅ ${logIdentifier} has expected text: "${opts.expectedText}".`
         );
-      } else {
-        const errorMsg = `Text mismatch on ${identifier}. Expected: "${expectedText}", Found: "${actualText}"`;
-        this.logMessage(errorMsg, "error");
-        await this.captureScreenshotOnFailure("validateAndClick");
-        throw new Error(errorMsg);
       }
-    } catch (error) {
-      throw error;
+
+      // --- Perform Click and Post-Click Waits ---
+      const clickActions: Promise<any>[] = [button.click()];
+
+      if (opts.waitForNavigation) {
+        if (opts.expectedURL) {
+          clickActions.unshift(
+            this.page.waitForURL(opts.expectedURL, {
+              waitUntil: opts.waitForLoadState,
+            })
+          );
+          this.logMessage(
+            `[INFO] Waiting for URL to match: ${
+              opts.expectedURL instanceof RegExp
+                ? opts.expectedURL.source
+                : opts.expectedURL
+            }.`
+          );
+        } else {
+          clickActions.unshift(
+            this.page.waitForLoadState(opts.waitForLoadState)
+          );
+          this.logMessage(
+            `[INFO] Waiting for page load state: '${opts.waitForLoadState}'.`
+          );
+        }
+      }
+
+      if (opts.waitForSelectorAfterClick) {
+        clickActions.push(
+          this.page
+            .locator(opts.waitForSelectorAfterClick)
+            .waitFor({ state: "visible", timeout: 15000 })
+        );
+        this.logMessage(
+          `[INFO] Waiting for selector "${opts.waitForSelectorAfterClick}" to be visible after click.`
+        );
+      }
+
+      await Promise.all(clickActions);
+      this.logMessage(`[INFO] Successfully clicked ${logIdentifier}.`);
+
+      // --- Post-Click Assertions (Basic, within the function) ---
+      if (opts.waitForNavigation && opts.expectedURL) {
+        await expect(this.page).toHaveURL(opts.expectedURL, { timeout: 5000 });
+        this.logMessage(`✅ Navigated to expected URL: ${this.page.url()}.`);
+      }
+    } catch (error: any) {
+      const errorMsg = `❌ Failed to validate or click ${logIdentifier}: ${error.message}`;
+      this.logMessage(errorMsg, "error");
+      // Use a sanitized locator for screenshot name
+      const screenshotName = `Fail_${buttonLocator.replace(/[^a-zA-Z0-9_]/g, '_')}`;
+      await this.captureScreenshotOnFailure(screenshotName);
+      throw new Error(errorMsg);
     }
   }
 
@@ -1096,96 +1160,7 @@ export class Utils {
     return randomIndex; // Return the index for external use (e.g., getting details after navigation)
   }
 
-  async validateAndClickButton(
-    buttonLocator: string,
-    buttonNameForLogging: string,
-    options?: ButtonClickOptions
-  ): Promise<void> {
-    const opts: ButtonClickOptions = {
-      waitForNavigation: true, // Default to waiting for navigation
-      waitForLoadState: "load", // Default load state
-      ...options,
-    };
 
-    this.logMessage(
-      `[INFO] Validating and attempting to click "${buttonNameForLogging}".`
-    );
-    try {
-      const button = this.page.locator(buttonLocator);
-
-      // --- Pre-Click Validations (Industry Standard) ---
-      await expect(button).toBeVisible({ timeout: 10000 });
-      this.logMessage(`✅ "${buttonNameForLogging}" is visible.`);
-
-      await expect(button).toBeEnabled({ timeout: 5000 });
-      this.logMessage(`✅ "${buttonNameForLogging}" is enabled.`);
-
-      if (opts.expectedText) {
-        await expect(button).toHaveText(opts.expectedText, { timeout: 5000 });
-        this.logMessage(
-          `✅ "${buttonNameForLogging}" has expected text: "${opts.expectedText}".`
-        );
-      }
-
-      // --- Perform Click and Post-Click Waits ---
-      const clickActions: Promise<any>[] = [button.click()];
-
-      if (opts.waitForNavigation) {
-        if (opts.expectedURL) {
-          // If expectedURL is provided, use waitForURL, which implies navigation
-          clickActions.unshift(
-            this.page.waitForURL(opts.expectedURL, {
-              waitUntil: opts.waitForLoadState,
-            })
-          );
-          this.logMessage(
-            `[INFO] Waiting for URL to match: ${
-              opts.expectedURL instanceof RegExp
-                ? opts.expectedURL.source
-                : opts.expectedURL
-            }.`
-          );
-        } else {
-          // Otherwise, just wait for general page load state
-          clickActions.unshift(
-            this.page.waitForLoadState(opts.waitForLoadState)
-          );
-          this.logMessage(
-            `[INFO] Waiting for page load state: '${opts.waitForLoadState}'.`
-          );
-        }
-      }
-
-      if (opts.waitForSelectorAfterClick) {
-        clickActions.push(
-          this.page
-            .locator(opts.waitForSelectorAfterClick)
-            .waitFor({ state: "visible", timeout: 15000 })
-        );
-        this.logMessage(
-          `[INFO] Waiting for selector "${opts.waitForSelectorAfterClick}" to be visible after click.`
-        );
-      }
-
-      await Promise.all(clickActions);
-      this.logMessage(`[INFO] Successfully clicked "${buttonNameForLogging}".`);
-
-      // --- Post-Click Assertions (Basic, within the function) ---
-      if (opts.waitForNavigation && opts.expectedURL) {
-        // After Promise.all, assert the final URL is correct.
-        // This is a robust check that navigation truly completed to the desired URL.
-        await expect(this.page).toHaveURL(opts.expectedURL, { timeout: 5000 });
-        this.logMessage(`✅ Navigated to expected URL: ${this.page.url()}.`);
-      }
-    } catch (error: any) {
-      const errorMsg = `❌ Failed to validate or click "${buttonNameForLogging}": ${error.message}`;
-      this.logMessage(errorMsg, "error");
-      await this.captureScreenshotOnFailure(
-        `Fail_${buttonNameForLogging.replace(/\s/g, "_")}`
-      );
-      throw new Error(errorMsg);
-    }
-  }
   async validatingProductUrl(): Promise<void> {
     // The specific regex for DemoBlaze product pages
     const expectedProductURLRegex =
@@ -1215,6 +1190,13 @@ export class Utils {
       throw new Error(errorMsg);
     }
   }
+  private async getImageSrcFromSpecificLocator(imageLocator: Locator): Promise<string> {
+      // This will ensure the image element is visible before trying to get its attribute
+      // Using Playwright's expect for visibility
+      await expect(imageLocator).toBeVisible({ timeout: 5000 });
+      const src = await imageLocator.getAttribute('src');
+      return src || ''; // Return empty string if src is null/undefined
+  }
   public async getImageSrcByIndex(
     imageLocator: string,
     index: number
@@ -1238,14 +1220,19 @@ export class Utils {
     return { text: text.trim(), numericValue: numericValue.trim() };
   }
 
-  public async selectAndCaptureRandomProductDetailsAndClick(
-    itemContainerLocator: string,
-    clickableElementLocator: string,
-    productTitleLocator: string,
-    productPriceLocator: string,
-    productImageLocator: string
+async selectAndCaptureRandomProductDetailsAndClick(
+    itemContainerLocator: string // Only this parameter is passed
   ): Promise<ProductDetails> {
-    const totalItems = await this.page.locator(itemContainerLocator).count();
+    // Hardcode the internal locators relative to the itemContainerLocator
+    // If the title is also the clickable element, these two can be the same.
+    const internalTitleAndClickableLocator = '.card-title a'; // This serves as both title text and clickable element
+    const internalProductPriceLocator = '.card-block h5';      // Price text
+    const internalProductImageLocator = '.card-img-top';      // Image element
+
+    // First, get all product container locators
+    const allItemContainers = this.page.locator(itemContainerLocator);
+    const totalItems = await allItemContainers.count();
+
     if (totalItems === 0) {
       throw new Error(
         `No items found using locator: ${itemContainerLocator}. Cannot select random product.`
@@ -1257,19 +1244,19 @@ export class Utils {
       `[INFO] Randomly selected product at index: ${randomIndex}.`
     );
 
-    // --- Capture details BEFORE the click ---
-    const title = await this.page
-      .locator(productTitleLocator)
-      .nth(randomIndex)
-      .innerText();
-    const price = await this.page
-      .locator(productPriceLocator)
-      .nth(randomIndex)
-      .innerText();
-    const imageSrc = await this.getImageSrcByIndex(
-      productImageLocator,
-      randomIndex
-    );
+    // Get the specific container for the randomly selected product
+    const selectedItemContainer = allItemContainers.nth(randomIndex);
+
+    // --- Capture details from the selected container ---
+    // Use .locator() on the selectedItemContainer to find elements *relative* to it
+    const titleElement = selectedItemContainer.locator(internalTitleAndClickableLocator);
+    const title = await titleElement.innerText();
+
+    const priceElement = selectedItemContainer.locator(internalProductPriceLocator);
+    const price = await priceElement.innerText();
+
+    const imageElement = selectedItemContainer.locator(internalProductImageLocator);
+    const imageSrc = await this.getImageSrcFromSpecificLocator(imageElement); // Pass the specific image Locator
 
     this.logMessage(
       `[INFO] Captured details for product at index ${randomIndex} (Home Page):`
@@ -1278,8 +1265,8 @@ export class Utils {
     this.logMessage(`  Price: "${price}"`);
     this.logMessage(`  Image Src: "${imageSrc}"`);
 
-    // --- Perform the click using the existing helper ---
-    await this.clickItemByIndex(clickableElementLocator, randomIndex);
+    // --- Perform the click using the title element itself ---
+    await titleElement.click(); // Click the title element (which is now the clickable element)
 
     return { index: randomIndex, title, price, imageSrc };
   }
@@ -1372,20 +1359,17 @@ export class Utils {
     }
   }
 
-  async validateProductsInCart(
+async validateProductsInCart(
     expectedProducts: ProductDetails[],
     cartRowLocator: string,
     titleInRowLocator: string,
     priceInRowLocator: string,
     imageContainerInRowLocator: string,
     totalPriceElementLocator: string
-    // Removed scenarioName parameter here
-  ): Promise<void> {
-    // Note: The logMessage and captureScreenshotOnFailure calls below
-    // will no longer have the specific scenarioName context from here.
-    // If you want scenario-specific screenshots, you'll need to call
-    // captureScreenshotOnFailure from the test's try/catch block.
-    this.logMessage(`[INFO] Starting cart validation.`); // Less specific log
+  ): Promise<number> { // <--- CHANGE 1: Change return type to Promise<number>
+    this.logMessage(`[INFO] Starting cart validation.`);
+
+    let calculatedTotalPrice = 0; // Initialize here so it's accessible outside the try block if needed for partial returns
 
     try {
       await this.page.waitForLoadState("domcontentloaded");
@@ -1399,7 +1383,7 @@ export class Utils {
         `✅ Cart contains ${cartRows.length} items, matching expected count.`
       );
 
-      let calculatedTotalPrice = 0;
+      // calculatedTotalPrice is already declared above
 
       for (const expectedProduct of expectedProducts) {
         this.logMessage(
@@ -1465,18 +1449,18 @@ export class Utils {
         actualTotalPriceText.replace(/\s*\$\s*/g, "").trim()
       );
 
+      // The existing assertion is good to keep for immediate validation within this method
       expect(actualTotalPrice).toEqual(calculatedTotalPrice);
       this.logMessage(
         `✅ Total cart price matches: $${calculatedTotalPrice} (Actual: $${actualTotalPrice})`
       );
 
-      this.logMessage(`✅ All products in cart validated successfully.`); // Less specific log
+      this.logMessage(`✅ All products in cart validated successfully.`);
+      return calculatedTotalPrice; // <--- CHANGE 2: Return the calculated total price
     } catch (error: any) {
       const errorMsg = `❌ Cart validation failed: ${error.message}`;
       this.logMessage(errorMsg, "error");
-      // If captureScreenshotOnFailure needs a name, you might pass a default or timestamp
-      // or ensure it's called from the test's outer try/catch
-      await this.captureScreenshotOnFailure("CartValidationFailure"); // Example: Use a default name
+      await this.captureScreenshotOnFailure("CartValidationFailure");
       throw new Error(errorMsg);
     }
   }
@@ -1784,20 +1768,51 @@ export class Utils {
     }
   }
 
+ 
+  async getCartProductCount(cartRowLocator: string): Promise<string> {
+    this.logMessage('[INFO] Checking cart product count.');
+    try {
+        await this.page.waitForLoadState("domcontentloaded");
+        const cartRows = await this.page.locator(cartRowLocator).all();
+        const productCount = cartRows.length;
+
+        if (productCount === 0) {
+            this.logMessage('[INFO] No products found in cart.');
+            return "No products in cart.";
+        } else {
+            const message = `Cart contains ${productCount} products.`;
+            this.logMessage('[INFO] ' + message);
+            return message;
+        }
+    } catch (error: any) {
+        const errorMsg = `❌ Failed to get cart product count: ${error.message}`;
+        this.logMessage(errorMsg, "error");
+        await this.captureScreenshotOnFailure("GetCartProductCountFailure");
+        throw new Error(errorMsg);
+    }
+}
   async handleAlertWithMessage(expectedMessage: string): Promise<void> {
     try {
+
       this.page.on("dialog", async (dialog) => {
         expect(dialog.type()).toContain("alert");
         expect(dialog.message()).toContain(expectedMessage);
         await dialog.accept();
+
+
         this.logMessage(
           `handled alert correctly with message: ${expectedMessage}`
         );
+
       });
     } catch (error) {
-      this.logMessage(`❌ Failed to handle alert: ${error}`, "error");
+      this.logMessage(`:x: Failed to handle alert: ${error}`, "error");
       await this.captureScreenshotOnFailure("alert_handling_error");
       throw error;
     }
   }
+
+
+
+  
 }
