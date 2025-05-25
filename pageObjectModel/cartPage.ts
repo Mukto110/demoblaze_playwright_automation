@@ -1,9 +1,6 @@
 import { Page } from "@playwright/test";
 
 export class CartPage {
-  readonly cartPageTitle: string;
-  readonly totalText: string;
-  readonly placeOrderButton: string;
   readonly picSection: string;
   readonly titleSection: string;
   readonly priceSection: string;
@@ -11,7 +8,11 @@ export class CartPage {
   readonly deleteButton: string;
   readonly firstCartedProduct: string;
   readonly secondCartedProduct: string;
-  readonly orderModalTitle: string;
+  //----------------------------------------------------
+  readonly cartPageHeaderText: string;
+  readonly totalText: string;
+  readonly placeOrderButton: string;
+  readonly orderModalHeader: string;
   readonly totalPriceInOrderModal: string;
   readonly nameInputInOrderModal: string;
   readonly countryInputInOrderModal: string;
@@ -33,9 +34,6 @@ export class CartPage {
   readonly totalPrice: string;
 
   constructor(page: Page) {
-    this.cartPageTitle = `css=div[class='col-lg-8'] h2`;
-    this.totalText = `css=div[class='col-lg-1'] h2`;
-    this.placeOrderButton = `xpath=//button[normalize-space()='Place Order']`;
     this.picSection = `xpath=//th[normalize-space()='Pic']`;
     this.titleSection = `xpath=//th[normalize-space()='Title']`;
     this.priceSection = `xpath=//th[normalize-space()='Price']`;
@@ -43,7 +41,11 @@ export class CartPage {
     this.deleteButton = `xpath=/html[1]/body[1]/div[6]/div[1]/div[1]/div[1]/table[1]/tbody[1]/tr[1]/td[4]/a[1]`;
     this.firstCartedProduct = `css=body > div:nth-child(7) > div:nth-child(1) > div:nth-child(1) > div:nth-child(2) > table:nth-child(1) > tbody:nth-child(2) > tr:nth-child(1)`;
     this.secondCartedProduct = `css=body > div:nth-child(7) > div:nth-child(1) > div:nth-child(1) > div:nth-child(2) > table:nth-child(1) > tbody:nth-child(2) > tr:nth-child(2)`;
-    this.orderModalTitle = `css=h5[id="orderModalLabel"]`;
+    //---------------------------------------------------------------------------------------------------
+    this.cartPageHeaderText = `css=div[class='col-lg-8'] h2`;
+    this.totalText = `css=div[class='col-lg-1'] h2`;
+    this.placeOrderButton = `css=button[class="btn btn-success"]`;
+    this.orderModalHeader = `css=h5[id="orderModalLabel"]`;
     this.totalPriceInOrderModal = `css=label[id="totalm"]`;
     this.nameInputInOrderModal = `css=input[id="name"]`;
     this.countryInputInOrderModal = `css=input[id="country"]`;
@@ -53,7 +55,9 @@ export class CartPage {
     this.yearInputInOrderModal = `css=input[id="year"]`;
     this.closeButtonInOrderModal = `css=div[id='orderModal'] div[class='modal-footer'] button[data-dismiss="modal"]`;
     this.purchaseButtonInOrderModal = `css=div[id='orderModal'] div[class='modal-footer'] button[class="btn btn-primary"]`;
-    this.purchaseCofimationMessageAlert = `xpath=//h2[normalize-space()='Thank you for your purchase!']`;
+
+    
+    this.purchaseCofimationMessageAlert = `css=div[class="sweet-alert  showSweetAlert visible"] h2`;
     this.purchaseCofimationDetailsInAlert = `css=p[class="lead text-muted "]`;
     this.okButtonInAlert = `css=button[class="confirm btn btn-lg btn-primary"]`;
     this.cartedProductsDetails = `css=tr[class="success"]`;
