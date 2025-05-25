@@ -24,17 +24,10 @@ export class HomePage {
   readonly activeCarouselImage: string;
   readonly carouselNextButton: string;
   readonly carouselPreviousButton: string;
-  // --------------------------------------------
-  readonly macbookLaptopCard: string;
-  readonly firstProductCardOfMonitors: string;
-
-  readonly firstProductTitle: string;
-  readonly firstProductPrice: string;
-  readonly firstProductDescription: string;
-
   readonly footer: string;
-  readonly footerText: string;
-  // ---------------------------------
+  readonly footerHeaderAboutUsText: string;
+  readonly footerHeaderGetInTouchText: string;
+  readonly footerCopyrightText: string;
   readonly productContainer: string;
   readonly productTitles: string;
   readonly productPrices: string;
@@ -65,17 +58,10 @@ export class HomePage {
     this.activeCarouselImage = `css=.carousel-item.active img`;
     this.carouselNextButton = `css=a[data-slide='next'] span[class='carousel-control-next-icon']`;
     this.carouselPreviousButton = `css=a[data-slide='prev'] span[class='carousel-control-prev-icon']`;
-    // -----------------------------------------------------------------------------------
-    this.macbookLaptopCard = `css=body > div:nth-child(6) > div:nth-child(1) > div:nth-child(2) > div:nth-child(1) > div:nth-child(3)`;
-    this.firstProductCardOfMonitors = `css=body > div:nth-child(6) > div:nth-child(1) > div:nth-child(2) > div:nth-child(1) > div:nth-child(1)`;
-
-    this.firstProductTitle = `css=body > div:nth-child(6) > div:nth-child(1) > div:nth-child(2) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(2) > h4:nth-child(1) > a:nth-child(1)`;
-    this.firstProductPrice = `css=body > div:nth-child(6) > div:nth-child(1) > div:nth-child(2) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(2) > h5:nth-child(2)`;
-    this.firstProductDescription = `css=body > div:nth-child(6) > div:nth-child(1) > div:nth-child(2) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(2) > p:nth-child(3)`;
-    this.carousel = `css=div[id='carouselExampleIndicators']`;
     this.footer = `css=div[id='footc']`;
-    this.footerText = `xpath=//p[@class='m-0 text-center text-white']`;
-    // <--------------------------------------------------------------->
+    this.footerHeaderAboutUsText = `css=div[class='col-sm-4 col-lg-4 col-md-4'] b`;
+    this.footerHeaderGetInTouchText = `css=div[class='col-sm-3 col-lg-3 col-md-3'] b`;
+    this.footerCopyrightText = `xpath=//p[@class='m-0 text-center text-white']`;
     this.productContainer = `css=div[id='tbodyid'] div[class='col-lg-4 col-md-6 mb-4'] div[class='card h-100']`;
     this.productTitles = `css=div[id='tbodyid'] div[class='col-lg-4 col-md-6 mb-4'] div[class='card-block'] a`;
     this.productPrices = `css=div[id='tbodyid'] div[class='col-lg-4 col-md-6 mb-4'] div[class='card-block'] h5`;

@@ -26,7 +26,7 @@ class HomePageTest extends ExpectedValueProvider {
           homePage.homePageLogo,
           homeData.homeLogoText
         );
-        await runner.wait(1, { waitForLoadState: "load" });
+        await runner.wait(2, { waitForLoadState: "load" });
       });
 
       test("Verify homepage reloads on logo button click", async ({
@@ -63,10 +63,10 @@ class HomePageTest extends ExpectedValueProvider {
           homeData.navbar.contact
         );
         await runner.clickOnElement(homePage.navbarContact);
-        await runner.verifyElementIsVisible(contactModal.title);
+        await runner.verifyElementIsVisible(contactModal.header);
         await runner.verifyContainText(
-          contactModal.title,
-          contactData.contactModalTitle
+          contactModal.header,
+          contactData.contactModalHeader
         );
         await runner.clickOnElement(contactModal.closeButton);
 
@@ -239,7 +239,7 @@ class HomePageTest extends ExpectedValueProvider {
           homePage.categoriesLaptops,
           homeData.categories.laptops
         );
-        await runner.wait(1, { waitForLoadState: "load" });
+        await runner.wait(2, { waitForLoadState: "load" });
         await runner.verifyElementsIsExist(homePage.productTitles);
         await runner.verifyElementsIsExist(homePage.productPrices);
         await runner.verifyElementsIsExist(homePage.productDescriptions);
@@ -285,8 +285,8 @@ class HomePageTest extends ExpectedValueProvider {
           homePage.categoriesHeader,
           homeData.categories.header
         );
-        await runner.wait(1, { waitForLoadState: "load" });
         await runner.verifyUrlContains(envData.baseUrl);
+        await runner.wait(2, { waitForLoadState: "load" });
         await runner.verifyElementsIsExist(homePage.productTitles);
         await runner.verifyElementsIsExist(homePage.productPrices);
         await runner.verifyElementsIsExist(homePage.productDescriptions);
@@ -334,7 +334,7 @@ class HomePageTest extends ExpectedValueProvider {
         await runner.clickOnElement(homePage.paginationNextButton);
         await runner.waitForProductChangeAfterPagination(
           homePage.paginationNextButton,
-          homePage.firstProductTitle
+          homePage.productTitles
         );
         await runner.verifyElementsIsExist(homePage.productImages, true);
         await runner.verifyElementsIsExist(homePage.productTitles);
@@ -381,60 +381,246 @@ class HomePageTest extends ExpectedValueProvider {
         );
       });
 
-      // ---------------------------------------------------------------------------------------------
-
-      test("Verify clicking on a product image navigates to the correct product detail page", async ({
+      test("Verify clicking on a product image navigates to the correct product detail page on pagination first page", async ({
         runner,
+        envData,
         homePage,
         productDetailPage,
-      }) => {});
+      }) => {
+        await runner.wait(1, { waitForLoadState: "load" });
+        // verifications of homepage products
+        await runner.verifyElementsIsExist(homePage.productImages, true);
+        await runner.verifyElementsIsExist(homePage.productTitles);
+        await runner.verifyElementsIsExist(homePage.productPrices);
+        await runner.verifyElementsIsExist(homePage.productDescriptions);
 
-      //     test("Verify clicking product title navigates to product detail page", async ({
-      //       runner,
-      //       homePage,
-      //       productDetailPage,
-      //     }) => {
-      //       await runner.clickOnElement(homePage.firstProductCardTitle);
-      //       await runner.wait(1);
-      //       await runner.verifyUrlContains(
-      //         homeData.productDetails.firstProduct.urlFragment
-      //       );
-      //       await runner.verifyElementIsVisible(productDetailPage.productTitle);
-      //       await runner.verifyContainText(
-      //         productDetailPage.productTitle,
-      //         homeData.productDetails.firstProduct.title
-      //       );
-      //       await runner.verifyElementIsVisible(productDetailPage.productPrice);
-      //       await runner.verifyContainText(
-      //         productDetailPage.productPrice,
-      //         homeData.productDetails.firstProduct.price
-      //       );
-      //       await runner.goBack();
-      //       await runner.clickOnElement(homePage.secondProductCardTitle);
-      //       await runner.wait(1);
-      //       await runner.verifyUrlContains(
-      //         homeData.productDetails.secondProduct.urlFragment
-      //       );
-      //       await runner.verifyContainText(
-      //         productDetailPage.productTitle,
-      //         homeData.productDetails.secondProduct.title
-      //       );
-      //       await runner.verifyContainText(
-      //         productDetailPage.productPrice,
-      //         homeData.productDetails.secondProduct.price
-      //       );
-      //     });
+        // Validating first random product
+        const randomFirstProductCardDetails =
+          await runner.selectAndCaptureRandomProductDetailsAndClick(
+            homePage.productContainer,
+            homePage.productImages, // clicking on random product's image
+            homePage.productTitles,
+            homePage.productPrices,
+            homePage.productImages
+          );
+        await runner.waitUntilSeconds(2);
+        await runner.verifyUrlContains(envData.productUrl);
+        await runner.validateProductDetailsOnDetailPage(
+          randomFirstProductCardDetails,
+          productDetailPage.productTitle,
+          productDetailPage.productPrice,
+          productDetailPage.productImg
+        );
 
-      //     test("Verify footer is present with copyright text", async ({
-      //       runner,
-      //       homePage,
-      //     }) => {
-      //       await runner.verifyElementIsVisible(homePage.footer);
-      //       await runner.verifyContainText(
-      //         homePage.footerText,
-      //         homeData.footer.copyright
-      //       );
-      //     });
+        await runner.goBack();
+        await runner.wait(1, { waitForLoadState: "load" });
+
+        // Validating second random product
+        const randomSecondProductCardDetails =
+          await runner.selectAndCaptureRandomProductDetailsAndClick(
+            homePage.productContainer,
+            homePage.productImages,
+            homePage.productTitles,
+            homePage.productPrices,
+            homePage.productImages
+          );
+        await runner.waitUntilSeconds(2);
+        await runner.verifyUrlContains(envData.productUrl);
+        await runner.validateProductDetailsOnDetailPage(
+          randomSecondProductCardDetails,
+          productDetailPage.productTitle,
+          productDetailPage.productPrice,
+          productDetailPage.productImg
+        );
+      });
+
+      test("Verify clicking product title navigates to product detail page on pagination first page", async ({
+        runner,
+        envData,
+        homePage,
+        productDetailPage,
+      }) => {
+        await runner.wait(1, { waitForLoadState: "load" });
+        // verifications of homepage products
+        await runner.verifyElementsIsExist(homePage.productImages, true);
+        await runner.verifyElementsIsExist(homePage.productTitles);
+        await runner.verifyElementsIsExist(homePage.productPrices);
+        await runner.verifyElementsIsExist(homePage.productDescriptions);
+
+        // Validating first random product
+        const randomFirstProductCardDetails =
+          await runner.selectAndCaptureRandomProductDetailsAndClick(
+            homePage.productContainer,
+            homePage.productTitles, // clicking on random product's title
+            homePage.productTitles,
+            homePage.productPrices,
+            homePage.productImages
+          );
+        await runner.waitUntilSeconds(2);
+        await runner.verifyUrlContains(envData.productUrl);
+        await runner.validateProductDetailsOnDetailPage(
+          randomFirstProductCardDetails,
+          productDetailPage.productTitle,
+          productDetailPage.productPrice,
+          productDetailPage.productImg
+        );
+
+        await runner.goBack();
+        await runner.wait(1, { waitForLoadState: "load" });
+
+        // Validating second random product
+        const randomSecondProductCardDetails =
+          await runner.selectAndCaptureRandomProductDetailsAndClick(
+            homePage.productContainer,
+            homePage.productTitles,
+            homePage.productTitles,
+            homePage.productPrices,
+            homePage.productImages
+          );
+        await runner.waitUntilSeconds(2);
+        await runner.verifyUrlContains(envData.productUrl);
+        await runner.validateProductDetailsOnDetailPage(
+          randomSecondProductCardDetails,
+          productDetailPage.productTitle,
+          productDetailPage.productPrice,
+          productDetailPage.productImg
+        );
+      });
+
+      test("Verify clicking on a product image navigates to the correct product detail page on pagination second page", async ({
+        runner,
+        envData,
+        homePage,
+        productDetailPage,
+      }) => {
+        // navigating to the second page of pagination
+        await runner.clickOnElement(homePage.paginationNextButton);
+        await runner.wait(1, { waitForLoadState: "load" });
+
+        // verifications of homepage's pagination second page products
+        await runner.verifyElementsIsExist(homePage.productImages, true);
+        await runner.verifyElementsIsExist(homePage.productTitles);
+        await runner.verifyElementsIsExist(homePage.productPrices);
+        await runner.verifyElementsIsExist(homePage.productDescriptions);
+
+        // Validating first random product
+        const randomFirstProductCardDetails =
+          await runner.selectAndCaptureRandomProductDetailsAndClick(
+            homePage.productContainer,
+            homePage.productImages, // clicking on random product's image
+            homePage.productTitles,
+            homePage.productPrices,
+            homePage.productImages
+          );
+        await runner.waitUntilSeconds(2);
+        await runner.verifyUrlContains(envData.productUrl);
+        await runner.validateProductDetailsOnDetailPage(
+          randomFirstProductCardDetails,
+          productDetailPage.productTitle,
+          productDetailPage.productPrice,
+          productDetailPage.productImg
+        );
+
+        await runner.goBack();
+        await runner.wait(1, { waitForLoadState: "load" });
+
+        // Validating second random product
+        const randomSecondProductCardDetails =
+          await runner.selectAndCaptureRandomProductDetailsAndClick(
+            homePage.productContainer,
+            homePage.productImages,
+            homePage.productTitles,
+            homePage.productPrices,
+            homePage.productImages
+          );
+        await runner.waitUntilSeconds(2);
+        await runner.verifyUrlContains(envData.productUrl);
+        await runner.validateProductDetailsOnDetailPage(
+          randomSecondProductCardDetails,
+          productDetailPage.productTitle,
+          productDetailPage.productPrice,
+          productDetailPage.productImg
+        );
+      });
+
+      test("Verify clicking product title navigates to product detail page on pagination second page", async ({
+        runner,
+        envData,
+        homePage,
+        productDetailPage,
+      }) => {
+        // navigating to the second page of pagination
+        await runner.clickOnElement(homePage.paginationNextButton);
+        await runner.wait(1, { waitForLoadState: "load" });
+        // verifications of homepage's pagination second page products
+        await runner.verifyElementsIsExist(homePage.productImages, true);
+        await runner.verifyElementsIsExist(homePage.productTitles);
+        await runner.verifyElementsIsExist(homePage.productPrices);
+        await runner.verifyElementsIsExist(homePage.productDescriptions);
+
+        // Validating first random product
+        const randomFirstProductCardDetails =
+          await runner.selectAndCaptureRandomProductDetailsAndClick(
+            homePage.productContainer,
+            homePage.productTitles, // clicking on random product's title
+            homePage.productTitles,
+            homePage.productPrices,
+            homePage.productImages
+          );
+        await runner.waitUntilSeconds(2);
+        await runner.verifyUrlContains(envData.productUrl);
+        await runner.validateProductDetailsOnDetailPage(
+          randomFirstProductCardDetails,
+          productDetailPage.productTitle,
+          productDetailPage.productPrice,
+          productDetailPage.productImg
+        );
+
+        await runner.goBack();
+        await runner.wait(1, { waitForLoadState: "load" });
+
+        // Validating second random product
+        const randomSecondProductCardDetails =
+          await runner.selectAndCaptureRandomProductDetailsAndClick(
+            homePage.productContainer,
+            homePage.productTitles,
+            homePage.productTitles,
+            homePage.productPrices,
+            homePage.productImages
+          );
+        await runner.waitUntilSeconds(2);
+        await runner.verifyUrlContains(envData.productUrl);
+        await runner.validateProductDetailsOnDetailPage(
+          randomSecondProductCardDetails,
+          productDetailPage.productTitle,
+          productDetailPage.productPrice,
+          productDetailPage.productImg
+        );
+      });
+
+      test("Validate footer is present with footer header texts, logo and copyright text", async ({
+        runner,
+        homePage,
+      }) => {
+        await runner.verifyElementIsVisible(homePage.footer);
+        await runner.verifyElementIsVisible(homePage.footerHeaderAboutUsText);
+        await runner.verifyContainText(
+          homePage.footerHeaderAboutUsText,
+          homeData.footer.headers.aboutUs
+        );
+        await runner.verifyElementIsVisible(
+          homePage.footerHeaderGetInTouchText
+        );
+        await runner.verifyContainText(
+          homePage.footerHeaderGetInTouchText,
+          homeData.footer.headers.getInTouch
+        );
+        await runner.verifyElementIsVisible(homePage.footerCopyrightText);
+        await runner.verifyContainText(
+          homePage.footerCopyrightText,
+          homeData.footer.copyright
+        );
+      });
     });
   }
 }

@@ -1160,94 +1160,7 @@ export class Utils {
     return randomIndex; // Return the index for external use (e.g., getting details after navigation)
   }
 
-// async validateAndClickButton(
-//     buttonLocator: string,
-//     options?: ButtonClickOptions
-//   ): Promise<void> {
-//     const opts: ButtonClickOptions = {
-//       waitForNavigation: true, // Default to waiting for navigation
-//       waitForLoadState: "load", // Default load state
-//       ...options,
-//     };
 
-//     // Use the buttonLocator directly for logging
-//     const logIdentifier = `button located by "${buttonLocator}"`; // Derived identifier for logging
-
-//     this.logMessage(
-//       `[INFO] Validating and attempting to click ${logIdentifier}.`
-//     );
-//     try {
-//       const button = this.page.locator(buttonLocator);
-
-//       // --- Pre-Click Validations (Industry Standard) ---
-//       await expect(button).toBeVisible({ timeout: 10000 });
-//       this.logMessage(`✅ ${logIdentifier} is visible.`);
-
-//       await expect(button).toBeEnabled({ timeout: 5000 });
-//       this.logMessage(`✅ ${logIdentifier} is enabled.`);
-
-//       if (opts.expectedText) {
-//         await expect(button).toHaveText(opts.expectedText, { timeout: 5000 });
-//         this.logMessage(
-//           `✅ ${logIdentifier} has expected text: "${opts.expectedText}".`
-//         );
-//       }
-
-//       // --- Perform Click and Post-Click Waits ---
-//       const clickActions: Promise<any>[] = [button.click()];
-
-//       if (opts.waitForNavigation) {
-//         if (opts.expectedURL) {
-//           clickActions.unshift(
-//             this.page.waitForURL(opts.expectedURL, {
-//               waitUntil: opts.waitForLoadState,
-//             })
-//           );
-//           this.logMessage(
-//             `[INFO] Waiting for URL to match: ${
-//               opts.expectedURL instanceof RegExp
-//                 ? opts.expectedURL.source
-//                 : opts.expectedURL
-//             }.`
-//           );
-//         } else {
-//           clickActions.unshift(
-//             this.page.waitForLoadState(opts.waitForLoadState)
-//           );
-//           this.logMessage(
-//             `[INFO] Waiting for page load state: '${opts.waitForLoadState}'.`
-//           );
-//         }
-//       }
-
-//       if (opts.waitForSelectorAfterClick) {
-//         clickActions.push(
-//           this.page
-//             .locator(opts.waitForSelectorAfterClick)
-//             .waitFor({ state: "visible", timeout: 15000 })
-//         );
-//         this.logMessage(
-//           `[INFO] Waiting for selector "${opts.waitForSelectorAfterClick}" to be visible after click.`
-//         );
-//       }
-
-//       await Promise.all(clickActions);
-//       this.logMessage(`[INFO] Successfully clicked ${logIdentifier}.`);
-
-//       // --- Post-Click Assertions (Basic, within the function) ---
-//       if (opts.waitForNavigation && opts.expectedURL) {
-//         await expect(this.page).toHaveURL(opts.expectedURL, { timeout: 5000 });
-//         this.logMessage(`✅ Navigated to expected URL: ${this.page.url()}.`);
-//       }
-//     } catch (error: any) {
-//       const errorMsg = `❌ Failed to validate or click ${logIdentifier}: ${error.message}`;
-//       this.logMessage(errorMsg, "error");
-//       // Use a sanitized locator for screenshot name
-//       const screenshotName = `Fail_${buttonLocator.replace(/[^a-zA-Z0-9_]/g, '_')}`;
-//       await this.captureScreenshotOnFailure(screenshotName);
-//       throw new Error(errorMsg);
-//     }
-//   }
   async validatingProductUrl(): Promise<void> {
     // The specific regex for DemoBlaze product pages
     const expectedProductURLRegex =
@@ -1856,38 +1769,41 @@ async validateProductsInCart(
   }
 
  
-   async getCartProductCount(cartRowLocator: string): Promise<string> {
-    this.logMessage(`[INFO] Checking cart product count.`);
+  async getCartProductCount(cartRowLocator: string): Promise<string> {
+    this.logMessage('[INFO] Checking cart product count.');
     try {
-      // Wait for the DOM to be loaded
-      await this.page.waitForLoadState("domcontentloaded");
+        await this.page.waitForLoadState("domcontentloaded");
+        const cartRows = await this.page.locator(cartRowLocator).all();
+        const productCount = cartRows.length;
 
-      // Attempt to find all cart rows.
-      // Using .all() will return an empty array if no elements match, which is what we want.
-      const cartRows = await this.page.locator(cartRowLocator).all();
-      const productCount = cartRows.length;
-
-      if (productCount === 0) {
-        this.logMessage(`[INFO] No products found in cart.`);
-        return "No products in cart.";
-      } else {
-        const message = `Cart contains ${productCount} products.`;
-        this.logMessage(`[INFO] ${message}`);
-        return message;
-      }
+        if (productCount === 0) {
+            this.logMessage('[INFO] No products found in cart.');
+            return "No products in cart.";
+        } else {
+            const message = `Cart contains ${productCount} products.`;
+            this.logMessage('[INFO] ' + message);
+            return message;
+        }
     } catch (error: any) {
-      const errorMsg = `❌ Failed to get cart product count: ${error.message}`;
-      this.logMessage(errorMsg, "error");
-      await this.captureScreenshotOnFailure("GetCartProductCountFailure");
-      throw new Error(errorMsg); // Re-throw the error to indicate failure
+        const errorMsg = `❌ Failed to get cart product count: ${error.message}`;
+        this.logMessage(errorMsg, "error");
+        await this.captureScreenshotOnFailure("GetCartProductCountFailure");
+        throw new Error(errorMsg);
     }
-  }async handleAlertWithMessage(expectedMessage: string): Promise<void> {
+}
+  async handleAlertWithMessage(expectedMessage: string): Promise<void> {
     try {
+
       this.page.on("dialog", async (dialog) => {
         expect(dialog.type()).toContain("alert");
         expect(dialog.message()).toContain(expectedMessage);
         await dialog.accept();
-        this.logMessage("handled alert correctly");
+
+
+        this.logMessage(
+          `handled alert correctly with message: ${expectedMessage}`
+        );
+
       });
     } catch (error) {
       this.logMessage(`:x: Failed to handle alert: ${error}`, "error");
