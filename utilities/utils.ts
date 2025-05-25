@@ -23,7 +23,7 @@ interface ButtonClickOptions {
    * The state to wait for on the page after click. Default is 'load'.
    * Possible values: 'load', 'domcontentloaded', 'networkidle'.
    */
-  waitForLoadState?: 'load' | 'domcontentloaded' | 'networkidle';
+  waitForLoadState?: "load" | "domcontentloaded" | "networkidle";
 }
 
 interface ProductDetails {
@@ -87,26 +87,25 @@ export class Utils {
     }
   }
 
+  async verifyElementIsVisible(selector: string): Promise<void> {
+    try {
+      const element = this.page.locator(selector);
+      const count = await element.count();
+      if (count === 0) {
+        throw new Error(`No elements found with identifier: ${selector}`);
+      }
 
-async verifyElementIsVisible(selector: string): Promise<void> {
-  try {
-    const element = this.page.locator(selector);
-    const count = await element.count();
-    if (count === 0) {
-      throw new Error(`No elements found with identifier: ${selector}`);
+      await expect(element.first()).toBeVisible({ timeout: 5000 });
+      this.logMessage(
+        `✅ Verified element(s) with identifier ${selector} is visible`
+      );
+    } catch (error) {
+      const errorMsg = `Failed to verify element(s) with identifier ${selector} is visible: ${error.message}`;
+      this.logMessage(errorMsg, "error");
+      await this.captureScreenshotOnFailure("verifyElementIsVisible");
+      throw new Error(errorMsg);
     }
-
-    await expect(element.first()).toBeVisible({ timeout: 5000 });
-    this.logMessage(`✅ Verified element(s) with identifier ${selector} is visible`);
-  } catch (error) {
-    const errorMsg = `Failed to verify element(s) with identifier ${selector} is visible: ${error.message}`;
-    this.logMessage(errorMsg, "error");
-    await this.captureScreenshotOnFailure("verifyElementIsVisible");
-    throw new Error(errorMsg);
   }
-}
-
-
 
   async verifyElementIsNotVisible(identifier: string): Promise<void> {
     try {
@@ -373,41 +372,49 @@ async verifyElementIsVisible(selector: string): Promise<void> {
     return savePath;
   }
 
- async acceptWebAlert(
-    expectedAlertMessage: string | RegExp
-  ): Promise<void> {
+  async acceptWebAlert(expectedAlertMessage: string | RegExp): Promise<void> {
     // A default scenario name for logging and screenshots
     const scenarioNameForAlert = "WebAlertHandling";
-    this.logMessage(`[INFO] Waiting for web alert to appear for scenario "${scenarioNameForAlert}".`);
+    this.logMessage(
+      `[INFO] Waiting for web alert to appear for scenario "${scenarioNameForAlert}".`
+    );
 
     try {
       // Use Promise.all to wait for the dialog event AND accept it.
       // This prevents a race condition where the dialog might appear before waitForEvent is set up.
       const [dialog] = await Promise.all([
-        this.page.waitForEvent('dialog', { timeout: 10000 }), // Wait for a dialog (alert, confirm, prompt)
+        this.page.waitForEvent("dialog", { timeout: 10000 }), // Wait for a dialog (alert, confirm, prompt)
         // No click action here, assuming the alert is triggered by a previous action
         // If the alert is triggered by a specific click *within this function*,
         // that click would be the second element in this Promise.all array.
       ]);
 
-      if (dialog.type() !== 'alert') {
-        throw new Error(`Expected an alert dialog, but received a dialog of type: ${dialog.type()}`);
+      if (dialog.type() !== "alert") {
+        throw new Error(
+          `Expected an alert dialog, but received a dialog of type: ${dialog.type()}`
+        );
       }
 
       const actualMessage = dialog.message();
-      this.logMessage(`[INFO] Web alert appeared with message: "${actualMessage}"`);
+      this.logMessage(
+        `[INFO] Web alert appeared with message: "${actualMessage}"`
+      );
 
-      if (typeof expectedAlertMessage === 'string') {
+      if (typeof expectedAlertMessage === "string") {
         expect(actualMessage).toEqual(expectedAlertMessage);
-        this.logMessage(`✅ Alert message matches expected exact string: "${expectedAlertMessage}"`);
-      } else { // It's a RegExp
+        this.logMessage(
+          `✅ Alert message matches expected exact string: "${expectedAlertMessage}"`
+        );
+      } else {
+        // It's a RegExp
         expect(actualMessage).toMatch(expectedAlertMessage);
-        this.logMessage(`✅ Alert message matches expected regex: "${expectedAlertMessage.source}"`);
+        this.logMessage(
+          `✅ Alert message matches expected regex: "${expectedAlertMessage.source}"`
+        );
       }
 
       await dialog.accept(); // Accept the alert
       this.logMessage(`✅ Web alert accepted successfully.`);
-
     } catch (error: any) {
       const errorMsg = `❌ Failed to handle web alert for scenario "${scenarioNameForAlert}": ${error.message}`;
       this.logMessage(errorMsg, "error");
@@ -812,95 +819,150 @@ async verifyElementIsVisible(selector: string): Promise<void> {
     }
   }
 
-  async verifyCarouselIsAutoChanging(
-    carouselLocator: string,
-    activeImageLocator: string,
-    waitTimeInSeconds: number = 7
-  ): Promise<void> {
+  async getAttributesFromLocator(
+    selector: string,
+    attributeName: string
+  ): Promise<string[]> {
     try {
-      await this.verifyElementIsVisible(carouselLocator);
+      const locator = this.page.locator(selector);
+      const count = await locator.count();
+      const attributes: string[] = [];
 
-      const firstImageSrc = await this.getAttributeFromLocator(
-        activeImageLocator,
-        "src"
-      );
-
-      await this.wait(waitTimeInSeconds);
-
-      const secondImageSrc = await this.getAttributeFromLocator(
-        activeImageLocator,
-        "src"
-      );
-
-      await this.verifyNotEqual(
-        firstImageSrc,
-        secondImageSrc,
-        "Carousel image did not auto-change."
-      );
+      for (let i = 0; i < count; i++) {
+        const attr = await locator.nth(i).getAttribute(attributeName);
+        if (attr) {
+          attributes.push(attr);
+        } else {
+          this.logMessage(
+            `⚠️ No "${attributeName}" attribute found on element at index ${i}.`,
+            "warn"
+          );
+        }
+      }
 
       this.logMessage(
-        "✅ Carousel auto-change functionality verified successfully."
+        `✅ Successfully extracted "${attributeName}" attribute from ${attributes.length} element(s) using selector: ${selector}`,
+        "info"
       );
-    } catch (error: any) {
-      const errorMsg = `❌ Failed to verify carousel auto-change: ${error.message}`;
-      this.logMessage(errorMsg, "error");
-      await this.captureScreenshotOnFailure("verifyCarouselIsAutoChanging");
-      throw new Error(errorMsg);
+      return attributes;
+    } catch (error) {
+      this.logMessage(
+        `❌ Failed to extract "${attributeName}" attributes using selector "${selector}": ${error}`,
+        "error"
+      );
+      await this.captureScreenshotOnFailure("attribute_extraction_error");
+      throw error;
+    }
+  }
+
+  async verifyAllCarouselImagesAutoChange(
+    activeImageLocator: string,
+    allImagesLocator: string,
+    waitTimeInSeconds = 4
+  ): Promise<void> {
+    try {
+      const totalImages = await this.page.locator(allImagesLocator).count();
+      const seenImages: string[] = [];
+
+      for (let i = 0; i < totalImages + 2; i++) {
+        const currentSrc = await this.getAttributeFromLocator(
+          activeImageLocator,
+          "src"
+        );
+
+        if (!currentSrc) {
+          throw new Error(
+            "Active carousel image does not have a 'src' attribute."
+          );
+        }
+
+        if (!seenImages.includes(currentSrc)) {
+          seenImages.push(currentSrc);
+          this.logMessage(`ℹ️ Detected new carousel image: ${currentSrc}`);
+        }
+
+        if (seenImages.length === totalImages) {
+          break;
+        }
+
+        await this.wait(waitTimeInSeconds);
+      }
+
+      if (seenImages.length !== totalImages) {
+        throw new Error(
+          `Only detected ${seenImages.length} unique image(s), expected ${totalImages}.`
+        );
+      }
+
+      this.logMessage(
+        `✅ Carousel auto-change verified for all ${totalImages} image${
+          totalImages > 1 ? "s" : ""
+        }.`
+      );
+    } catch (err: any) {
+      const message = `❌ Failed to verify full carousel rotation: ${err.message}`;
+      this.logMessage(message, "error");
+      await this.captureScreenshotOnFailure(
+        "verifyAllCarouselImagesAutoChange"
+      );
+      throw new Error(message);
     }
   }
 
   async verifyCarouselArrowNavigation(
-    carouselLocator: string,
     activeImageLocator: string,
+    allImageLocators: string,
     nextButtonLocator: string,
     prevButtonLocator: string
   ): Promise<void> {
     try {
-      await this.verifyElementIsVisible(carouselLocator);
-
-      const firstImage = await this.getAttributeFromLocator(
-        activeImageLocator,
+      const expectedSrcs = await this.getAttributesFromLocator(
+        allImageLocators,
         "src"
       );
 
-      await this.clickOnElement(nextButtonLocator);
-      await this.wait(1);
-      const secondImage = await this.getAttributeFromLocator(
-        activeImageLocator,
-        "src"
-      );
-      await this.verifyNotEqual(secondImage, firstImage);
+      if (expectedSrcs.length < 2) {
+        throw new Error(
+          "Carousel must contain at least 2 images to verify navigation."
+        );
+      }
 
-      await this.clickOnElement(nextButtonLocator);
-      await this.wait(1);
-      const thirdImage = await this.getAttributeFromLocator(
-        activeImageLocator,
-        "src"
-      );
-      await this.verifyNotEqual(thirdImage, secondImage);
+      const visitedSrcs: string[] = [];
 
-      await this.clickOnElement(prevButtonLocator);
-      await this.wait(1);
-      const backToSecond = await this.getAttributeFromLocator(
-        activeImageLocator,
-        "src"
-      );
-      await this.verifyEqual(backToSecond, secondImage);
+      // Navigate forward through carousel images
+      for (let i = 0; i < expectedSrcs.length; i++) {
+        const currentSrc = await this.getAttributeFromLocator(
+          activeImageLocator,
+          "src"
+        );
+        if (!currentSrc) throw new Error("Failed to get current image src.");
 
-      await this.clickOnElement(prevButtonLocator);
-      await this.wait(1);
-      const backToFirst = await this.getAttributeFromLocator(
-        activeImageLocator,
-        "src"
-      );
-      await this.verifyEqual(backToFirst, firstImage);
+        visitedSrcs.push(currentSrc);
 
-      this.logMessage("✅ Carousel arrow navigation verified successfully.");
-    } catch (error: any) {
-      const errorMsg = `❌ Failed to verify carousel navigation: ${error.message}`;
-      this.logMessage(errorMsg, "error");
+        if (i < expectedSrcs.length - 1) {
+          await this.clickOnElement(nextButtonLocator);
+          await this.wait(1);
+        }
+      }
+
+      // Check if every expectedSrc is present in visitedSrcs
+      const missing = expectedSrcs.filter((src) => !visitedSrcs.includes(src));
+      if (missing.length > 0) {
+        throw new Error(
+          `Next arrow did not navigate through all images. Missing: ${missing.join(
+            ", "
+          )}`
+        );
+      }
+
+      this.logMessage(
+        `✅ Carousel next-arrow navigation verified successfully.`
+      );
+    } catch (err: any) {
+      const message = `❌ Failed to verify carousel arrow navigation: ${err.message}`;
+      this.logMessage(message, "error");
       await this.captureScreenshotOnFailure("verifyCarouselArrowNavigation");
-      throw new Error(errorMsg);
+      throw new Error(message);
     }
   }
 
@@ -1051,18 +1113,21 @@ async verifyElementIsVisible(selector: string): Promise<void> {
     }
   }
 
+  // -----------------------------------------------------------------------------------
 
-// -----------------------------------------------------------------------------------
-
-async clickItemByIndex(
+  async clickItemByIndex(
     clickableElementLocator: string,
     index: number
   ): Promise<void> {
-    this.logMessage(`[INFO] Attempting to click item at index: ${index} using locator: ${clickableElementLocator}`);
+    this.logMessage(
+      `[INFO] Attempting to click item at index: ${index} using locator: ${clickableElementLocator}`
+    );
     try {
-      const clickableElement = this.page.locator(clickableElementLocator).nth(index);
+      const clickableElement = this.page
+        .locator(clickableElementLocator)
+        .nth(index);
       await Promise.all([
-        this.page.waitForLoadState('load'), // Wait for navigation after click
+        this.page.waitForLoadState("load"), // Wait for navigation after click
         clickableElement.click(),
       ]);
       this.logMessage(`[INFO] Successfully clicked item at index: ${index}.`);
@@ -1074,14 +1139,16 @@ async clickItemByIndex(
     }
   }
 
-async selectRandomItemAndClick(
+  async selectRandomItemAndClick(
     itemContainerLocator: string, // E.g., '.product-card', '.search-result-item' - used for total count
     clickableElementLocator: string // E.g., '.product-card-link', '.item-title' - used for the actual click
   ): Promise<number> {
     this.logMessage(`[INFO] Attempting to select a random item and click it.`);
     const totalItems = await this.page.locator(itemContainerLocator).count();
     if (totalItems === 0) {
-      throw new Error(`No items found using locator: ${itemContainerLocator}. Cannot select random item.`);
+      throw new Error(
+        `No items found using locator: ${itemContainerLocator}. Cannot select random item.`
+      );
     }
 
     const randomIndex = Math.floor(Math.random() * totalItems);
@@ -1093,19 +1160,20 @@ async selectRandomItemAndClick(
     return randomIndex; // Return the index for external use (e.g., getting details after navigation)
   }
 
-  
-async validateAndClickButton(
+  async validateAndClickButton(
     buttonLocator: string,
     buttonNameForLogging: string,
     options?: ButtonClickOptions
   ): Promise<void> {
     const opts: ButtonClickOptions = {
       waitForNavigation: true, // Default to waiting for navigation
-      waitForLoadState: 'load', // Default load state
+      waitForLoadState: "load", // Default load state
       ...options,
     };
 
-    this.logMessage(`[INFO] Validating and attempting to click "${buttonNameForLogging}".`);
+    this.logMessage(
+      `[INFO] Validating and attempting to click "${buttonNameForLogging}".`
+    );
     try {
       const button = this.page.locator(buttonLocator);
 
@@ -1118,7 +1186,9 @@ async validateAndClickButton(
 
       if (opts.expectedText) {
         await expect(button).toHaveText(opts.expectedText, { timeout: 5000 });
-        this.logMessage(`✅ "${buttonNameForLogging}" has expected text: "${opts.expectedText}".`);
+        this.logMessage(
+          `✅ "${buttonNameForLogging}" has expected text: "${opts.expectedText}".`
+        );
       }
 
       // --- Perform Click and Post-Click Waits ---
@@ -1127,20 +1197,38 @@ async validateAndClickButton(
       if (opts.waitForNavigation) {
         if (opts.expectedURL) {
           // If expectedURL is provided, use waitForURL, which implies navigation
-          clickActions.unshift(this.page.waitForURL(opts.expectedURL, { waitUntil: opts.waitForLoadState }));
-          this.logMessage(`[INFO] Waiting for URL to match: ${opts.expectedURL instanceof RegExp ? opts.expectedURL.source : opts.expectedURL}.`);
+          clickActions.unshift(
+            this.page.waitForURL(opts.expectedURL, {
+              waitUntil: opts.waitForLoadState,
+            })
+          );
+          this.logMessage(
+            `[INFO] Waiting for URL to match: ${
+              opts.expectedURL instanceof RegExp
+                ? opts.expectedURL.source
+                : opts.expectedURL
+            }.`
+          );
         } else {
           // Otherwise, just wait for general page load state
-          clickActions.unshift(this.page.waitForLoadState(opts.waitForLoadState));
-          this.logMessage(`[INFO] Waiting for page load state: '${opts.waitForLoadState}'.`);
+          clickActions.unshift(
+            this.page.waitForLoadState(opts.waitForLoadState)
+          );
+          this.logMessage(
+            `[INFO] Waiting for page load state: '${opts.waitForLoadState}'.`
+          );
         }
       }
 
       if (opts.waitForSelectorAfterClick) {
         clickActions.push(
-          this.page.locator(opts.waitForSelectorAfterClick).waitFor({ state: 'visible', timeout: 15000 })
+          this.page
+            .locator(opts.waitForSelectorAfterClick)
+            .waitFor({ state: "visible", timeout: 15000 })
         );
-        this.logMessage(`[INFO] Waiting for selector "${opts.waitForSelectorAfterClick}" to be visible after click.`);
+        this.logMessage(
+          `[INFO] Waiting for selector "${opts.waitForSelectorAfterClick}" to be visible after click.`
+        );
       }
 
       await Promise.all(clickActions);
@@ -1153,30 +1241,36 @@ async validateAndClickButton(
         await expect(this.page).toHaveURL(opts.expectedURL, { timeout: 5000 });
         this.logMessage(`✅ Navigated to expected URL: ${this.page.url()}.`);
       }
-
     } catch (error: any) {
       const errorMsg = `❌ Failed to validate or click "${buttonNameForLogging}": ${error.message}`;
       this.logMessage(errorMsg, "error");
-      await this.captureScreenshotOnFailure(`Fail_${buttonNameForLogging.replace(/\s/g, '_')}`);
+      await this.captureScreenshotOnFailure(
+        `Fail_${buttonNameForLogging.replace(/\s/g, "_")}`
+      );
       throw new Error(errorMsg);
     }
   }
   async validatingProductUrl(): Promise<void> {
     // The specific regex for DemoBlaze product pages
-    const expectedProductURLRegex = /^https:\/\/demoblaze\.com\/prod\.html\?idp_=\d+$/;
+    const expectedProductURLRegex =
+      /^https:\/\/demoblaze\.com\/prod\.html\?idp_=\d+$/;
     const urlDescription = "DemoBlaze Product Page URL";
     // A default scenario name is used for logging/screenshots since no parameter is provided
     const scenarioNameForLogging = "ProductURLValidation";
 
     const actualURL = this.page.url(); // Get the current page's URL automatically
 
-    this.logMessage(`[INFO] Validating ${urlDescription}: "${actualURL}" for scenario "${scenarioNameForLogging}".`);
+    this.logMessage(
+      `[INFO] Validating ${urlDescription}: "${actualURL}" for scenario "${scenarioNameForLogging}".`
+    );
 
     try {
       if (!expectedProductURLRegex.test(actualURL)) {
         throw new Error(`URL did not match expected regex.`);
       }
-      this.logMessage(`✅ ${urlDescription} validated successfully: "${actualURL}" matches regex.`);
+      this.logMessage(
+        `✅ ${urlDescription} validated successfully: "${actualURL}" matches regex.`
+      );
     } catch (error: any) {
       const errorMsg = `❌ ${urlDescription} validation failed for scenario "${scenarioNameForLogging}": Expected URL to match ${expectedProductURLRegex.source}, but got "${actualURL}". Error: ${error.message}`;
       this.logMessage(errorMsg, "error");
@@ -1185,24 +1279,30 @@ async validateAndClickButton(
       throw new Error(errorMsg);
     }
   }
- public async getImageSrcByIndex(
+  public async getImageSrcByIndex(
     imageLocator: string,
     index: number
   ): Promise<string | null> {
     const element = this.page.locator(imageLocator).nth(index);
-    return await element.getAttribute('src');
+    return await element.getAttribute("src");
   }
   public async getItemDetailsByIndex(
     itemTextLocator: string,
     itemNumericValueLocator: string,
     index: number
   ): Promise<{ text: string; numericValue: string }> {
-    const text = await this.page.locator(itemTextLocator).nth(index).innerText();
-    const numericValue = await this.page.locator(itemNumericValueLocator).nth(index).innerText();
+    const text = await this.page
+      .locator(itemTextLocator)
+      .nth(index)
+      .innerText();
+    const numericValue = await this.page
+      .locator(itemNumericValueLocator)
+      .nth(index)
+      .innerText();
     return { text: text.trim(), numericValue: numericValue.trim() };
   }
 
-public async selectAndCaptureRandomProductDetailsAndClick(
+  public async selectAndCaptureRandomProductDetailsAndClick(
     itemContainerLocator: string,
     clickableElementLocator: string,
     productTitleLocator: string,
@@ -1211,18 +1311,33 @@ public async selectAndCaptureRandomProductDetailsAndClick(
   ): Promise<ProductDetails> {
     const totalItems = await this.page.locator(itemContainerLocator).count();
     if (totalItems === 0) {
-      throw new Error(`No items found using locator: ${itemContainerLocator}. Cannot select random product.`);
+      throw new Error(
+        `No items found using locator: ${itemContainerLocator}. Cannot select random product.`
+      );
     }
 
     const randomIndex = Math.floor(Math.random() * totalItems);
-    this.logMessage(`[INFO] Randomly selected product at index: ${randomIndex}.`);
+    this.logMessage(
+      `[INFO] Randomly selected product at index: ${randomIndex}.`
+    );
 
     // --- Capture details BEFORE the click ---
-    const title = await this.page.locator(productTitleLocator).nth(randomIndex).innerText();
-    const price = await this.page.locator(productPriceLocator).nth(randomIndex).innerText();
-    const imageSrc = await this.getImageSrcByIndex(productImageLocator, randomIndex);
+    const title = await this.page
+      .locator(productTitleLocator)
+      .nth(randomIndex)
+      .innerText();
+    const price = await this.page
+      .locator(productPriceLocator)
+      .nth(randomIndex)
+      .innerText();
+    const imageSrc = await this.getImageSrcByIndex(
+      productImageLocator,
+      randomIndex
+    );
 
-    this.logMessage(`[INFO] Captured details for product at index ${randomIndex} (Home Page):`);
+    this.logMessage(
+      `[INFO] Captured details for product at index ${randomIndex} (Home Page):`
+    );
     this.logMessage(`  Title: "${title}"`);
     this.logMessage(`  Price: "${price}"`);
     this.logMessage(`  Image Src: "${imageSrc}"`);
@@ -1232,14 +1347,20 @@ public async selectAndCaptureRandomProductDetailsAndClick(
 
     return { index: randomIndex, title, price, imageSrc };
   }
-async validateProductDetailsOnDetailPage(
-    expectedProductDetails: { title: string; price: string; imageSrc: string | null },
+  async validateProductDetailsOnDetailPage(
+    expectedProductDetails: {
+      title: string;
+      price: string;
+      imageSrc: string | null;
+    },
     titleLocator: string,
     priceLocator: string,
     imageContainerLocator: string
   ): Promise<void> {
     const scenarioName = "Product Details Page Validation";
-    this.logMessage(`[INFO] Starting product details validation for: "${expectedProductDetails.title}" on detail page.`);
+    this.logMessage(
+      `[INFO] Starting product details validation for: "${expectedProductDetails.title}" on detail page.`
+    );
 
     try {
       // 1. Validate Title
@@ -1257,44 +1378,65 @@ async validateProductDetailsOnDetailPage(
       // --- MODIFICATION STARTS HERE ---
       // A more robust regex to remove '$', whitespace, and the "(includes tax)" or "*includes tax" part
       const cleanPriceRegex = /\s*[\$\(\*]\s*includes tax\)?\s*|[\$\*\s]/g; // Matches '$', '*', '(', 'includes tax', ')', and extra spaces
-      const normalizedActualPrice = actualPriceText.replace(cleanPriceRegex, '').trim();
-      const normalizedExpectedPrice = expectedProductDetails.price.replace(cleanPriceRegex, '').trim();
+      const normalizedActualPrice = actualPriceText
+        .replace(cleanPriceRegex, "")
+        .trim();
+      const normalizedExpectedPrice = expectedProductDetails.price
+        .replace(cleanPriceRegex, "")
+        .trim();
       // --- MODIFICATION ENDS HERE ---
 
       expect(normalizedActualPrice).toEqual(normalizedExpectedPrice);
-      this.logMessage(`✅ Price matches: "${normalizedExpectedPrice}" (Actual: "${actualPriceText}")`);
+      this.logMessage(
+        `✅ Price matches: "${normalizedExpectedPrice}" (Actual: "${actualPriceText}")`
+      );
 
       // 3. Validate Image
       const imageContainerElement = this.page.locator(imageContainerLocator);
-      this.logMessage(`[DEBUG] Attempting to find image container with locator: "${imageContainerLocator}"`);
+      this.logMessage(
+        `[DEBUG] Attempting to find image container with locator: "${imageContainerLocator}"`
+      );
       await expect(imageContainerElement).toBeVisible({ timeout: 10000 });
-      this.logMessage(`[DEBUG] Image container found and visible: "${imageContainerLocator}"`);
+      this.logMessage(
+        `[DEBUG] Image container found and visible: "${imageContainerLocator}"`
+      );
 
-      const imageElement = imageContainerElement.locator('img').or(imageContainerElement);
+      const imageElement = imageContainerElement
+        .locator("img")
+        .or(imageContainerElement);
       this.logMessage(`[DEBUG] Attempting to find <img> tag within container.`);
       await expect(imageElement).toBeVisible({ timeout: 10000 });
       this.logMessage(`[DEBUG] <img> tag found and visible.`);
 
-      const actualImageSrc = await imageElement.getAttribute('src');
-      this.logMessage(`[DEBUG] Actual image src attribute: "${actualImageSrc}"`);
+      const actualImageSrc = await imageElement.getAttribute("src");
+      this.logMessage(
+        `[DEBUG] Actual image src attribute: "${actualImageSrc}"`
+      );
 
-      const expectedFileName = expectedProductDetails.imageSrc ?
-        expectedProductDetails.imageSrc.split('/').pop() : '';
-      this.logMessage(`[DEBUG] Expected image file name: "${expectedFileName}"`);
+      const expectedFileName = expectedProductDetails.imageSrc
+        ? expectedProductDetails.imageSrc.split("/").pop()
+        : "";
+      this.logMessage(
+        `[DEBUG] Expected image file name: "${expectedFileName}"`
+      );
 
       expect(actualImageSrc).toContain(expectedFileName);
-      this.logMessage(`✅ Image matches (contains "${expectedFileName}"): "${actualImageSrc}"`);
+      this.logMessage(
+        `✅ Image matches (contains "${expectedFileName}"): "${actualImageSrc}"`
+      );
 
-      this.logMessage(`✅ All product details validated successfully for "${expectedProductDetails.title}".`);
+      this.logMessage(
+        `✅ All product details validated successfully for "${expectedProductDetails.title}".`
+      );
     } catch (error: any) {
       const errorMsg = `❌ Product details validation failed for "${expectedProductDetails.title}": ${error.message}`;
-      this.logMessage(errorMsg, 'error');
+      this.logMessage(errorMsg, "error");
       await this.captureScreenshotOnFailure(scenarioName);
       throw new Error(errorMsg);
     }
   }
 
- async validateProductsInCart(
+  async validateProductsInCart(
     expectedProducts: ProductDetails[],
     cartRowLocator: string,
     titleInRowLocator: string,
@@ -1310,17 +1452,23 @@ async validateProductDetailsOnDetailPage(
     this.logMessage(`[INFO] Starting cart validation.`); // Less specific log
 
     try {
-      await this.page.waitForLoadState('domcontentloaded');
-      await expect(this.page.locator(cartRowLocator).first()).toBeVisible({ timeout: 10000 });
+      await this.page.waitForLoadState("domcontentloaded");
+      await expect(this.page.locator(cartRowLocator).first()).toBeVisible({
+        timeout: 10000,
+      });
 
       const cartRows = await this.page.locator(cartRowLocator).all();
       expect(cartRows.length).toEqual(expectedProducts.length);
-      this.logMessage(`✅ Cart contains ${cartRows.length} items, matching expected count.`);
+      this.logMessage(
+        `✅ Cart contains ${cartRows.length} items, matching expected count.`
+      );
 
       let calculatedTotalPrice = 0;
 
       for (const expectedProduct of expectedProducts) {
-        this.logMessage(`[INFO] Validating expected product: "${expectedProduct.title}" in cart.`);
+        this.logMessage(
+          `[INFO] Validating expected product: "${expectedProduct.title}" in cart.`
+        );
         let foundProductInCart = false;
 
         for (const row of cartRows) {
@@ -1333,49 +1481,66 @@ async validateProductDetailsOnDetailPage(
 
             const actualPriceElement = row.locator(priceInRowLocator);
             const actualPriceText = await actualPriceElement.innerText();
-            const normalizedActualPrice = actualPriceText.replace(/\s*\$\s*/g, '').trim();
-            const normalizedExpectedPrice = expectedProduct.price.replace(/\s*\$\s*/g, '').trim();
+            const normalizedActualPrice = actualPriceText
+              .replace(/\s*\$\s*/g, "")
+              .trim();
+            const normalizedExpectedPrice = expectedProduct.price
+              .replace(/\s*\$\s*/g, "")
+              .trim();
 
             expect(normalizedActualPrice).toEqual(normalizedExpectedPrice);
-            this.logMessage(`✅ Price matches for "${expectedProduct.title}": "${normalizedExpectedPrice}" (Actual: "${actualPriceText}")`);
+            this.logMessage(
+              `✅ Price matches for "${expectedProduct.title}": "${normalizedExpectedPrice}" (Actual: "${actualPriceText}")`
+            );
 
             calculatedTotalPrice += parseFloat(normalizedActualPrice);
 
-            const imageContainerElement = row.locator(imageContainerInRowLocator);
-            const imageElement = imageContainerElement.locator('img');
+            const imageContainerElement = row.locator(
+              imageContainerInRowLocator
+            );
+            const imageElement = imageContainerElement.locator("img");
             await expect(imageElement).toBeVisible();
 
-            const actualImageSrc = await imageElement.getAttribute('src');
-            const expectedFileName = expectedProduct.imageSrc ?
-              expectedProduct.imageSrc.split('/').pop() : '';
+            const actualImageSrc = await imageElement.getAttribute("src");
+            const expectedFileName = expectedProduct.imageSrc
+              ? expectedProduct.imageSrc.split("/").pop()
+              : "";
 
             expect(actualImageSrc).toContain(expectedFileName);
-            this.logMessage(`✅ Image matches for "${expectedProduct.title}" (contains "${expectedFileName}"): "${actualImageSrc}"`);
+            this.logMessage(
+              `✅ Image matches for "${expectedProduct.title}" (contains "${expectedFileName}"): "${actualImageSrc}"`
+            );
 
             break;
           }
         }
 
         if (!foundProductInCart) {
-          throw new Error(`Product "${expectedProduct.title}" was not found in the cart.`);
+          throw new Error(
+            `Product "${expectedProduct.title}" was not found in the cart.`
+          );
         }
       }
 
       const totalPriceElement = this.page.locator(totalPriceElementLocator);
       await expect(totalPriceElement).toBeVisible();
       const actualTotalPriceText = await totalPriceElement.innerText();
-      const actualTotalPrice = parseFloat(actualTotalPriceText.replace(/\s*\$\s*/g, '').trim());
+      const actualTotalPrice = parseFloat(
+        actualTotalPriceText.replace(/\s*\$\s*/g, "").trim()
+      );
 
       expect(actualTotalPrice).toEqual(calculatedTotalPrice);
-      this.logMessage(`✅ Total cart price matches: $${calculatedTotalPrice} (Actual: $${actualTotalPrice})`);
+      this.logMessage(
+        `✅ Total cart price matches: $${calculatedTotalPrice} (Actual: $${actualTotalPrice})`
+      );
 
       this.logMessage(`✅ All products in cart validated successfully.`); // Less specific log
     } catch (error: any) {
       const errorMsg = `❌ Cart validation failed: ${error.message}`;
-      this.logMessage(errorMsg, 'error');
+      this.logMessage(errorMsg, "error");
       // If captureScreenshotOnFailure needs a name, you might pass a default or timestamp
       // or ensure it's called from the test's outer try/catch
-      await this.captureScreenshotOnFailure('CartValidationFailure'); // Example: Use a default name
+      await this.captureScreenshotOnFailure("CartValidationFailure"); // Example: Use a default name
       throw new Error(errorMsg);
     }
   }
@@ -1391,67 +1556,295 @@ async validateProductDetailsOnDetailPage(
       throw new Error(errorMsg);
     }
   }
- async deleteProductFromCartByIndex(
+  async deleteProductFromCartByIndex(
     productIndexToDelete: number,
     cartRowLocator: string
   ): Promise<string> {
-    const defaultTitleInRowLocator = 'td:nth-child(2)'; // Common DemoBlaze title column
-    const defaultDeleteButtonInRowLocator = 'td:nth-child(4) a'; // Common DemoBlaze delete button column
+    const defaultTitleInRowLocator = "td:nth-child(2)"; // Common DemoBlaze title column
+    const defaultDeleteButtonInRowLocator = "td:nth-child(4) a"; // Common DemoBlaze delete button column
 
-    this.logMessage(`[INFO] Attempting to delete product at index ${productIndexToDelete} from the cart.`);
-    let deletedProductTitle = 'Unknown Product'; // Initialize for error logging
+    this.logMessage(
+      `[INFO] Attempting to delete product at index ${productIndexToDelete} from the cart.`
+    );
+    let deletedProductTitle = "Unknown Product"; // Initialize for error logging
 
     try {
       // 1. Get the specific cart row by index
-      const targetCartRow = this.page.locator(cartRowLocator).nth(productIndexToDelete);
+      const targetCartRow = this.page
+        .locator(cartRowLocator)
+        .nth(productIndexToDelete);
       await expect(targetCartRow).toBeVisible({ timeout: 10000 });
-      this.logMessage(`[INFO] Cart row at index ${productIndexToDelete} found and visible.`);
+      this.logMessage(
+        `[INFO] Cart row at index ${productIndexToDelete} found and visible.`
+      );
 
       // 2. Get the title of the product about to be deleted (THIS IS KEY)
       const titleElement = targetCartRow.locator(defaultTitleInRowLocator);
       await expect(titleElement).toBeVisible();
       deletedProductTitle = await titleElement.innerText();
-      this.logMessage(`[INFO] Product to be deleted: "${deletedProductTitle}" at index ${productIndexToDelete}.`);
+      this.logMessage(
+        `[INFO] Product to be deleted: "${deletedProductTitle}" at index ${productIndexToDelete}.`
+      );
 
       // 3. Locate and click the delete button for the target product
-      const deleteButton = targetCartRow.locator(defaultDeleteButtonInRowLocator);
+      const deleteButton = targetCartRow.locator(
+        defaultDeleteButtonInRowLocator
+      );
       await expect(deleteButton).toBeVisible();
-      this.logMessage(`[INFO] Clicking delete button for "${deletedProductTitle}".`);
+      this.logMessage(
+        `[INFO] Clicking delete button for "${deletedProductTitle}".`
+      );
 
       await Promise.all([
-        this.page.waitForResponse(response => response.url().includes('deleteitem') && response.status() === 200),
+        this.page.waitForResponse(
+          (response) =>
+            response.url().includes("deleteitem") && response.status() === 200
+        ),
         deleteButton.click(),
       ]);
 
-      this.logMessage(`✅ Successfully clicked delete for "${deletedProductTitle}".`);
+      this.logMessage(
+        `✅ Successfully clicked delete for "${deletedProductTitle}".`
+      );
 
       // --- CRUCIAL CHANGE: Validate the product is gone by its content ---
       // Instead of checking if the old row position is not visible,
       // we check if ANY element with the DELETED PRODUCT'S TITLE is visible in the cart.
-      const deletedProductTitleLocator = this.page.locator(cartRowLocator)
-                                             .locator(defaultTitleInRowLocator, { hasText: deletedProductTitle });
+      const deletedProductTitleLocator = this.page
+        .locator(cartRowLocator)
+        .locator(defaultTitleInRowLocator, { hasText: deletedProductTitle });
 
-      await expect(deletedProductTitleLocator).not.toBeVisible({ timeout: 5000 });
-      this.logMessage(`✅ Verified product with title "${deletedProductTitle}" is no longer visible anywhere in the cart.`);
+      await expect(deletedProductTitleLocator).not.toBeVisible({
+        timeout: 5000,
+      });
+      this.logMessage(
+        `✅ Verified product with title "${deletedProductTitle}" is no longer visible anywhere in the cart.`
+      );
       // --- END CRUCIAL CHANGE ---
 
-      this.logMessage(`✅ Product "${deletedProductTitle}" successfully deleted from cart.`);
+      this.logMessage(
+        `✅ Product "${deletedProductTitle}" successfully deleted from cart.`
+      );
       return deletedProductTitle; // Return the title of the deleted product
     } catch (error: any) {
       const errorMsg = `❌ Failed to delete product at index ${productIndexToDelete} (likely "${deletedProductTitle}") from cart: ${error.message}`;
-      this.logMessage(errorMsg, 'error');
+      this.logMessage(errorMsg, "error");
       await this.captureScreenshotOnFailure(`DeleteProductByIndex_Failure`);
       throw new Error(errorMsg);
     }
   }
 
+  async verifyElementsIsExist(
+    selector: string,
+    isImage: boolean = false
+  ): Promise<void> {
+    try {
+      const elementCount = await this.page.locator(selector).count();
 
+      if (elementCount === 0) {
+        const errorMsg = `❌ No element selector displayed in: "${selector}"`;
+        this.logMessage(errorMsg, "error");
+        await this.captureScreenshotOnFailure("verifyElementIsExist");
+        throw new Error(errorMsg);
+      }
 
+      this.logMessage(
+        `✅ ${elementCount} element(s) found under selector: "${selector}"`
+      );
 
+      for (let i = 0; i < elementCount; i++) {
+        let target: string | null;
 
+        if (!isImage) {
+          target = await this.page.locator(selector).nth(i).textContent();
+        } else {
+          target = await this.page.locator(selector).nth(i).getAttribute("src");
+        }
 
+        if (!target?.trim()) {
+          const errorMsg = `❌ Element ${
+            i + 1
+          } missing or empty in selector: "${selector}"`;
+          this.logMessage(errorMsg, "error");
+          await this.captureScreenshotOnFailure("verifyElementIsExist");
+          throw new Error(errorMsg);
+        }
 
+        this.logMessage(
+          `✅ Element ${i + 1} content validated in selector: "${target}"`
+        );
+      }
+    } catch (error) {
+      const errorMsg = `Failed to verify elements for selector: "${selector}"`;
+      this.logMessage(errorMsg, "error");
+      await this.captureScreenshotOnFailure("verifyElementIsExist");
+      throw new Error(errorMsg);
+    }
+  }
 
+  async validateAttribute(
+    selector: string,
+    attribute: string,
+    expectedValue: string
+  ): Promise<void> {
+    try {
+      const actualValue = await this.page.getAttribute(selector, attribute);
 
+      if (actualValue !== expectedValue) {
+        const errorMsg = `Attribute "${attribute}" value mismatch. Expected: "${expectedValue}", Got: "${actualValue}"`;
+        this.logMessage(errorMsg, "error");
+        await this.captureScreenshotOnFailure("validateAttribute");
+        throw new Error(errorMsg);
+      }
 
+      this.logMessage(
+        `Validated attribute "${attribute}" with value "${expectedValue}" on selector "${selector}"`
+      );
+    } catch (error) {
+      const errorMsg = `Failed to validate attribute "${attribute}" on selector "${selector}"`;
+      this.logMessage(errorMsg, "error");
+      await this.captureScreenshotOnFailure("validateAttribute");
+      throw new Error(errorMsg);
+    }
+  }
+
+  async validateAttributeExistsForAllElements(
+    selector: string,
+    attribute: string
+  ): Promise<void> {
+    try {
+      const elements = this.page.locator(selector);
+      const count = await elements.count();
+
+      if (count === 0) {
+        const errorMsg = `No elements found for selector "${selector}".`;
+        this.logMessage(errorMsg, "error");
+        await this.captureScreenshotOnFailure(
+          "validateAttributeExistsForAllElements"
+        );
+        throw new Error(errorMsg);
+      }
+
+      let missingCount = 0;
+
+      for (let i = 0; i < count; i++) {
+        const element = elements.nth(i);
+        const attrValue = await element.getAttribute(attribute);
+
+        if (!attrValue) {
+          missingCount++;
+          this.logMessage(
+            `❌ Element ${i + 1} is missing attribute "${attribute}".`
+          );
+        } else {
+          this.logMessage(
+            `✅ Element ${
+              i + 1
+            } has attribute "${attribute}" with value "${attrValue}".`
+          );
+        }
+      }
+
+      if (missingCount > 0) {
+        const errorMsg = `❌ ${missingCount} of ${count} element(s) are missing attribute "${attribute}".`;
+        this.logMessage(errorMsg, "error");
+        await this.captureScreenshotOnFailure(
+          "validateAttributeExistsForAllElements"
+        );
+        throw new Error(errorMsg);
+      }
+
+      this.logMessage(
+        `✅ All ${count} element(s) have attribute "${attribute}".`
+      );
+    } catch (err: any) {
+      const errorMsg = `❌ Failed to validate attribute "${attribute}" existence for all elements: ${err.message}`;
+      this.logMessage(errorMsg, "error");
+      await this.captureScreenshotOnFailure(
+        "validateAttributeExistsForAllElements"
+      );
+      throw new Error(errorMsg);
+    }
+  }
+
+  async getProductTitles(productTitleLocator: string): Promise<string[]> {
+    try {
+      const titles = await this.getAllTexts(productTitleLocator);
+      this.logMessage(
+        `📄 Captured product titles: ${JSON.stringify(titles)}`,
+        "info"
+      );
+      return titles;
+    } catch (error) {
+      this.logMessage(`❌ Error in getProductTitles: ${error}`, "error");
+      await this.captureScreenshotOnFailure("get_product_titles_error");
+      throw error;
+    }
+  }
+
+  async verifyTitlesMatch(expected: string[], actual: string[]): Promise<void> {
+    try {
+      const normalizedActualSet = new Set(
+        actual.map((title) => title.trim().toLowerCase())
+      );
+
+      const missingTitles = expected.filter(
+        (title) => !normalizedActualSet.has(title.trim().toLowerCase())
+      );
+
+      if (missingTitles.length > 0) {
+        this.logMessage(
+          `⚠️ Product titles mismatch after returning to first page.\nExpected: ${JSON.stringify(
+            expected
+          )}\nActual: ${JSON.stringify(actual)}\nMissing: ${JSON.stringify(
+            missingTitles
+          )}`,
+          "warn"
+        );
+        await this.captureScreenshotOnFailure("title_mismatch_warning");
+      } else {
+        this.logMessage(
+          "✅ Titles match exactly after returning to first page.",
+          "info"
+        );
+      }
+    } catch (error) {
+      this.logMessage(
+        `❌ Error in verifyTitlesMatchExactly: ${error}`,
+        "error"
+      );
+      await this.captureScreenshotOnFailure("title_mismatch_error");
+      throw error;
+    }
+  }
+
+  async verifyTitlesNoMatch(
+    titles1: string[],
+    titles2: string[]
+  ): Promise<void> {
+    try {
+      const overlappingTitles = titles1.filter((title) =>
+        titles2.includes(title)
+      );
+
+      if (overlappingTitles.length > 0) {
+        this.logMessage(
+          `⚠️ Overlapping product titles found between pages: ${JSON.stringify(
+            overlappingTitles
+          )}`,
+          "warn"
+        );
+        await this.captureScreenshotOnFailure("title_overlap_warning");
+      } else {
+        this.logMessage(
+          "✅ No overlapping product titles found between pages.",
+          "info"
+        );
+      }
+    } catch (error) {
+      this.logMessage(`❌ Error in verifyTitlesNoMatch: ${error}`, "error");
+      await this.captureScreenshotOnFailure("title_overlap_error");
+      throw error;
+    }
+  }
 }
