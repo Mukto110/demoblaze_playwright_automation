@@ -174,10 +174,10 @@ class HomePageTest extends ExpectedValueProvider {
           homeData.categories.phones
         );
         await runner.waitUntilSeconds(1);
-        await runner.verifyElementsIsExist(homePage.productImage, true);
-        await runner.verifyElementsIsExist(homePage.productTitle);
-        await runner.verifyElementsIsExist(homePage.productPrice);
-        await runner.verifyElementsIsExist(homePage.productDescription);
+        await runner.verifyElementsIsExist(homePage.productImages, true);
+        await runner.verifyElementsIsExist(homePage.productTitles);
+        await runner.verifyElementsIsExist(homePage.productPrices);
+        await runner.verifyElementsIsExist(homePage.productDescriptions);
       });
 
       test("Verify filtering laptop tab interactions", async ({
@@ -195,10 +195,10 @@ class HomePageTest extends ExpectedValueProvider {
           homeData.categories.laptops
         );
         await runner.waitUntilSeconds(1);
-        await runner.verifyElementsIsExist(homePage.productImage, true);
-        await runner.verifyElementsIsExist(homePage.productTitle);
-        await runner.verifyElementsIsExist(homePage.productPrice);
-        await runner.verifyElementsIsExist(homePage.productDescription);
+        await runner.verifyElementsIsExist(homePage.productImages, true);
+        await runner.verifyElementsIsExist(homePage.productTitles);
+        await runner.verifyElementsIsExist(homePage.productPrices);
+        await runner.verifyElementsIsExist(homePage.productDescriptions);
       });
 
       test("Verify filtering monitors tab interactions", async ({
@@ -216,10 +216,10 @@ class HomePageTest extends ExpectedValueProvider {
           homeData.categories.monitors
         );
         await runner.waitUntilSeconds(1);
-        await runner.verifyElementsIsExist(homePage.productImage, true);
-        await runner.verifyElementsIsExist(homePage.productTitle);
-        await runner.verifyElementsIsExist(homePage.productPrice);
-        await runner.verifyElementsIsExist(homePage.productDescription);
+        await runner.verifyElementsIsExist(homePage.productImages, true);
+        await runner.verifyElementsIsExist(homePage.productTitles);
+        await runner.verifyElementsIsExist(homePage.productPrices);
+        await runner.verifyElementsIsExist(homePage.productDescriptions);
       });
 
       test("Verify homepage reloads and resets filters on 'Home' navbar click", async ({
@@ -227,11 +227,12 @@ class HomePageTest extends ExpectedValueProvider {
         envData,
         homePage,
       }) => {
+        await runner.wait(1, { waitForLoadState: "load" });
         // verify homepage products
-        await runner.verifyElementsIsExist(homePage.productTitle);
-        await runner.verifyElementsIsExist(homePage.productPrice);
-        await runner.verifyElementsIsExist(homePage.productDescription);
-        await runner.verifyElementsIsExist(homePage.productImage, true);
+        await runner.verifyElementsIsExist(homePage.productTitles);
+        await runner.verifyElementsIsExist(homePage.productPrices);
+        await runner.verifyElementsIsExist(homePage.productDescriptions);
+        await runner.verifyElementsIsExist(homePage.productImages, true);
 
         // click on laptops tab to show laptops products
         await runner.validateAndClick(
@@ -239,10 +240,10 @@ class HomePageTest extends ExpectedValueProvider {
           homeData.categories.laptops
         );
         await runner.wait(1, { waitForLoadState: "load" });
-        await runner.verifyElementsIsExist(homePage.productTitle);
-        await runner.verifyElementsIsExist(homePage.productPrice);
-        await runner.verifyElementsIsExist(homePage.productDescription);
-        await runner.verifyElementsIsExist(homePage.productImage, true);
+        await runner.verifyElementsIsExist(homePage.productTitles);
+        await runner.verifyElementsIsExist(homePage.productPrices);
+        await runner.verifyElementsIsExist(homePage.productDescriptions);
+        await runner.verifyElementsIsExist(homePage.productImages, true);
 
         // click on home button and reset filter
         await runner.validateAndClick(
@@ -251,10 +252,10 @@ class HomePageTest extends ExpectedValueProvider {
         );
         await runner.wait(1, { waitForLoadState: "load" });
         await runner.verifyUrlContains(envData.homeButtonClickUrl);
-        await runner.verifyElementsIsExist(homePage.productTitle);
-        await runner.verifyElementsIsExist(homePage.productPrice);
-        await runner.verifyElementsIsExist(homePage.productDescription);
-        await runner.verifyElementsIsExist(homePage.productImage, true);
+        await runner.verifyElementsIsExist(homePage.productTitles);
+        await runner.verifyElementsIsExist(homePage.productPrices);
+        await runner.verifyElementsIsExist(homePage.productDescriptions);
+        await runner.verifyElementsIsExist(homePage.productImages, true);
       });
 
       test("Verify clicking 'Categories' reloads homepage and shows all products", async ({
@@ -263,10 +264,10 @@ class HomePageTest extends ExpectedValueProvider {
         homePage,
       }) => {
         // verify homepage products
-        await runner.verifyElementsIsExist(homePage.productTitle);
-        await runner.verifyElementsIsExist(homePage.productPrice);
-        await runner.verifyElementsIsExist(homePage.productDescription);
-        await runner.verifyElementsIsExist(homePage.productImage, true);
+        await runner.verifyElementsIsExist(homePage.productTitles);
+        await runner.verifyElementsIsExist(homePage.productPrices);
+        await runner.verifyElementsIsExist(homePage.productDescriptions);
+        await runner.verifyElementsIsExist(homePage.productImages, true);
 
         // click on laptops tab to show laptops products
         await runner.validateAndClick(
@@ -274,10 +275,10 @@ class HomePageTest extends ExpectedValueProvider {
           homeData.categories.laptops
         );
         await runner.wait(1, { waitForLoadState: "load" });
-        await runner.verifyElementsIsExist(homePage.productTitle);
-        await runner.verifyElementsIsExist(homePage.productPrice);
-        await runner.verifyElementsIsExist(homePage.productDescription);
-        await runner.verifyElementsIsExist(homePage.productImage, true);
+        await runner.verifyElementsIsExist(homePage.productTitles);
+        await runner.verifyElementsIsExist(homePage.productPrices);
+        await runner.verifyElementsIsExist(homePage.productDescriptions);
+        await runner.verifyElementsIsExist(homePage.productImages, true);
 
         // click on categories header and reset filter
         await runner.validateAndClick(
@@ -286,10 +287,10 @@ class HomePageTest extends ExpectedValueProvider {
         );
         await runner.wait(1, { waitForLoadState: "load" });
         await runner.verifyUrlContains(envData.baseUrl);
-        await runner.verifyElementsIsExist(homePage.productTitle);
-        await runner.verifyElementsIsExist(homePage.productPrice);
-        await runner.verifyElementsIsExist(homePage.productDescription);
-        await runner.verifyElementsIsExist(homePage.productImage, true);
+        await runner.verifyElementsIsExist(homePage.productTitles);
+        await runner.verifyElementsIsExist(homePage.productPrices);
+        await runner.verifyElementsIsExist(homePage.productDescriptions);
+        await runner.verifyElementsIsExist(homePage.productImages, true);
       });
 
       test("Verify pagination controls with next and previous button", async ({
@@ -319,10 +320,10 @@ class HomePageTest extends ExpectedValueProvider {
         runner,
         homePage,
       }) => {
-        await runner.verifyElementsIsExist(homePage.productImage, true);
-        await runner.verifyElementsIsExist(homePage.productTitle);
-        await runner.verifyElementsIsExist(homePage.productPrice);
-        await runner.verifyElementsIsExist(homePage.productDescription);
+        await runner.verifyElementsIsExist(homePage.productTitles);
+        await runner.verifyElementsIsExist(homePage.productPrices);
+        await runner.verifyElementsIsExist(homePage.productDescriptions);
+        await runner.verifyElementsIsExist(homePage.productImages, true);
       });
 
       test("Verify product content is valid on the second page of pagination", async ({
@@ -335,10 +336,10 @@ class HomePageTest extends ExpectedValueProvider {
           homePage.paginationNextButton,
           homePage.firstProductTitle
         );
-        await runner.verifyElementsIsExist(homePage.productImage, true);
-        await runner.verifyElementsIsExist(homePage.productTitle);
-        await runner.verifyElementsIsExist(homePage.productPrice);
-        await runner.verifyElementsIsExist(homePage.productDescription);
+        await runner.verifyElementsIsExist(homePage.productImages, true);
+        await runner.verifyElementsIsExist(homePage.productTitles);
+        await runner.verifyElementsIsExist(homePage.productPrices);
+        await runner.verifyElementsIsExist(homePage.productDescriptions);
       });
 
       test("Verify pagination returning to first page with previous button click shows correct products", async ({
@@ -348,7 +349,7 @@ class HomePageTest extends ExpectedValueProvider {
         // getting page one's product titles
         await runner.validateProductContainers(homePage.productContainer);
         const pageOneProductTitles = await runner.getProductTitles(
-          homePage.productTitle
+          homePage.productTitles
         );
 
         // navigating to the next page of pagination
@@ -357,7 +358,7 @@ class HomePageTest extends ExpectedValueProvider {
 
         // getting page two's product titles
         const pageTwoProductTitles = await runner.getProductTitles(
-          homePage.productTitle
+          homePage.productTitles
         );
 
         // page tow's titles should not match with page one's titles
@@ -370,7 +371,7 @@ class HomePageTest extends ExpectedValueProvider {
         await runner.clickOnElement(homePage.carouselPreviousButton);
         await runner.wait(1, { waitForLoadState: "load" });
         const pageOneTitlesAgain = await runner.getProductTitles(
-          homePage.productTitle
+          homePage.productTitles
         );
 
         // now the products of pageOneTitles again should match with products of page one

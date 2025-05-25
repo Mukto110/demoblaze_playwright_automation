@@ -2,7 +2,7 @@
   "homeLogoText": "PRODUCT STORE",
 
   "navbar": {
-    "home": "Home",
+    "home": "Home (current)",
     "contact": "Contact",
     "about": "About us",
     "cart": "Cart",
