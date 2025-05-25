@@ -334,7 +334,7 @@ class HomePageTest extends ExpectedValueProvider {
         await runner.clickOnElement(homePage.paginationNextButton);
         await runner.waitForProductChangeAfterPagination(
           homePage.paginationNextButton,
-          homePage.firstProductTitle
+          homePage.productTitles
         );
         await runner.verifyElementsIsExist(homePage.productImages, true);
         await runner.verifyElementsIsExist(homePage.productTitles);
