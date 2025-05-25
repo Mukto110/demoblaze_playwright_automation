@@ -63,10 +63,10 @@ class HomePageTest extends ExpectedValueProvider {
           homeData.navbar.contact
         );
         await runner.clickOnElement(homePage.navbarContact);
-        await runner.verifyElementIsVisible(contactModal.title);
+        await runner.verifyElementIsVisible(contactModal.header);
         await runner.verifyContainText(
-          contactModal.title,
-          contactData.contactModalTitle
+          contactModal.header,
+          contactData.contactModalHeader
         );
         await runner.clickOnElement(contactModal.closeButton);
 
