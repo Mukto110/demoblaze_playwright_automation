@@ -149,7 +149,7 @@ export class Utils {
   }
 
   async validateAndClick(
-     buttonLocator: string,
+    buttonLocator: string,
     options?: ButtonClickOptions
   ): Promise<void> {
     const opts: ButtonClickOptions = {
@@ -231,7 +231,10 @@ export class Utils {
       const errorMsg = `❌ Failed to validate or click ${logIdentifier}: ${error.message}`;
       this.logMessage(errorMsg, "error");
       // Use a sanitized locator for screenshot name
-      const screenshotName = `Fail_${buttonLocator.replace(/[^a-zA-Z0-9_]/g, '_')}`;
+      const screenshotName = `Fail_${buttonLocator.replace(
+        /[^a-zA-Z0-9_]/g,
+        "_"
+      )}`;
       await this.captureScreenshotOnFailure(screenshotName);
       throw new Error(errorMsg);
     }
@@ -1158,7 +1161,6 @@ export class Utils {
     return randomIndex; // Return the index for external use (e.g., getting details after navigation)
   }
 
-
   async validatingProductUrl(): Promise<void> {
     // The specific regex for DemoBlaze product pages
     const expectedProductURLRegex =
@@ -1188,12 +1190,14 @@ export class Utils {
       throw new Error(errorMsg);
     }
   }
-  private async getImageSrcFromSpecificLocator(imageLocator: Locator): Promise<string> {
-      // This will ensure the image element is visible before trying to get its attribute
-      // Using Playwright's expect for visibility
-      await expect(imageLocator).toBeVisible({ timeout: 5000 });
-      const src = await imageLocator.getAttribute('src');
-      return src || ''; // Return empty string if src is null/undefined
+  private async getImageSrcFromSpecificLocator(
+    imageLocator: Locator
+  ): Promise<string> {
+    // This will ensure the image element is visible before trying to get its attribute
+    // Using Playwright's expect for visibility
+    await expect(imageLocator).toBeVisible({ timeout: 5000 });
+    const src = await imageLocator.getAttribute("src");
+    return src || ""; // Return empty string if src is null/undefined
   }
   public async getImageSrcByIndex(
     imageLocator: string,
@@ -1218,14 +1222,14 @@ export class Utils {
     return { text: text.trim(), numericValue: numericValue.trim() };
   }
 
-async selectAndCaptureRandomProductDetailsAndClick(
+  async selectAndCaptureRandomProductDetailsAndClick(
     itemContainerLocator: string // Only this parameter is passed
   ): Promise<ProductDetails> {
     // Hardcode the internal locators relative to the itemContainerLocator
     // If the title is also the clickable element, these two can be the same.
-    const internalTitleAndClickableLocator = '.card-title a'; // This serves as both title text and clickable element
-    const internalProductPriceLocator = '.card-block h5';      // Price text
-    const internalProductImageLocator = '.card-img-top';      // Image element
+    const internalTitleAndClickableLocator = ".card-title a"; // This serves as both title text and clickable element
+    const internalProductPriceLocator = ".card-block h5"; // Price text
+    const internalProductImageLocator = ".card-img-top"; // Image element
 
     // First, get all product container locators
     const allItemContainers = this.page.locator(itemContainerLocator);
@@ -1247,13 +1251,19 @@ async selectAndCaptureRandomProductDetailsAndClick(
 
     // --- Capture details from the selected container ---
     // Use .locator() on the selectedItemContainer to find elements *relative* to it
-    const titleElement = selectedItemContainer.locator(internalTitleAndClickableLocator);
+    const titleElement = selectedItemContainer.locator(
+      internalTitleAndClickableLocator
+    );
     const title = await titleElement.innerText();
 
-    const priceElement = selectedItemContainer.locator(internalProductPriceLocator);
+    const priceElement = selectedItemContainer.locator(
+      internalProductPriceLocator
+    );
     const price = await priceElement.innerText();
 
-    const imageElement = selectedItemContainer.locator(internalProductImageLocator);
+    const imageElement = selectedItemContainer.locator(
+      internalProductImageLocator
+    );
     const imageSrc = await this.getImageSrcFromSpecificLocator(imageElement); // Pass the specific image Locator
 
     this.logMessage(
@@ -1357,14 +1367,15 @@ async selectAndCaptureRandomProductDetailsAndClick(
     }
   }
 
-async validateProductsInCart(
+  async validateProductsInCart(
     expectedProducts: ProductDetails[],
     cartRowLocator: string,
     titleInRowLocator: string,
     priceInRowLocator: string,
     imageContainerInRowLocator: string,
     totalPriceElementLocator: string
-  ): Promise<number> { // <--- CHANGE 1: Change return type to Promise<number>
+  ): Promise<number> {
+    // <--- CHANGE 1: Change return type to Promise<number>
     this.logMessage(`[INFO] Starting cart validation.`);
 
     let calculatedTotalPrice = 0; // Initialize here so it's accessible outside the try block if needed for partial returns
@@ -1766,42 +1777,38 @@ async validateProductsInCart(
     }
   }
 
- 
   async getCartProductCount(cartRowLocator: string): Promise<string> {
-    this.logMessage('[INFO] Checking cart product count.');
+    this.logMessage("[INFO] Checking cart product count.");
     try {
-        await this.page.waitForLoadState("domcontentloaded");
-        const cartRows = await this.page.locator(cartRowLocator).all();
-        const productCount = cartRows.length;
+      await this.page.waitForLoadState("domcontentloaded");
+      const cartRows = await this.page.locator(cartRowLocator).all();
+      const productCount = cartRows.length;
 
-        if (productCount === 0) {
-            this.logMessage('[INFO] No products found in cart.');
-            return "No products in cart.";
-        } else {
-            const message = `Cart contains ${productCount} products.`;
-            this.logMessage('[INFO] ' + message);
-            return message;
-        }
+      if (productCount === 0) {
+        this.logMessage("[INFO] No products found in cart.");
+        return "No products in cart.";
+      } else {
+        const message = `Cart contains ${productCount} products.`;
+        this.logMessage("[INFO] " + message);
+        return message;
+      }
     } catch (error: any) {
-        const errorMsg = `❌ Failed to get cart product count: ${error.message}`;
-        this.logMessage(errorMsg, "error");
-        await this.captureScreenshotOnFailure("GetCartProductCountFailure");
-        throw new Error(errorMsg);
+      const errorMsg = `❌ Failed to get cart product count: ${error.message}`;
+      this.logMessage(errorMsg, "error");
+      await this.captureScreenshotOnFailure("GetCartProductCountFailure");
+      throw new Error(errorMsg);
     }
-}
+  }
   async handleAlertWithMessage(expectedMessage: string): Promise<void> {
     try {
-
       this.page.on("dialog", async (dialog) => {
         expect(dialog.type()).toContain("alert");
         expect(dialog.message()).toContain(expectedMessage);
         await dialog.accept();
 
-
         this.logMessage(
           `handled alert correctly with message: ${expectedMessage}`
         );
-
       });
     } catch (error) {
       this.logMessage(`:x: Failed to handle alert: ${error}`, "error");
@@ -1809,8 +1816,4 @@ async validateProductsInCart(
       throw error;
     }
   }
-
-
-
-  
 }
