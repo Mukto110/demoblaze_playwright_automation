@@ -120,14 +120,13 @@ class HomePageTest extends ExpectedValueProvider {
         cartPage,
       }) => {
         await runner.verifyElementIsVisible(homePage.navbarCart);
-        await runner.validateAndClick(
-          homePage.navbarCart,
-          homeData.navbar.cart
-        );
+        await runner.validateAndClick(homePage.navbarCart, {
+          expectedText: homeData.navbar.cart,
+        });
         await runner.verifyUrlContains(envData.cartUrl);
         await runner.verifyContainText(
-          cartPage.cartPageTitle,
-          cartData.cartPageHeader // later change
+          cartPage.cartPageHeaderText,
+          cartData.cartPageHeaderText // later change
         );
       });
 
@@ -171,10 +170,9 @@ class HomePageTest extends ExpectedValueProvider {
           "onclick",
           "byCat('phone')"
         );
-        await runner.validateAndClick(
-          homePage.categoriesPhones,
-          homeData.categories.phones
-        );
+        await runner.validateAndClick(homePage.categoriesPhones, {
+          expectedText: homeData.categories.phones,
+        });
         await runner.waitUntilSeconds(1);
         await runner.verifyElementsIsExist(homePage.productImages, true);
         await runner.verifyElementsIsExist(homePage.productTitles);
@@ -192,10 +190,9 @@ class HomePageTest extends ExpectedValueProvider {
           "onclick",
           "byCat('notebook')"
         );
-        await runner.validateAndClick(
-          homePage.categoriesLaptops,
-          homeData.categories.laptops
-        );
+        await runner.validateAndClick(homePage.categoriesLaptops, {
+          expectedText: homeData.categories.laptops,
+        });
         await runner.waitUntilSeconds(1);
         await runner.verifyElementsIsExist(homePage.productImages, true);
         await runner.verifyElementsIsExist(homePage.productTitles);
@@ -213,11 +210,10 @@ class HomePageTest extends ExpectedValueProvider {
           "onclick",
           "byCat('monitor')"
         );
-        await runner.validateAndClick(
-          homePage.categoriesMonitors,
-          homeData.categories.monitors
-        );
-        await runner.waitUntilSeconds(1);
+        await runner.validateAndClick(homePage.categoriesMonitors, {
+          expectedText: homeData.categories.laptops,
+        });
+        await runner.wait(1, { waitForLoadState: "load" });
         await runner.verifyElementsIsExist(homePage.productImages, true);
         await runner.verifyElementsIsExist(homePage.productTitles);
         await runner.verifyElementsIsExist(homePage.productPrices);
@@ -237,10 +233,9 @@ class HomePageTest extends ExpectedValueProvider {
         await runner.verifyElementsIsExist(homePage.productImages, true);
 
         // click on laptops tab to show laptops products
-        await runner.validateAndClick(
-          homePage.categoriesLaptops,
-          homeData.categories.laptops
-        );
+        await runner.validateAndClick(homePage.categoriesLaptops, {
+          expectedText: homeData.categories.laptops,
+        });
         await runner.wait(2, { waitForLoadState: "load" });
         await runner.verifyElementsIsExist(homePage.productTitles);
         await runner.verifyElementsIsExist(homePage.productPrices);
@@ -248,10 +243,9 @@ class HomePageTest extends ExpectedValueProvider {
         await runner.verifyElementsIsExist(homePage.productImages, true);
 
         // click on home button and reset filter
-        await runner.validateAndClick(
-          homePage.navbarHome,
-          homeData.navbar.home
-        );
+        await runner.validateAndClick(homePage.navbarHome, {
+          expectedText: homeData.navbar.home,
+        });
         await runner.wait(1, { waitForLoadState: "load" });
         await runner.verifyUrlContains(envData.homeButtonClickUrl);
         await runner.verifyElementsIsExist(homePage.productTitles);
@@ -272,10 +266,9 @@ class HomePageTest extends ExpectedValueProvider {
         await runner.verifyElementsIsExist(homePage.productImages, true);
 
         // click on laptops tab to show laptops products
-        await runner.validateAndClick(
-          homePage.categoriesLaptops,
-          homeData.categories.laptops
-        );
+        await runner.validateAndClick(homePage.categoriesLaptops, {
+          expectedText: homeData.categories.laptops,
+        });
         await runner.wait(1, { waitForLoadState: "load" });
         await runner.verifyElementsIsExist(homePage.productTitles);
         await runner.verifyElementsIsExist(homePage.productPrices);
@@ -283,10 +276,9 @@ class HomePageTest extends ExpectedValueProvider {
         await runner.verifyElementsIsExist(homePage.productImages, true);
 
         // click on categories header and reset filter
-        await runner.validateAndClick(
-          homePage.categoriesHeader,
-          homeData.categories.header
-        );
+        await runner.validateAndClick(homePage.categoriesHeader, {
+          expectedText: homeData.categories.header,
+        });
         await runner.verifyUrlContains(envData.baseUrl);
         await runner.wait(2, { waitForLoadState: "load" });
         await runner.verifyElementsIsExist(homePage.productTitles);
@@ -399,11 +391,7 @@ class HomePageTest extends ExpectedValueProvider {
         // Validating first random product
         const randomFirstProductCardDetails =
           await runner.selectAndCaptureRandomProductDetailsAndClick(
-            homePage.productContainer,
-            homePage.productImages, // clicking on random product's image
-            homePage.productTitles,
-            homePage.productPrices,
-            homePage.productImages
+            homePage.productContainer
           );
         await runner.waitUntilSeconds(2);
         await runner.verifyUrlContains(envData.productUrl);
@@ -420,11 +408,7 @@ class HomePageTest extends ExpectedValueProvider {
         // Validating second random product
         const randomSecondProductCardDetails =
           await runner.selectAndCaptureRandomProductDetailsAndClick(
-            homePage.productContainer,
-            homePage.productImages,
-            homePage.productTitles,
-            homePage.productPrices,
-            homePage.productImages
+            homePage.productContainer
           );
         await runner.waitUntilSeconds(2);
         await runner.verifyUrlContains(envData.productUrl);
@@ -452,11 +436,7 @@ class HomePageTest extends ExpectedValueProvider {
         // Validating first random product
         const randomFirstProductCardDetails =
           await runner.selectAndCaptureRandomProductDetailsAndClick(
-            homePage.productContainer,
-            homePage.productTitles, // clicking on random product's title
-            homePage.productTitles,
-            homePage.productPrices,
-            homePage.productImages
+            homePage.productContainer
           );
         await runner.waitUntilSeconds(2);
         await runner.verifyUrlContains(envData.productUrl);
@@ -473,11 +453,7 @@ class HomePageTest extends ExpectedValueProvider {
         // Validating second random product
         const randomSecondProductCardDetails =
           await runner.selectAndCaptureRandomProductDetailsAndClick(
-            homePage.productContainer,
-            homePage.productTitles,
-            homePage.productTitles,
-            homePage.productPrices,
-            homePage.productImages
+            homePage.productContainer
           );
         await runner.waitUntilSeconds(2);
         await runner.verifyUrlContains(envData.productUrl);
@@ -508,11 +484,7 @@ class HomePageTest extends ExpectedValueProvider {
         // Validating first random product
         const randomFirstProductCardDetails =
           await runner.selectAndCaptureRandomProductDetailsAndClick(
-            homePage.productContainer,
-            homePage.productImages, // clicking on random product's image
-            homePage.productTitles,
-            homePage.productPrices,
-            homePage.productImages
+            homePage.productContainer
           );
         await runner.waitUntilSeconds(2);
         await runner.verifyUrlContains(envData.productUrl);
@@ -529,11 +501,7 @@ class HomePageTest extends ExpectedValueProvider {
         // Validating second random product
         const randomSecondProductCardDetails =
           await runner.selectAndCaptureRandomProductDetailsAndClick(
-            homePage.productContainer,
-            homePage.productImages,
-            homePage.productTitles,
-            homePage.productPrices,
-            homePage.productImages
+            homePage.productContainer
           );
         await runner.waitUntilSeconds(2);
         await runner.verifyUrlContains(envData.productUrl);
@@ -563,11 +531,7 @@ class HomePageTest extends ExpectedValueProvider {
         // Validating first random product
         const randomFirstProductCardDetails =
           await runner.selectAndCaptureRandomProductDetailsAndClick(
-            homePage.productContainer,
-            homePage.productTitles, // clicking on random product's title
-            homePage.productTitles,
-            homePage.productPrices,
-            homePage.productImages
+            homePage.productContainer
           );
         await runner.waitUntilSeconds(2);
         await runner.verifyUrlContains(envData.productUrl);
@@ -584,11 +548,7 @@ class HomePageTest extends ExpectedValueProvider {
         // Validating second random product
         const randomSecondProductCardDetails =
           await runner.selectAndCaptureRandomProductDetailsAndClick(
-            homePage.productContainer,
-            homePage.productTitles,
-            homePage.productTitles,
-            homePage.productPrices,
-            homePage.productImages
+            homePage.productContainer
           );
         await runner.waitUntilSeconds(2);
         await runner.verifyUrlContains(envData.productUrl);
