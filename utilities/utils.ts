@@ -1855,20 +1855,7 @@ async validateProductsInCart(
     }
   }
 
- async handleAlertWithMessage(expectedMessage: string): Promise<void> {
-    try {
-      this.page.on("dialog", async (dialog) => {
-        expect(dialog.type()).toContain("alert");
-        expect(dialog.message()).toContain(expectedMessage);
-        await dialog.accept();
-        this.logMessage("handled alert correctly");
-      });
-    } catch (error) {
-      this.logMessage(`:x: Failed to handle alert: ${error}`, "error");
-      await this.captureScreenshotOnFailure("alert_handling_error");
-      throw error;
-    }
-  }
+ 
    async getCartProductCount(cartRowLocator: string): Promise<string> {
     this.logMessage(`[INFO] Checking cart product count.`);
     try {
