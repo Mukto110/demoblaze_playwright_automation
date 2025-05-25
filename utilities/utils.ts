@@ -640,7 +640,6 @@ export class Utils {
       const locator = this.page.locator(selector);
       await expect(locator).toBeVisible();
 
-      // Playwright has a built‑in matcher for disabled state
       await expect
         .soft(
           locator,
@@ -976,8 +975,7 @@ export class Utils {
   async verifyCarouselArrowNavigation(
     activeImageLocator: string,
     allImageLocators: string,
-    nextButtonLocator: string,
-    prevButtonLocator: string
+    nextButtonLocator: string
   ): Promise<void> {
     try {
       const expectedSrcs = await this.getAttributesFromLocator(
