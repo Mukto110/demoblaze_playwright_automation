@@ -41,17 +41,17 @@ class CartPage extends ExpectedValueProvider {
         productDetailPage,
       }) => {
         await runner.validateProductContainers(homePage.productContainer);
-        await runner.validateProductTitles(homePage.productTitle);
-        await runner.validateProductPrices(homePage.productPrice);
-        await runner.validateProductDescriptions(homePage.productDescription);
+        await runner.validateProductTitles(homePage.productTitles);
+        await runner.validateProductPrices(homePage.productPrices);
+        await runner.validateProductDescriptions(homePage.productDescriptions);
         const clickedProductDetails: any = [];
         const firstProductDetails =
           await runner.selectAndCaptureRandomProductDetailsAndClick(
             homePage.productContainer,
-            homePage.productTitle,
-            homePage.productTitle,
-            homePage.productPrice,
-            homePage.productImage
+            homePage.productTitles,
+            homePage.productTitles,
+            homePage.productPrices,
+            homePage.productImages
           );
         await runner.waitUntilSeconds(2);
 
@@ -90,17 +90,17 @@ class CartPage extends ExpectedValueProvider {
         productDetailPage,
       }) => {
         await runner.validateProductContainers(homePage.productContainer);
-        await runner.validateProductTitles(homePage.productTitle);
-        await runner.validateProductPrices(homePage.productPrice);
-        await runner.validateProductDescriptions(homePage.productDescription);
+        await runner.validateProductTitles(homePage.productTitles);
+        await runner.validateProductPrices(homePage.productPrices);
+        await runner.validateProductDescriptions(homePage.productDescriptions);
         const clickedProductDetails: any = [];
         const firstProductDetails =
           await runner.selectAndCaptureRandomProductDetailsAndClick(
             homePage.productContainer,
-            homePage.productTitle,
-            homePage.productTitle,
-            homePage.productPrice,
-            homePage.productImage
+            homePage.productTitles,
+            homePage.productTitles,
+            homePage.productPrices,
+            homePage.productImages
           );
         await runner.waitUntilSeconds(2);
         await runner.verifyUrlContains(envData.productUrl);
@@ -125,10 +125,10 @@ class CartPage extends ExpectedValueProvider {
         const secondProductDetails =
           await runner.selectAndCaptureRandomProductDetailsAndClick(
             homePage.productContainer,
-            homePage.productTitle,
-            homePage.productTitle,
-            homePage.productPrice,
-            homePage.productImage
+            homePage.productTitles,
+            homePage.productTitles,
+            homePage.productPrices,
+            homePage.productImages
           );
         await runner.waitUntilSeconds(2);
         await runner.verifyUrlContains(envData.productUrl);
@@ -166,17 +166,17 @@ class CartPage extends ExpectedValueProvider {
         productDetailPage,
       }) => {
         await runner.validateProductContainers(homePage.productContainer);
-        await runner.validateProductTitles(homePage.productTitle);
-        await runner.validateProductPrices(homePage.productPrice);
-        await runner.validateProductDescriptions(homePage.productDescription);
+        await runner.validateProductTitles(homePage.productTitles);
+        await runner.validateProductPrices(homePage.productPrices);
+        await runner.validateProductDescriptions(homePage.productDescriptions);
         const clickedProductDetails: any = [];
         const firstProductDetails =
           await runner.selectAndCaptureRandomProductDetailsAndClick(
             homePage.productContainer,
-            homePage.productTitle,
-            homePage.productTitle,
-            homePage.productPrice,
-            homePage.productImage
+            homePage.productTitles,
+            homePage.productTitles,
+            homePage.productPrices,
+            homePage.productImages
           );
         await runner.waitUntilSeconds(3);
         await runner.verifyUrlContains(envData.productUrl);
@@ -201,10 +201,10 @@ class CartPage extends ExpectedValueProvider {
         const secondProductDetails =
           await runner.selectAndCaptureRandomProductDetailsAndClick(
             homePage.productContainer,
-            homePage.productTitle,
-            homePage.productTitle,
-            homePage.productPrice,
-            homePage.productImage
+            homePage.productTitles,
+            homePage.productTitles,
+            homePage.productPrices,
+            homePage.productImages
           );
         await runner.waitUntilSeconds(2);
         await runner.verifyUrlContains(envData.productUrl);

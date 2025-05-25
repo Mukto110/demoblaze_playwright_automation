@@ -1049,70 +1049,6 @@ export class Utils {
     }
   }
 
-  async verifyPaginationReturn(homePage: HomePage): Promise<void> {
-    try {
-      const firstProductPage1 = await this.getText(
-        homePage.firstProductCardTitle
-      );
-      const secondProductPage1 = await this.getText(
-        homePage.secondProductCardTitle
-      );
-      this.logMessage(
-        `📄 Captured Page 1 product titles: "${firstProductPage1}", "${secondProductPage1}"`,
-        "info"
-      );
-
-      await this.clickOnElement(homePage.paginationNextButton);
-      await this.wait(1);
-
-      const page2ProductTitles = await this.getAllTexts(homePage.productTitle);
-      const foundFirst = page2ProductTitles.includes(firstProductPage1);
-      const foundSecond = page2ProductTitles.includes(secondProductPage1);
-
-      if (foundFirst || foundSecond) {
-        this.logMessage(
-          `⚠️ Page 2 incorrectly contains ${
-            foundFirst && foundSecond
-              ? "first and second"
-              : foundFirst
-              ? "first"
-              : "second"
-          } product(s) from Page 1.`,
-          "warn"
-        );
-      } else {
-        this.logMessage(
-          "✅ Page 2 does not contain products from Page 1.",
-          "info"
-        );
-      }
-
-      await this.clickOnElement(homePage.paginationPreviousButton);
-      await this.wait(1);
-
-      const page1TitlesAgain = await this.getAllTexts(homePage.productTitle);
-      const firstBack = page1TitlesAgain.includes(firstProductPage1);
-      const secondBack = page1TitlesAgain.includes(secondProductPage1);
-
-      if (!firstBack || !secondBack) {
-        this.logMessage(
-          `⚠️ Pagination Bug: After returning to Page 1, ${
-            !firstBack && !secondBack ? "both" : !firstBack ? "first" : "second"
-          } product(s) are missing.\nExpected: "${firstProductPage1}", "${secondProductPage1}"\nActual: ${JSON.stringify(
-            page1TitlesAgain
-          )}`,
-          "warn"
-        );
-      } else {
-        this.logMessage("✅ Pagination return validation passed.", "info");
-      }
-    } catch (error) {
-      this.logMessage(`❌ Error in verifyPaginationReturn: ${error}`, "error");
-      await this.captureScreenshotOnFailure("pagination_return_error");
-      throw error;
-    }
-  }
-
   // -----------------------------------------------------------------------------------
 
   async clickItemByIndex(
@@ -1844,6 +1780,34 @@ export class Utils {
     } catch (error) {
       this.logMessage(`❌ Error in verifyTitlesNoMatch: ${error}`, "error");
       await this.captureScreenshotOnFailure("title_overlap_error");
+      throw error;
+    }
+  }
+
+  async handleAlertWithMessage(expectedMessage: string): Promise<void> {
+    try {
+      const dialog = await this.page.waitForEvent("dialog", { timeout: 1000 });
+
+      const actualMessage = dialog.message();
+
+      if (actualMessage === expectedMessage) {
+        this.logMessage(
+          `✅ Alert message matched expected: "${expectedMessage}"`,
+          "info"
+        );
+      } else {
+        this.logMessage(
+          `❌ Alert message mismatch.\nExpected: "${expectedMessage}"\nActual: "${actualMessage}"`,
+          "error"
+        );
+        await this.captureScreenshotOnFailure("alert_message_mismatch");
+        throw new Error("Alert message did not match expected text.");
+      }
+
+      await dialog.accept();
+    } catch (error) {
+      this.logMessage(`❌ Failed to handle alert: ${error}`, "error");
+      await this.captureScreenshotOnFailure("alert_handling_error");
       throw error;
     }
   }

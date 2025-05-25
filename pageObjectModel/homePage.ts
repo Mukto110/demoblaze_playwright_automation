@@ -34,11 +34,12 @@ export class HomePage {
 
   readonly footer: string;
   readonly footerText: string;
+  // ---------------------------------
   readonly productContainer: string;
-  readonly productTitle: string;
-  readonly productPrice: string;
-  readonly productImage: string;
-  readonly productDescription: string;
+  readonly productTitles: string;
+  readonly productPrices: string;
+  readonly productImages: string;
+  readonly productDescriptions: string;
 
   constructor(page: Page) {
     this.homePageLogo = `css=nav[id='narvbarx'] a[id='nava']`;
@@ -62,8 +63,8 @@ export class HomePage {
     this.carousel = `css=div[id='contcar'] div[id='carouselExampleIndicators']`;
     this.carouselImages = `css=div[class='carousel-inner'] div img`;
     this.activeCarouselImage = `css=.carousel-item.active img`;
-    this.carouselNextButton = `css=li[class='page-item'] button[id='next2']`;
-    this.carouselPreviousButton = `css=li[class='page-item'] button[id='prev2']`;
+    this.carouselNextButton = `css=a[data-slide='next'] span[class='carousel-control-next-icon']`;
+    this.carouselPreviousButton = `css=a[data-slide='prev'] span[class='carousel-control-prev-icon']`;
     // -----------------------------------------------------------------------------------
     this.macbookLaptopCard = `css=body > div:nth-child(6) > div:nth-child(1) > div:nth-child(2) > div:nth-child(1) > div:nth-child(3)`;
     this.firstProductCardOfMonitors = `css=body > div:nth-child(6) > div:nth-child(1) > div:nth-child(2) > div:nth-child(1) > div:nth-child(1)`;
@@ -75,10 +76,10 @@ export class HomePage {
     this.footer = `css=div[id='footc']`;
     this.footerText = `xpath=//p[@class='m-0 text-center text-white']`;
     // <--------------------------------------------------------------->
-    this.productContainer = `css=div[class="card h-100"]`;
-    this.productTitle = `css=h4[class="card-title"]`;
-    this.productPrice = `css=div[id='tbodyid'] div[class='col-lg-4 col-md-6 mb-4'] h5`;
-    this.productImage = `css=div[id='tbodyid'] div[class='col-lg-4 col-md-6 mb-4'] img`;
-    this.productDescription = `css=div[id='tbodyid'] div[class='col-lg-4 col-md-6 mb-4'] p`;
+    this.productContainer = `css=div[id='tbodyid'] div[class='col-lg-4 col-md-6 mb-4'] div[class='card h-100']`;
+    this.productTitles = `css=div[id='tbodyid'] div[class='col-lg-4 col-md-6 mb-4'] div[class='card-block'] a`;
+    this.productPrices = `css=div[id='tbodyid'] div[class='col-lg-4 col-md-6 mb-4'] div[class='card-block'] h5`;
+    this.productImages = `css=div[id='tbodyid'] div[class='col-lg-4 col-md-6 mb-4'] div[class='card h-100'] img`;
+    this.productDescriptions = `css=div[id='tbodyid'] div[class='col-lg-4 col-md-6 mb-4'] div[class='card-block'] p`;
   }
 }

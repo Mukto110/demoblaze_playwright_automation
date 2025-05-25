@@ -21,7 +21,7 @@ class LoginModal extends ExpectedValueProvider {
         await runner.verifyElementIsVisible(homePage.navbarLogin);
         await runner.clickOnElement(homePage.navbarLogin);
 
-        await runner.verifyContainText(loginModal.loginModalLabel, "Log in");
+        await runner.verifyContainText(loginModal.loginModalTitle, "Log in");
         await runner.verifyElementIsVisible(loginModal.usernameTextField);
         await runner.verifyElementIsVisible(loginModal.passwordTextField);
         await runner.verifyElementIsVisible(loginModal.closeButton);
@@ -35,7 +35,7 @@ class LoginModal extends ExpectedValueProvider {
       }) => {
         await runner.verifyElementIsVisible(homePage.navbarLogin);
         await runner.clickOnElement(homePage.navbarLogin);
-        await runner.verifyContainText(loginModal.loginModalLabel, "Log in");
+        await runner.verifyContainText(loginModal.loginModalTitle, "Log in");
         await runner.fillInputBox(
           loginModal.usernameTextField,
           envData.username
@@ -55,7 +55,7 @@ class LoginModal extends ExpectedValueProvider {
       }) => {
         await runner.verifyElementIsVisible(homePage.navbarLogin);
         await runner.clickOnElement(homePage.navbarLogin);
-        await runner.verifyContainText(loginModal.loginModalLabel, "Log in");
+        await runner.verifyContainText(loginModal.loginModalTitle, "Log in");
         await runner.fillInputBox(
           loginModal.usernameTextField,
           fakeUser.username
@@ -75,7 +75,7 @@ class LoginModal extends ExpectedValueProvider {
       }) => {
         await runner.verifyElementIsVisible(homePage.navbarLogin);
         await runner.clickOnElement(homePage.navbarLogin);
-        await runner.verifyContainText(loginModal.loginModalLabel, "Log in");
+        await runner.verifyContainText(loginModal.loginModalTitle, "Log in");
         await runner.clickOnElement(loginModal.closeButton);
         await runner.navigateTo(envData.baseUrl);
         await runner.verifyElementIsVisible(homePage.homePageLogo);
@@ -89,7 +89,7 @@ class LoginModal extends ExpectedValueProvider {
       }) => {
         await runner.verifyElementIsVisible(homePage.navbarLogin);
         await runner.clickOnElement(homePage.navbarLogin);
-        await runner.verifyContainText(loginModal.loginModalLabel, "Log in");
+        await runner.verifyContainText(loginModal.loginModalTitle, "Log in");
         await runner.fillInputBox(
           loginModal.usernameTextField,
           envData.username
@@ -109,7 +109,7 @@ class LoginModal extends ExpectedValueProvider {
       }) => {
         await runner.verifyElementIsVisible(homePage.navbarLogin);
         await runner.clickOnElement(homePage.navbarLogin);
-        await runner.verifyContainText(loginModal.loginModalLabel, "Log in");
+        await runner.verifyContainText(loginModal.loginModalTitle, "Log in");
         await runner.fillInputBox(
           loginModal.usernameTextField,
           envData.username
@@ -129,7 +129,7 @@ class LoginModal extends ExpectedValueProvider {
       }) => {
         await runner.verifyElementIsVisible(homePage.navbarLogin);
         await runner.clickOnElement(homePage.navbarLogin);
-        await runner.verifyContainText(loginModal.loginModalLabel, "Log in");
+        await runner.verifyContainText(loginModal.loginModalTitle, "Log in");
         await runner.fillInputBox(
           loginModal.usernameTextField,
           envData.username
