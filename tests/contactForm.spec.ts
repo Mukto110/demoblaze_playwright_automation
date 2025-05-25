@@ -83,6 +83,7 @@ class ContactFormTest extends ExpectedValueProvider {
         await runner.verifyElementIsNotVisible(contactModal.header);
       });
 
+      // This 5 test has the valid error from website
       test("Verify the form is not submitted when all fields are left empty", async ({
         runner,
         contactModal,
@@ -143,6 +144,8 @@ class ContactFormTest extends ExpectedValueProvider {
         await runner.handleAlertWithMessage("Whitespace does not allowed!!");
         await runner.clickOnElement(contactModal.sendButton);
       });
+
+      // <----------------------------------------------------->
 
       test("Verify input fields must be empty on reopen after successful submission", async ({
         runner,

@@ -1,15 +1,21 @@
 import { test } from "../utilities/fixtures";
 import { ExpectedValueProvider } from "../utilities/valueProvider";
+import aboutUsData from "../testData/aboutUs.json";
 
 class AboutUsTest extends ExpectedValueProvider {
   runTest() {
     test.describe("AboutUs Modal Functionality", () => {
-      test.beforeEach(async ({ runner, envData, homePage }) => {
+      test.beforeEach(async ({ runner, envData, homePage, aboutModal }) => {
         await runner.navigateTo(envData.baseUrl);
         await runner.clickOnElement(homePage.navbarAbout);
+        await runner.verifyElementIsVisible(aboutModal.title);
+        await runner.verifyContainText(
+          aboutModal.title,
+          aboutUsData.aboutUsTitle
+        );
       });
 
-      test("modal contains expected video element", async ({
+      test("Verify modal contains video element", async ({
         runner,
         aboutModal,
       }) => {

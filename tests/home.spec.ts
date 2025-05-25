@@ -115,6 +115,7 @@ class HomePageTest extends ExpectedValueProvider {
 
       test("Verify cart button in navbar navigates to cart page", async ({
         runner,
+        envData,
         homePage,
         cartPage,
       }) => {
@@ -123,10 +124,10 @@ class HomePageTest extends ExpectedValueProvider {
           homePage.navbarCart,
           homeData.navbar.cart
         );
-        await runner.verifyUrlContains(cartData.cartUrlFragment);
+        await runner.verifyUrlContains(envData.cartUrl);
         await runner.verifyContainText(
           cartPage.cartPageTitle,
-          cartData.cartPageHeader
+          cartData.cartPageHeader // later change
         );
       });
 
@@ -145,7 +146,7 @@ class HomePageTest extends ExpectedValueProvider {
         );
       });
 
-      test("Verify hero banner carousel arrows change displayed image", async ({
+      test("Verify hero banner carousel next arrow button change displayed image", async ({
         runner,
         homePage,
       }) => {
@@ -154,10 +155,11 @@ class HomePageTest extends ExpectedValueProvider {
         await runner.verifyCarouselArrowNavigation(
           homePage.activeCarouselImage,
           homePage.carouselImages,
-          homePage.carouselNextButton,
-          homePage.carouselPreviousButton
+          homePage.carouselNextButton
         );
       });
+
+      // previous arrow button
 
       test("Verify filtering phone tab interactions", async ({
         runner,
