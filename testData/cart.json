@@ -1,4 +1,11 @@
 {
-    "cartPageHeader": "Products",
-    "cartUrlFragment": "cart.html"
+    "cartPageHeaderText": "Products",
+    "cartPageTotalText": "Total",
+    "picSectionText": "Pic",
+    "ttleSectionText": "Title",
+    "priceSectionText": "Price",
+    "closeSectionText": "x",
+    "placeOrderButtonText": "Place Order",
+    "orderModalPurchaseButtonText": "Purchase"
+
 }
