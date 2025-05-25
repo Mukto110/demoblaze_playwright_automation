@@ -1881,6 +1881,19 @@ async validateProductsInCart(
       await this.captureScreenshotOnFailure("GetCartProductCountFailure");
       throw new Error(errorMsg); // Re-throw the error to indicate failure
     }
+  }async handleAlertWithMessage(expectedMessage: string): Promise<void> {
+    try {
+      this.page.on("dialog", async (dialog) => {
+        expect(dialog.type()).toContain("alert");
+        expect(dialog.message()).toContain(expectedMessage);
+        await dialog.accept();
+        this.logMessage("handled alert correctly");
+      });
+    } catch (error) {
+      this.logMessage(`:x: Failed to handle alert: ${error}`, "error");
+      await this.captureScreenshotOnFailure("alert_handling_error");
+      throw error;
+    }
   }
 
 
