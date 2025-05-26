@@ -225,7 +225,7 @@ class HomePageTest extends ExpectedValueProvider {
         await runner.validateAndClick(homePage.categoriesMonitors, {
           expectedText: homeData.categories.monitors,
         });
-        await runner.wait(1, { waitForLoadState: "load" });
+        await runner.wait(3, { waitForLoadState: "load" });
         await runner.verifyElementsIsExist(homePage.productImages, true);
         await runner.verifyElementsIsExist(homePage.productTitles);
         await runner.verifyElementsIsExist(homePage.productPrices);
@@ -281,7 +281,7 @@ class HomePageTest extends ExpectedValueProvider {
         await runner.validateAndClick(homePage.categoriesLaptops, {
           expectedText: homeData.categories.laptops,
         });
-        // await runner.wait(1, { waitForLoadState: "load" });
+        await runner.wait(1, { waitForLoadState: "load" });
         await runner.verifyElementsIsExist(homePage.productTitles);
         await runner.verifyElementsIsExist(homePage.productPrices);
         await runner.verifyElementsIsExist(homePage.productDescriptions);
@@ -485,7 +485,7 @@ class HomePageTest extends ExpectedValueProvider {
       }) => {
         // navigating to the second page of pagination
         await runner.clickOnElement(homePage.paginationNextButton);
-        await runner.wait(1, { waitForLoadState: "load" });
+        await runner.wait(3, { waitForLoadState: "load" });
 
         // verifications of homepage's pagination second page products
         await runner.verifyElementsIsExist(homePage.productImages, true);
