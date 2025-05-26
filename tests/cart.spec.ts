@@ -622,6 +622,7 @@ class CartPage extends ExpectedValueProvider {
           cartPage.purchaseCofimationMessageAlert,
           "Thank you for your purchase!"
         );
+        await runner.verifyContainsDigit(cartPage.purchaseCofimationDetailsInAlert)
         await runner.verifyContainText(
           cartPage.purchaseCofimationDetailsInAlert,
           fakeUser.username
@@ -634,6 +635,8 @@ class CartPage extends ExpectedValueProvider {
           cartPage.purchaseCofimationDetailsInAlert,
           `${totalPriceValue}`
         );
+        // This is a genuine Bug that the date is 1 month behind of the current date
+        await runner.verifyContainsTodayDate(cartPage.purchaseCofimationDetailsInAlert)
         await runner.wait(5, { waitForLoadState: "load" });
 
         await runner.validateAndClick(cartPage.okButtonInAlert, {
