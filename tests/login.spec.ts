@@ -160,10 +160,8 @@ class LoginModal extends ExpectedValueProvider {
           signupSelector: homePage.navbarSignup,
           expectedUsername: envData.username,
         });
-
         await runner.clickOnElement(homePage.navLogoutButton);
         await runner.wait(1, { waitForLoadState: "load" });
-
         await runner.verifyLogoutUIState({
           logoutSelector: homePage.navLogoutButton,
           loginSelector: homePage.navbarLogin,

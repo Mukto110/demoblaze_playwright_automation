@@ -8,6 +8,7 @@ export class LoginModal {
   readonly passwordInputField: string;
   readonly loginButton: string;
   readonly crossButton: string;
+  readonly closeButton: string;
 
   constructor(page: Page) {
     this.loginModalHeader = `css=h5[id='logInModalLabel']`;
@@ -17,5 +18,6 @@ export class LoginModal {
     this.passwordInputField = `css=input[id='loginpassword']`;
     this.loginButton = `css=button[onclick='logIn()']`;
     this.crossButton = `css=div[id='logInModal'] span[aria-hidden='true']`;
+    this.closeButton = `xpath=//div[@id='logInModal']//button[@type='button'][normalize-space()='Close']`;
   }
 }

@@ -48,7 +48,7 @@ class HomePageTest extends ExpectedValueProvider {
         );
       });
 
-      test("Verify navbar buttons interaction", async ({
+      test("Verify navbar contact, about us, login and signup shows the correct modal", async ({
         runner,
         homePage,
         loginModal,

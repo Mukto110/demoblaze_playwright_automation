@@ -2055,4 +2055,42 @@ export class Utils {
       throw error;
     }
   }
+
+  async validateVisibleNavItems(
+    navItemSelector: string, // e.g. "ul.navbar-nav > li"
+    expectedVisibleTexts: string[] // e.g. ["Home", "Cart", "Logout", "Welcome John"]
+  ): Promise<void> {
+    try {
+      const navItems = this.page.locator(navItemSelector);
+      const visibleTexts: string[] = [];
+
+      const count = await navItems.count();
+
+      for (let i = 0; i < count; i++) {
+        const item = navItems.nth(i);
+        if (await item.isVisible()) {
+          const text = (await item.innerText()).replace(/\s+/g, " ").trim();
+          visibleTexts.push(text);
+        }
+      }
+
+      // Optional log output for debugging
+      this.logMessage(
+        `🔍 Actual visible nav items: [${visibleTexts.join(", ")}]`
+      );
+      this.logMessage(
+        `📌 Expected visible nav items: [${expectedVisibleTexts.join(", ")}]`
+      );
+
+      // Assertion: Texts should match exactly in content and order
+      expect(visibleTexts).toEqual(expectedVisibleTexts);
+
+      this.logMessage("✅ Navbar items validated successfully.");
+    } catch (error) {
+      const errorMsg = `❌ Navbar validation failed: ${error.message}`;
+      this.logMessage(errorMsg, "error");
+      await this.captureScreenshotOnFailure("validateVisibleNavItems");
+      throw new Error(errorMsg);
+    }
+  }
 }
