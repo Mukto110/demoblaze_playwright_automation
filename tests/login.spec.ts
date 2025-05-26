@@ -3,10 +3,6 @@ import { ExpectedValueProvider } from "../utilities/valueProvider";
 import homeData from "../testData/home.json";
 import loginData from "../testData/login.json";
 
-// test("", async ({runner}) => {
-
-// })
-
 class LoginModal extends ExpectedValueProvider {
   constructor() {
     super();
