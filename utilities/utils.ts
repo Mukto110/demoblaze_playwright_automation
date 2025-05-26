@@ -2,7 +2,6 @@ import { expect, Page, Locator } from "@playwright/test";
 import logger from "./logger";
 // import { allure } from "allure-playwright";
 import { ExpectedValueProvider } from "./valueProvider";
-import { HomePage } from "../pageObjectModel/homePage";
 
 interface ButtonClickOptions {
   /** Expected text content of the button. Optional, if you don't need to validate text. */
@@ -1941,37 +1940,200 @@ export class Utils {
       throw error;
     }
   }
-  async verifyContainsDigit(selector: string, prefix: string = "Id:"): Promise<void> {
-  const element = this.page.locator(selector);
-  await expect(element).toBeVisible({ timeout: 5000 });
+  async verifyContainsDigit(
+    selector: string,
+    prefix: string = "Id:"
+  ): Promise<void> {
+    const element = this.page.locator(selector);
+    await expect(element).toBeVisible({ timeout: 5000 });
 
-  const text = await element.innerText();
-  this.logMessage(`🔍 Verifying ID in text: "${text}"`);
+    const text = await element.innerText();
+    this.logMessage(`🔍 Verifying ID in text: "${text}"`);
 
-  const idRegex = new RegExp(`${prefix}\\s\\d{7}`);
-  if (!idRegex.test(text)) {
-    throw new Error(`❌ Expected 7-digit ID with prefix "${prefix}" not found in: "${text}"`);
+    const idRegex = new RegExp(`${prefix}\\s\\d{7}`);
+    if (!idRegex.test(text)) {
+      throw new Error(
+        `❌ Expected 7-digit ID with prefix "${prefix}" not found in: "${text}"`
+      );
+    }
+
+    this.logMessage(`✅ Found valid 7-digit ID with prefix "${prefix}".`);
+  }
+  async verifyContainsTodayDate(
+    selector: string,
+    prefix: string = "Date:"
+  ): Promise<void> {
+    const element = this.page.locator(selector);
+    await expect(element).toBeVisible({ timeout: 5000 });
+
+    const text = await element.innerText();
+    this.logMessage(`🔍 Verifying Date in text: "${text}"`);
+
+    const now = new Date();
+    const today = `${now.getDate()}/${now.getMonth() + 1}/${now.getFullYear()}`; // e.g. "26/4/2025"
+    const dateRegex = new RegExp(`${prefix}\\s${today.replace(/\//g, "\\/")}`);
+
+    if (!dateRegex.test(text)) {
+      throw new Error(
+        `❌ Expected today's date "${today}" with prefix "${prefix}" not found in: "${text}"`
+      );
+    }
+
+    this.logMessage(
+      `✅ Found today's date "${today}" with prefix "${prefix}".`
+    );
   }
 
-  this.logMessage(`✅ Found valid 7-digit ID with prefix "${prefix}".`);
-}
-async verifyContainsTodayDate(selector: string, prefix: string = "Date:"): Promise<void> {
-  const element = this.page.locator(selector);
-  await expect(element).toBeVisible({ timeout: 5000 });
-
-  const text = await element.innerText();
-  this.logMessage(`🔍 Verifying Date in text: "${text}"`);
-
-  const now = new Date();
-  const today = `${now.getDate()}/${now.getMonth() + 1}/${now.getFullYear()}`; // e.g. "26/4/2025"
-  const dateRegex = new RegExp(`${prefix}\\s${today.replace(/\//g, "\\/")}`);
-
-  if (!dateRegex.test(text)) {
-    throw new Error(`❌ Expected today's date "${today}" with prefix "${prefix}" not found in: "${text}"`);
+  async validateLabel(selector: string, expectedText: string): Promise<void> {
+    try {
+      await this.verifyContainText(selector, expectedText);
+    } catch (error) {
+      this.logMessage(`Failed to validate label: ${error}`);
+      await this.captureScreenshotOnFailure("validate_label_error");
+      throw error;
+    }
   }
 
-  this.logMessage(`✅ Found today's date "${today}" with prefix "${prefix}".`);
-}
+  async validateLabels(
+    labels: Array<{ selector: string; expectedText: string }>
+  ): Promise<void> {
+    try {
+      for (const label of labels) {
+        await this.validateLabel(label.selector, label.expectedText);
+      }
+    } catch (error) {
+      this.logMessage(`Failed to validate labels: ${error}`);
+      await this.captureScreenshotOnFailure("validate_labels_error");
+      throw error;
+    }
+  }
 
+  async verifyLoginUIState({
+    welcomeSelector,
+    logoutSelector,
+    loginSelector,
+    signupSelector,
+    expectedUsername,
+  }: {
+    welcomeSelector: string;
+    logoutSelector: string;
+    loginSelector: string;
+    signupSelector: string;
+    expectedUsername: string;
+  }): Promise<void> {
+    try {
+      const welcomeEl = this.page.locator(welcomeSelector);
+      await expect(welcomeEl).toBeVisible({ timeout: 5000 });
 
+      const welcomeText = await welcomeEl.textContent();
+      if (!welcomeText?.includes(expectedUsername)) {
+        throw new Error(
+          `Expected welcome message to include "${expectedUsername}", but got "${welcomeText}"`
+        );
+      }
+
+      await expect(this.page.locator(logoutSelector)).toBeVisible();
+      await expect(this.page.locator(loginSelector)).toBeHidden();
+      await expect(this.page.locator(signupSelector)).toBeHidden();
+
+      this.logMessage(
+        `✅ Logged-in UI state verified for user "${expectedUsername}"`
+      );
+    } catch (error) {
+      this.logMessage(
+        `❌ Login UI state verification failed: ${error.message}`
+      );
+      await this.captureScreenshotOnFailure("verify-login-ui-state-error");
+      throw error;
+    }
+  }
+
+  async verifyLogoutUIState({
+    logoutSelector,
+    loginSelector,
+    signupSelector,
+    welcomeSelector,
+  }: {
+    logoutSelector: string;
+    loginSelector: string;
+    signupSelector: string;
+    welcomeSelector: string;
+  }): Promise<void> {
+    try {
+      await expect(this.page.locator(logoutSelector)).toBeHidden({
+        timeout: 5000,
+      });
+      await expect(this.page.locator(welcomeSelector)).toBeHidden();
+      await expect(this.page.locator(loginSelector)).toBeVisible();
+      await expect(this.page.locator(signupSelector)).toBeVisible();
+
+      this.logMessage("✅ Logged-out UI state verified successfully.");
+    } catch (error) {
+      this.logMessage(
+        `❌ Logout UI state verification failed: ${error.message}`
+      );
+      await this.captureScreenshotOnFailure("verify-logout-ui-state-error");
+      throw error;
+    }
+  }
+
+  async verifyFieldIsPasswordType(selector: string): Promise<void> {
+    try {
+      const inputType = await this.page.getAttribute(selector, "type");
+
+      if (inputType !== "password") {
+        throw new Error(
+          `Expected field type to be "password", but got "${inputType}"`
+        );
+      }
+
+      this.logMessage(
+        `✅ Field "${selector}" is correctly set to type "password"`
+      );
+    } catch (error) {
+      this.logMessage(
+        `❌ Error verifying password field type for selector "${selector}": ${error.message}`
+      );
+      await this.captureScreenshotOnFailure("verify-password-type-error");
+      throw error;
+    }
+  }
+
+  async validateVisibleNavItems(
+    navItemSelector: string, // e.g. "ul.navbar-nav > li"
+    expectedVisibleTexts: string[] // e.g. ["Home", "Cart", "Logout", "Welcome John"]
+  ): Promise<void> {
+    try {
+      const navItems = this.page.locator(navItemSelector);
+      const visibleTexts: string[] = [];
+
+      const count = await navItems.count();
+
+      for (let i = 0; i < count; i++) {
+        const item = navItems.nth(i);
+        if (await item.isVisible()) {
+          const text = (await item.innerText()).replace(/\s+/g, " ").trim();
+          visibleTexts.push(text);
+        }
+      }
+
+      // Optional log output for debugging
+      this.logMessage(
+        `🔍 Actual visible nav items: [${visibleTexts.join(", ")}]`
+      );
+      this.logMessage(
+        `📌 Expected visible nav items: [${expectedVisibleTexts.join(", ")}]`
+      );
+
+      // Assertion: Texts should match exactly in content and order
+      expect(visibleTexts).toEqual(expectedVisibleTexts);
+
+      this.logMessage("✅ Navbar items validated successfully.");
+    } catch (error) {
+      const errorMsg = `❌ Navbar validation failed: ${error.message}`;
+      this.logMessage(errorMsg, "error");
+      await this.captureScreenshotOnFailure("validateVisibleNavItems");
+      throw new Error(errorMsg);
+    }
+  }
 }
