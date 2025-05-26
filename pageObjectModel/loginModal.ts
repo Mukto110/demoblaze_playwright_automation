@@ -1,7 +1,11 @@
 import { Page } from "@playwright/test";
 
 export class LoginModal {
-  readonly loginModalTitle: string;
+  readonly loginModalHeader: string;
+  readonly usernameLabel: string;
+  readonly passwordLabel: string;
+
+  // <---------------------------------------------->
   readonly usernameTextField: string;
   readonly passwordTextField: string;
   readonly closeButton: string;
@@ -10,7 +14,11 @@ export class LoginModal {
   readonly nameOfUserText: string;
 
   constructor(page: Page) {
-    this.loginModalTitle = `css=h5[id='logInModalLabel']`;
+    this.loginModalHeader = `css=h5[id='logInModalLabel']`;
+    this.usernameLabel = `css=div[id='logInModal'] div[class='modal-body'] label[for='log-name']`;
+    this.passwordLabel = `css=div[id='logInModal'] div[class='modal-body'] div:nth-child(2) label`;
+
+    // <------------------------------------------------------------------------------------------>
     this.usernameTextField = `css=#loginusername`;
     this.passwordTextField = `css=#loginpassword`;
     this.closeButton = `css=div[id='logInModal'] div[class='modal-footer'] button:nth-child(1)`;

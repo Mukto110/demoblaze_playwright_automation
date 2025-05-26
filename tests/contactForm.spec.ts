@@ -83,8 +83,8 @@ class ContactFormTest extends ExpectedValueProvider {
         await runner.verifyElementIsNotVisible(contactModal.header);
       });
 
-      // This 5 test has the valid error from website
-      test("Verify the form is not submitted when all fields are left empty", async ({
+      // BUG_CONTACT_01 -> The form is getting submitted with success message when all fields are left empty
+      test("Verify the form should not get submitted when all fields are left empty", async ({
         runner,
         contactModal,
       }) => {
@@ -95,7 +95,8 @@ class ContactFormTest extends ExpectedValueProvider {
         await runner.clickOnElement(contactModal.sendButton);
       });
 
-      test("Verify the form is not submitted when only the email field is filled", async ({
+      // BUG_CONTACT_02 -> The form is getting submitted when only the email field is filled
+      test("Verify the form should not get submitted when only the email field is filled", async ({
         runner,
         fakeUser,
         contactModal,
@@ -107,7 +108,8 @@ class ContactFormTest extends ExpectedValueProvider {
         await runner.clickOnElement(contactModal.sendButton);
       });
 
-      test("Verify the form is not submitted when only the name field is filled", async ({
+      // BUG_CONTACT_03 -> Then form is getting submitted when only the name field if filled
+      test("Verify the form should not get submitted when only the name field is filled", async ({
         runner,
         fakeUser,
         contactModal,
@@ -119,7 +121,8 @@ class ContactFormTest extends ExpectedValueProvider {
         await runner.clickOnElement(contactModal.sendButton);
       });
 
-      test("Verify the form is not submitted when only the message field is filled", async ({
+      // BUG_CONTACT_04 -> The form is getting submitted when only the message field is filled
+      test("Verify the form should not get submitted when only the message field is filled", async ({
         runner,
         fakeUser,
         contactModal,
@@ -134,7 +137,8 @@ class ContactFormTest extends ExpectedValueProvider {
         await runner.clickOnElement(contactModal.sendButton);
       });
 
-      test("Verify the form is not submitted when whitespace is entered into all fields", async ({
+      // BUG_CONTACT_05 -> The form is getting submitted when all fields have the whitespace in the fields
+      test("Verify the form should not get submitted when whitespace is entered into all fields", async ({
         runner,
         contactModal,
       }) => {
@@ -144,8 +148,6 @@ class ContactFormTest extends ExpectedValueProvider {
         await runner.handleAlertWithMessage("Whitespace does not allowed!!");
         await runner.clickOnElement(contactModal.sendButton);
       });
-
-      // <----------------------------------------------------->
 
       test("Verify input fields must be empty on reopen after successful submission", async ({
         runner,
