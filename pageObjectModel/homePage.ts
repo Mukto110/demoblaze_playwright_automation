@@ -9,6 +9,8 @@ export class HomePage {
   readonly navbarCart: string;
   readonly navbarLogin: string;
   readonly navbarSignup: string;
+  readonly navLogoutButton: string;
+  readonly navWelcome: string;
   readonly categoriesHeader: string;
   readonly categoriesPhones: string;
   readonly categoriesLaptops: string;
@@ -43,6 +45,8 @@ export class HomePage {
     this.navbarCart = `css=a[id='cartur']`;
     this.navbarLogin = `css=a[id='login2']`;
     this.navbarSignup = `css=a[id='signin2']`;
+    this.navLogoutButton = `css=a[id='logout2']`;
+    this.navWelcome = `css=a[id='nameofuser']`;
     this.categoriesHeader = `css=div[class='list-group'] a[id='cat']`;
     this.categoriesPhones = `xpath=//a[@id='itemc' and text()='Phones']`;
     this.categoriesLaptops = `xpath=//a[@id='itemc' and text()='Laptops']`;

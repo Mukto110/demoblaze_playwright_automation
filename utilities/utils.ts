@@ -2,7 +2,6 @@ import { expect, Page, Locator } from "@playwright/test";
 import logger from "./logger";
 // import { allure } from "allure-playwright";
 import { ExpectedValueProvider } from "./valueProvider";
-import { HomePage } from "../pageObjectModel/homePage";
 
 interface ButtonClickOptions {
   /** Expected text content of the button. Optional, if you don't need to validate text. */
@@ -1938,6 +1937,121 @@ export class Utils {
     } catch (error) {
       this.logMessage(`:x: Failed to handle alert: ${error}`, "error");
       await this.captureScreenshotOnFailure("alert_handling_error");
+      throw error;
+    }
+  }
+
+  async validateLabel(selector: string, expectedText: string): Promise<void> {
+    try {
+      await this.verifyContainText(selector, expectedText);
+    } catch (error) {
+      this.logMessage(`Failed to validate label: ${error}`);
+      await this.captureScreenshotOnFailure("validate_label_error");
+      throw error;
+    }
+  }
+
+  async validateLabels(
+    labels: Array<{ selector: string; expectedText: string }>
+  ): Promise<void> {
+    try {
+      for (const label of labels) {
+        await this.validateLabel(label.selector, label.expectedText);
+      }
+    } catch (error) {
+      this.logMessage(`Failed to validate labels: ${error}`);
+      await this.captureScreenshotOnFailure("validate_labels_error");
+      throw error;
+    }
+  }
+
+  async verifyLoginUIState({
+    welcomeSelector,
+    logoutSelector,
+    loginSelector,
+    signupSelector,
+    expectedUsername,
+  }: {
+    welcomeSelector: string;
+    logoutSelector: string;
+    loginSelector: string;
+    signupSelector: string;
+    expectedUsername: string;
+  }): Promise<void> {
+    try {
+      const welcomeEl = this.page.locator(welcomeSelector);
+      await expect(welcomeEl).toBeVisible({ timeout: 5000 });
+
+      const welcomeText = await welcomeEl.textContent();
+      if (!welcomeText?.includes(expectedUsername)) {
+        throw new Error(
+          `Expected welcome message to include "${expectedUsername}", but got "${welcomeText}"`
+        );
+      }
+
+      await expect(this.page.locator(logoutSelector)).toBeVisible();
+      await expect(this.page.locator(loginSelector)).toBeHidden();
+      await expect(this.page.locator(signupSelector)).toBeHidden();
+
+      this.logMessage(
+        `✅ Logged-in UI state verified for user "${expectedUsername}"`
+      );
+    } catch (error) {
+      this.logMessage(
+        `❌ Login UI state verification failed: ${error.message}`
+      );
+      await this.captureScreenshotOnFailure("verify-login-ui-state-error");
+      throw error;
+    }
+  }
+
+  async verifyLogoutUIState({
+    logoutSelector,
+    loginSelector,
+    signupSelector,
+    welcomeSelector,
+  }: {
+    logoutSelector: string;
+    loginSelector: string;
+    signupSelector: string;
+    welcomeSelector: string;
+  }): Promise<void> {
+    try {
+      await expect(this.page.locator(logoutSelector)).toBeHidden({
+        timeout: 5000,
+      });
+      await expect(this.page.locator(welcomeSelector)).toBeHidden();
+      await expect(this.page.locator(loginSelector)).toBeVisible();
+      await expect(this.page.locator(signupSelector)).toBeVisible();
+
+      this.logMessage("✅ Logged-out UI state verified successfully.");
+    } catch (error) {
+      this.logMessage(
+        `❌ Logout UI state verification failed: ${error.message}`
+      );
+      await this.captureScreenshotOnFailure("verify-logout-ui-state-error");
+      throw error;
+    }
+  }
+
+  async verifyFieldIsPasswordType(selector: string): Promise<void> {
+    try {
+      const inputType = await this.page.getAttribute(selector, "type");
+
+      if (inputType !== "password") {
+        throw new Error(
+          `Expected field type to be "password", but got "${inputType}"`
+        );
+      }
+
+      this.logMessage(
+        `✅ Field "${selector}" is correctly set to type "password"`
+      );
+    } catch (error) {
+      this.logMessage(
+        `❌ Error verifying password field type for selector "${selector}": ${error.message}`
+      );
+      await this.captureScreenshotOnFailure("verify-password-type-error");
       throw error;
     }
   }
