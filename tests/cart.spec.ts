@@ -70,7 +70,8 @@ class CartPage extends ExpectedValueProvider {
         const clickedProductDetails: any = [];
         const firstProductDetails =
           await runner.selectAndCaptureRandomProductDetailsAndClick(
-            homePage.productContainer
+            homePage.productContainer,
+            homePage.productTitles
           );
         await runner.wait(5, {
           waitForSelector: productDetailPage.productTitle,
@@ -122,7 +123,8 @@ class CartPage extends ExpectedValueProvider {
         const clickedProductDetails: any = [];
         const firstProductDetails =
           await runner.selectAndCaptureRandomProductDetailsAndClick(
-            homePage.productContainer
+            homePage.productContainer,
+            homePage.productTitles
           );
         await runner.wait(2, { waitForLoadState: "load" });
         await runner.verifyUrlContains(envData.productUrl);
@@ -151,7 +153,8 @@ class CartPage extends ExpectedValueProvider {
 
         const secondProductDetails =
           await runner.selectAndCaptureRandomProductDetailsAndClick(
-            homePage.productContainer
+            homePage.productContainer,
+            homePage.productTitles
           );
         await runner.wait(2, { waitForLoadState: "load" });
         await runner.verifyUrlContains(envData.productUrl);
@@ -199,7 +202,8 @@ class CartPage extends ExpectedValueProvider {
         const clickedProductDetails: any = [];
         const firstProductDetails =
           await runner.selectAndCaptureRandomProductDetailsAndClick(
-            homePage.productContainer
+            homePage.productContainer,
+            homePage.productTitles
           );
         await runner.wait(2, { waitForLoadState: "load" });
         await runner.verifyUrlContains(envData.productUrl);
@@ -228,7 +232,8 @@ class CartPage extends ExpectedValueProvider {
 
         const secondProductDetails =
           await runner.selectAndCaptureRandomProductDetailsAndClick(
-            homePage.productContainer
+            homePage.productContainer,
+            homePage.productTitles
           );
         await runner.wait(2, { waitForLoadState: "load" });
         await runner.verifyUrlContains(envData.productUrl);
@@ -291,7 +296,8 @@ class CartPage extends ExpectedValueProvider {
         const clickedProductDetails: any = [];
         const firstProductDetails =
           await runner.selectAndCaptureRandomProductDetailsAndClick(
-            homePage.productContainer
+            homePage.productContainer,
+            homePage.productTitles
           );
         await runner.wait(2, { waitForLoadState: "load" });
         await runner.verifyUrlContains(envData.productUrl);
@@ -320,7 +326,8 @@ class CartPage extends ExpectedValueProvider {
 
         const secondProductDetails =
           await runner.selectAndCaptureRandomProductDetailsAndClick(
-            homePage.productContainer
+            homePage.productContainer,
+            homePage.productTitles
           );
         await runner.wait(2, { waitForLoadState: "load" });
         await runner.verifyUrlContains(envData.productUrl);
@@ -404,7 +411,8 @@ class CartPage extends ExpectedValueProvider {
         const clickedProductDetails: any = [];
         const firstProductDetails =
           await runner.selectAndCaptureRandomProductDetailsAndClick(
-            homePage.productContainer
+            homePage.productContainer,
+            homePage.productTitles
           );
         await runner.wait(2, { waitForLoadState: "load" });
         await runner.verifyUrlContains(envData.productUrl);
@@ -433,7 +441,8 @@ class CartPage extends ExpectedValueProvider {
 
         const secondProductDetails =
           await runner.selectAndCaptureRandomProductDetailsAndClick(
-            homePage.productContainer
+            homePage.productContainer,
+            homePage.productTitles
           );
         await runner.wait(5, { waitForLoadState: "load" });
         await runner.verifyUrlContains(envData.productUrl);
@@ -517,7 +526,8 @@ class CartPage extends ExpectedValueProvider {
         const clickedProductDetails: any = [];
         const firstProductDetails =
           await runner.selectAndCaptureRandomProductDetailsAndClick(
-            homePage.productContainer
+            homePage.productContainer,
+            homePage.productTitles
           );
         await runner.wait(5, { waitForLoadState: "load" });
         await runner.verifyUrlContains(envData.productUrl);
@@ -547,7 +557,8 @@ class CartPage extends ExpectedValueProvider {
 
         const secondProductDetails =
           await runner.selectAndCaptureRandomProductDetailsAndClick(
-            homePage.productContainer
+            homePage.productContainer,
+            homePage.productTitles
           );
         await runner.wait(5, { waitForLoadState: "load" });
         await runner.verifyUrlContains(envData.productUrl);
@@ -622,7 +633,9 @@ class CartPage extends ExpectedValueProvider {
           cartPage.purchaseCofimationMessageAlert,
           "Thank you for your purchase!"
         );
-        await runner.verifyContainsDigit(cartPage.purchaseCofimationDetailsInAlert)
+        await runner.verifyContainsDigit(
+          cartPage.purchaseCofimationDetailsInAlert
+        );
         await runner.verifyContainText(
           cartPage.purchaseCofimationDetailsInAlert,
           fakeUser.username
@@ -636,7 +649,9 @@ class CartPage extends ExpectedValueProvider {
           `${totalPriceValue}`
         );
         // This is a genuine Bug that the date is 1 month behind of the current date
-        await runner.verifyContainsTodayDate(cartPage.purchaseCofimationDetailsInAlert)
+        await runner.verifyContainsTodayDate(
+          cartPage.purchaseCofimationDetailsInAlert
+        );
         await runner.wait(5, { waitForLoadState: "load" });
 
         await runner.validateAndClick(cartPage.okButtonInAlert, {
