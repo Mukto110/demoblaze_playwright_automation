@@ -20,7 +20,7 @@ class HomePageTest extends ExpectedValueProvider {
         await runner.validateAttribute(
           homePage.homePageLogoImage,
           "src",
-          "bm.png"
+          homeData.homeLogoSrcValue
         );
         await runner.verifyContainText(
           homePage.homePageLogo,
@@ -35,12 +35,13 @@ class HomePageTest extends ExpectedValueProvider {
         homePage,
       }) => {
         await runner.clickOnElement(homePage.homePageLogo);
+        await runner.wait(1, { waitForLoadState: "load" });
         await runner.verifyUrlContains(envData.baseUrl);
         await runner.verifyElementIsVisible(homePage.homePageLogo);
         await runner.validateAttribute(
           homePage.homePageLogoImage,
           "src",
-          "bm.png"
+          homeData.homeLogoSrcValue
         );
         await runner.verifyContainText(
           homePage.homePageLogo,
@@ -126,7 +127,7 @@ class HomePageTest extends ExpectedValueProvider {
         await runner.verifyUrlContains(envData.cartUrl);
         await runner.verifyContainText(
           cartPage.cartPageHeaderText,
-          cartData.cartPageHeaderText // later change
+          cartData.cartPageHeaderText
         );
       });
 
@@ -257,7 +258,7 @@ class HomePageTest extends ExpectedValueProvider {
         await runner.validateAndClick(homePage.navbarHome, {
           expectedText: homeData.navbar.home,
         });
-        await runner.wait(1, { waitForLoadState: "load" });
+        await runner.wait(2, { waitForLoadState: "load" });
         await runner.verifyUrlContains(envData.homeButtonClickUrl);
         await runner.verifyElementsIsExist(homePage.productTitles);
         await runner.verifyElementsIsExist(homePage.productPrices);
@@ -280,7 +281,7 @@ class HomePageTest extends ExpectedValueProvider {
         await runner.validateAndClick(homePage.categoriesLaptops, {
           expectedText: homeData.categories.laptops,
         });
-        await runner.wait(1, { waitForLoadState: "load" });
+        // await runner.wait(1, { waitForLoadState: "load" });
         await runner.verifyElementsIsExist(homePage.productTitles);
         await runner.verifyElementsIsExist(homePage.productPrices);
         await runner.verifyElementsIsExist(homePage.productDescriptions);
@@ -497,7 +498,7 @@ class HomePageTest extends ExpectedValueProvider {
           await runner.selectAndCaptureRandomProductDetailsAndClick(
             homePage.productContainer
           );
-        await runner.waitUntilSeconds(2);
+        await runner.wait(2, { waitForLoadState: "load" });
         await runner.verifyUrlContains(envData.productUrl);
         await runner.validateProductDetailsOnDetailPage(
           randomFirstProductCardDetails,
@@ -544,7 +545,7 @@ class HomePageTest extends ExpectedValueProvider {
           await runner.selectAndCaptureRandomProductDetailsAndClick(
             homePage.productContainer
           );
-        await runner.waitUntilSeconds(2);
+        await runner.wait(1, { waitForLoadState: "load" });
         await runner.verifyUrlContains(envData.productUrl);
         await runner.validateProductDetailsOnDetailPage(
           randomFirstProductCardDetails,

@@ -1,5 +1,6 @@
 {
   "homeLogoText": "PRODUCT STORE",
+  "homeLogoSrcValue": "bm.png",
 
   "navbar": {
     "home": "Home (current)",
