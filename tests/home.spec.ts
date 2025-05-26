@@ -403,7 +403,8 @@ class HomePageTest extends ExpectedValueProvider {
         // Validating first random product
         const randomFirstProductCardDetails =
           await runner.selectAndCaptureRandomProductDetailsAndClick(
-            homePage.productContainer
+            homePage.productContainer,
+            homePage.productImages
           );
         await runner.waitUntilSeconds(2);
         await runner.verifyUrlContains(envData.productUrl);
@@ -420,7 +421,8 @@ class HomePageTest extends ExpectedValueProvider {
         // Validating second random product
         const randomSecondProductCardDetails =
           await runner.selectAndCaptureRandomProductDetailsAndClick(
-            homePage.productContainer
+            homePage.productContainer,
+            homePage.productImages
           );
         await runner.waitUntilSeconds(2);
         await runner.verifyUrlContains(envData.productUrl);
@@ -448,7 +450,8 @@ class HomePageTest extends ExpectedValueProvider {
         // Validating first random product
         const randomFirstProductCardDetails =
           await runner.selectAndCaptureRandomProductDetailsAndClick(
-            homePage.productContainer
+            homePage.productContainer,
+            homePage.productTitles
           );
         await runner.waitUntilSeconds(2);
         await runner.verifyUrlContains(envData.productUrl);
@@ -465,7 +468,8 @@ class HomePageTest extends ExpectedValueProvider {
         // Validating second random product
         const randomSecondProductCardDetails =
           await runner.selectAndCaptureRandomProductDetailsAndClick(
-            homePage.productContainer
+            homePage.productContainer,
+            homePage.productTitles
           );
         await runner.waitUntilSeconds(2);
         await runner.verifyUrlContains(envData.productUrl);
@@ -477,6 +481,7 @@ class HomePageTest extends ExpectedValueProvider {
         );
       });
 
+      // BUG_HOME_01 -> Click product card on pagination second page is not working correctly
       test("Verify clicking on a product image navigates to the correct product detail page on pagination second page", async ({
         runner,
         envData,
@@ -496,7 +501,8 @@ class HomePageTest extends ExpectedValueProvider {
         // Validating first random product
         const randomFirstProductCardDetails =
           await runner.selectAndCaptureRandomProductDetailsAndClick(
-            homePage.productContainer
+            homePage.productContainer,
+            homePage.productImages
           );
         await runner.wait(2, { waitForLoadState: "load" });
         await runner.verifyUrlContains(envData.productUrl);
@@ -513,7 +519,8 @@ class HomePageTest extends ExpectedValueProvider {
         // Validating second random product
         const randomSecondProductCardDetails =
           await runner.selectAndCaptureRandomProductDetailsAndClick(
-            homePage.productContainer
+            homePage.productContainer,
+            homePage.productImages
           );
         await runner.waitUntilSeconds(2);
         await runner.verifyUrlContains(envData.productUrl);
@@ -543,7 +550,8 @@ class HomePageTest extends ExpectedValueProvider {
         // Validating first random product
         const randomFirstProductCardDetails =
           await runner.selectAndCaptureRandomProductDetailsAndClick(
-            homePage.productContainer
+            homePage.productContainer,
+            homePage.productTitles
           );
         await runner.wait(1, { waitForLoadState: "load" });
         await runner.verifyUrlContains(envData.productUrl);
@@ -560,7 +568,8 @@ class HomePageTest extends ExpectedValueProvider {
         // Validating second random product
         const randomSecondProductCardDetails =
           await runner.selectAndCaptureRandomProductDetailsAndClick(
-            homePage.productContainer
+            homePage.productContainer,
+            homePage.productTitles
           );
         await runner.waitUntilSeconds(2);
         await runner.verifyUrlContains(envData.productUrl);

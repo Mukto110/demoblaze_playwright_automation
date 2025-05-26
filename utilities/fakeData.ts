@@ -22,6 +22,5 @@ export class FakeUser {
     this.card = faker.lorem.word();
     this.month = faker.lorem.word();
     this.year = faker.lorem.word();
-
   }
 }
