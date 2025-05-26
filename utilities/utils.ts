@@ -1346,62 +1346,57 @@ export class Utils {
     return { text: text.trim(), numericValue: numericValue.trim() };
   }
 
-  async selectAndCaptureRandomProductDetailsAndClick(
-    itemContainerLocator: string // Only this parameter is passed
-  ): Promise<ProductDetails> {
-    // Hardcode the internal locators relative to the itemContainerLocator
-    // If the title is also the clickable element, these two can be the same.
-    const internalTitleAndClickableLocator = ".card-title a"; // This serves as both title text and clickable element
-    const internalProductPriceLocator = ".card-block h5"; // Price text
-    const internalProductImageLocator = ".card-img-top"; // Image element
+async selectAndCaptureRandomProductDetailsAndClick(
+  itemContainerLocator: string,
+  clickableGlobalLocator: string // Accepts full Playwright locator
+): Promise<ProductDetails> {
+  const internalTitleLocator = ".card-title a";
+  const internalProductPriceLocator = ".card-block h5";
+  const internalProductImageLocator = ".card-img-top";
 
-    // First, get all product container locators
-    const allItemContainers = this.page.locator(itemContainerLocator);
-    const totalItems = await allItemContainers.count();
+  // Step 1: Get all containers
+  const allItemContainers = this.page.locator(itemContainerLocator);
+  const totalItems = await allItemContainers.count();
 
-    if (totalItems === 0) {
-      throw new Error(
-        `No items found using locator: ${itemContainerLocator}. Cannot select random product.`
-      );
-    }
-
-    const randomIndex = Math.floor(Math.random() * totalItems);
-    this.logMessage(
-      `[INFO] Randomly selected product at index: ${randomIndex}.`
+  if (totalItems === 0) {
+    throw new Error(
+      `No product containers found using: ${itemContainerLocator}`
     );
-
-    // Get the specific container for the randomly selected product
-    const selectedItemContainer = allItemContainers.nth(randomIndex);
-
-    // --- Capture details from the selected container ---
-    // Use .locator() on the selectedItemContainer to find elements *relative* to it
-    const titleElement = selectedItemContainer.locator(
-      internalTitleAndClickableLocator
-    );
-    const title = await titleElement.innerText();
-
-    const priceElement = selectedItemContainer.locator(
-      internalProductPriceLocator
-    );
-    const price = await priceElement.innerText();
-
-    const imageElement = selectedItemContainer.locator(
-      internalProductImageLocator
-    );
-    const imageSrc = await this.getImageSrcFromSpecificLocator(imageElement); // Pass the specific image Locator
-
-    this.logMessage(
-      `[INFO] Captured details for product at index ${randomIndex} (Home Page):`
-    );
-    this.logMessage(`  Title: "${title}"`);
-    this.logMessage(`  Price: "${price}"`);
-    this.logMessage(`  Image Src: "${imageSrc}"`);
-
-    // --- Perform the click using the title element itself ---
-    await titleElement.click(); // Click the title element (which is now the clickable element)
-
-    return { index: randomIndex, title, price, imageSrc };
   }
+
+  const randomIndex = Math.floor(Math.random() * totalItems);
+  this.logMessage(`[INFO] Randomly selected product at index: ${randomIndex}`);
+
+  const selectedItemContainer = allItemContainers.nth(randomIndex);
+
+  // Step 2: Extract title, price, image (still relative to container)
+  const titleElement = selectedItemContainer.locator(internalTitleLocator);
+  const priceElement = selectedItemContainer.locator(internalProductPriceLocator);
+  const imageElement = selectedItemContainer.locator(internalProductImageLocator);
+
+  const title = await titleElement.innerText();
+  const price = await priceElement.innerText();
+  const imageSrc = await this.getImageSrcFromSpecificLocator(imageElement);
+
+  this.logMessage(`  Title: "${title}"`);
+  this.logMessage(`  Price: "${price}"`);
+  this.logMessage(`  Image Src: "${imageSrc}"`);
+
+  // Step 3: Use full clickable locator and filter by index
+  const clickableItems = this.page.locator(clickableGlobalLocator);
+  const totalClickable = await clickableItems.count();
+
+  if (totalClickable <= randomIndex) {
+    throw new Error(`❌ Clickable locator count (${totalClickable}) is less than required index (${randomIndex})`);
+  }
+
+  const clickableElement = clickableItems.nth(randomIndex);
+  await clickableElement.click();
+
+  return { index: randomIndex, title, price, imageSrc };
+}
+
+
   async validateProductDetailsOnDetailPage(
     expectedProductDetails: {
       title: string;
