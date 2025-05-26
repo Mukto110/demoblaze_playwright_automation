@@ -1940,6 +1940,49 @@ export class Utils {
       throw error;
     }
   }
+  async verifyContainsDigit(
+    selector: string,
+    prefix: string = "Id:"
+  ): Promise<void> {
+    const element = this.page.locator(selector);
+    await expect(element).toBeVisible({ timeout: 5000 });
+
+    const text = await element.innerText();
+    this.logMessage(`🔍 Verifying ID in text: "${text}"`);
+
+    const idRegex = new RegExp(`${prefix}\\s\\d{7}`);
+    if (!idRegex.test(text)) {
+      throw new Error(
+        `❌ Expected 7-digit ID with prefix "${prefix}" not found in: "${text}"`
+      );
+    }
+
+    this.logMessage(`✅ Found valid 7-digit ID with prefix "${prefix}".`);
+  }
+  async verifyContainsTodayDate(
+    selector: string,
+    prefix: string = "Date:"
+  ): Promise<void> {
+    const element = this.page.locator(selector);
+    await expect(element).toBeVisible({ timeout: 5000 });
+
+    const text = await element.innerText();
+    this.logMessage(`🔍 Verifying Date in text: "${text}"`);
+
+    const now = new Date();
+    const today = `${now.getDate()}/${now.getMonth() + 1}/${now.getFullYear()}`; // e.g. "26/4/2025"
+    const dateRegex = new RegExp(`${prefix}\\s${today.replace(/\//g, "\\/")}`);
+
+    if (!dateRegex.test(text)) {
+      throw new Error(
+        `❌ Expected today's date "${today}" with prefix "${prefix}" not found in: "${text}"`
+      );
+    }
+
+    this.logMessage(
+      `✅ Found today's date "${today}" with prefix "${prefix}".`
+    );
+  }
 
   async validateLabel(selector: string, expectedText: string): Promise<void> {
     try {
