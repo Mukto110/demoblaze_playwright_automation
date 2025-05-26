@@ -1346,56 +1346,63 @@ export class Utils {
     return { text: text.trim(), numericValue: numericValue.trim() };
   }
 
-async selectAndCaptureRandomProductDetailsAndClick(
-  itemContainerLocator: string,
-  clickableGlobalLocator: string // Accepts full Playwright locator
-): Promise<ProductDetails> {
-  const internalTitleLocator = ".card-title a";
-  const internalProductPriceLocator = ".card-block h5";
-  const internalProductImageLocator = ".card-img-top";
+  async selectAndCaptureRandomProductDetailsAndClick(
+    itemContainerLocator: string,
+    clickableGlobalLocator: string // Accepts full Playwright locator
+  ): Promise<ProductDetails> {
+    const internalTitleLocator = ".card-title a";
+    const internalProductPriceLocator = ".card-block h5";
+    const internalProductImageLocator = ".card-img-top";
 
-  // Step 1: Get all containers
-  const allItemContainers = this.page.locator(itemContainerLocator);
-  const totalItems = await allItemContainers.count();
+    // Step 1: Get all containers
+    const allItemContainers = this.page.locator(itemContainerLocator);
+    const totalItems = await allItemContainers.count();
 
-  if (totalItems === 0) {
-    throw new Error(
-      `No product containers found using: ${itemContainerLocator}`
+    if (totalItems === 0) {
+      throw new Error(
+        `No product containers found using: ${itemContainerLocator}`
+      );
+    }
+
+    const randomIndex = Math.floor(Math.random() * totalItems);
+    this.logMessage(
+      `[INFO] Randomly selected product at index: ${randomIndex}`
     );
+
+    const selectedItemContainer = allItemContainers.nth(randomIndex);
+
+    // Step 2: Extract title, price, image (still relative to container)
+    const titleElement = selectedItemContainer.locator(internalTitleLocator);
+    const priceElement = selectedItemContainer.locator(
+      internalProductPriceLocator
+    );
+    const imageElement = selectedItemContainer.locator(
+      internalProductImageLocator
+    );
+
+    const title = await titleElement.innerText();
+    const price = await priceElement.innerText();
+    const imageSrc = await this.getImageSrcFromSpecificLocator(imageElement);
+
+    this.logMessage(`  Title: "${title}"`);
+    this.logMessage(`  Price: "${price}"`);
+    this.logMessage(`  Image Src: "${imageSrc}"`);
+
+    // Step 3: Use full clickable locator and filter by index
+    const clickableItems = this.page.locator(clickableGlobalLocator);
+    const totalClickable = await clickableItems.count();
+
+    if (totalClickable <= randomIndex) {
+      throw new Error(
+        `❌ Clickable locator count (${totalClickable}) is less than required index (${randomIndex})`
+      );
+    }
+
+    const clickableElement = clickableItems.nth(randomIndex);
+    await clickableElement.click();
+
+    return { index: randomIndex, title, price, imageSrc };
   }
-
-  const randomIndex = Math.floor(Math.random() * totalItems);
-  this.logMessage(`[INFO] Randomly selected product at index: ${randomIndex}`);
-
-  const selectedItemContainer = allItemContainers.nth(randomIndex);
-
-  // Step 2: Extract title, price, image (still relative to container)
-  const titleElement = selectedItemContainer.locator(internalTitleLocator);
-  const priceElement = selectedItemContainer.locator(internalProductPriceLocator);
-  const imageElement = selectedItemContainer.locator(internalProductImageLocator);
-
-  const title = await titleElement.innerText();
-  const price = await priceElement.innerText();
-  const imageSrc = await this.getImageSrcFromSpecificLocator(imageElement);
-
-  this.logMessage(`  Title: "${title}"`);
-  this.logMessage(`  Price: "${price}"`);
-  this.logMessage(`  Image Src: "${imageSrc}"`);
-
-  // Step 3: Use full clickable locator and filter by index
-  const clickableItems = this.page.locator(clickableGlobalLocator);
-  const totalClickable = await clickableItems.count();
-
-  if (totalClickable <= randomIndex) {
-    throw new Error(`❌ Clickable locator count (${totalClickable}) is less than required index (${randomIndex})`);
-  }
-
-  const clickableElement = clickableItems.nth(randomIndex);
-  await clickableElement.click();
-
-  return { index: randomIndex, title, price, imageSrc };
-}
-
 
   async validateProductDetailsOnDetailPage(
     expectedProductDetails: {
