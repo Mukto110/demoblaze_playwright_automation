@@ -1,3 +1,7 @@
 {
-    "loginModalTitle": "Log in"
+    "headerText": "Log in",
+    "labels": {
+        "userName": "Username:",
+        "Password": "Password:" 
+    }
 }

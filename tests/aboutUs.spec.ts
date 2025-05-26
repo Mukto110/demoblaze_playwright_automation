@@ -22,6 +22,7 @@ class AboutUsTest extends ExpectedValueProvider {
         await runner.verifyElementIsVisible(aboutModal.video);
       });
 
+      // BUG_ABOUT_US_01 -> Video is not playing correctly
       test("video plays correctly", async ({ runner, aboutModal }) => {
         await runner.clickOnElement(aboutModal.playButton);
         await runner.wait(2);
@@ -29,6 +30,7 @@ class AboutUsTest extends ExpectedValueProvider {
         await runner.verifyGreaterThan(t, 0, "Video did not start playing");
       });
 
+      // BUG_ABOUT_US_02 -> Video is not playing and resetting in reopening modal
       test("reopening modal resets video to beginning", async ({
         runner,
         homePage,

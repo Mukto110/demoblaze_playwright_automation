@@ -91,10 +91,10 @@ class HomePageTest extends ExpectedValueProvider {
           homeData.navbar.login
         );
         await runner.clickOnElement(homePage.navbarLogin);
-        await runner.verifyElementIsVisible(loginModal.loginModalTitle);
+        await runner.verifyElementIsVisible(loginModal.loginModalHeader);
         await runner.verifyContainText(
-          loginModal.loginModalTitle,
-          loginData.loginModalTitle
+          loginModal.loginModalHeader,
+          loginData.headerText
         );
         await runner.clickOnElement(loginModal.closeButton);
 
@@ -151,14 +151,25 @@ class HomePageTest extends ExpectedValueProvider {
       }) => {
         await runner.verifyElementIsVisible(homePage.carouselPreviousButton);
         await runner.verifyElementIsVisible(homePage.carouselNextButton);
-        await runner.verifyCarouselArrowNavigation(
+        await runner.verifyCarouselNextArrowNavigation(
           homePage.activeCarouselImage,
           homePage.carouselImages,
           homePage.carouselNextButton
         );
       });
 
-      // previous arrow button
+      test("Verify hero banner carousel previous arrow button change displayed image", async ({
+        runner,
+        homePage,
+      }) => {
+        await runner.verifyElementIsVisible(homePage.carouselPreviousButton);
+        await runner.verifyElementIsVisible(homePage.carouselNextButton);
+        await runner.verifyCarouselPreviousArrowNavigation(
+          homePage.activeCarouselImage,
+          homePage.carouselImages,
+          homePage.carouselPreviousButton
+        );
+      });
 
       test("Verify filtering phone tab interactions", async ({
         runner,
@@ -211,7 +222,7 @@ class HomePageTest extends ExpectedValueProvider {
           "byCat('monitor')"
         );
         await runner.validateAndClick(homePage.categoriesMonitors, {
-          expectedText: homeData.categories.laptops,
+          expectedText: homeData.categories.monitors,
         });
         await runner.wait(1, { waitForLoadState: "load" });
         await runner.verifyElementsIsExist(homePage.productImages, true);

@@ -930,6 +930,9 @@ export class Utils {
       const totalImages = await this.page.locator(allImagesLocator).count();
       const seenImages: string[] = [];
 
+      let firstImageSrc: string | undefined;
+      let firstImageSeenAgain = false;
+
       for (let i = 0; i < totalImages + 2; i++) {
         const currentSrc = await this.getAttributeFromLocator(
           activeImageLocator,
@@ -945,6 +948,9 @@ export class Utils {
         if (!seenImages.includes(currentSrc)) {
           seenImages.push(currentSrc);
           this.logMessage(`ℹ️ Detected new carousel image: ${currentSrc}`);
+          if (seenImages.length === 1) {
+            firstImageSrc = currentSrc; // Capturing first image's src
+          }
         }
 
         if (seenImages.length === totalImages) {
@@ -960,10 +966,32 @@ export class Utils {
         );
       }
 
+      for (let i = 0; i < totalImages + 2; i++) {
+        await this.wait(waitTimeInSeconds);
+        const currentSrc = await this.getAttributeFromLocator(
+          activeImageLocator,
+          "src"
+        );
+
+        if (currentSrc === firstImageSrc) {
+          firstImageSeenAgain = true;
+          this.logMessage(
+            `🔄 Carousel returned to the first image: ${firstImageSrc}`
+          );
+          break;
+        }
+      }
+
+      if (!firstImageSeenAgain) {
+        throw new Error(
+          `Carousel did not return to the first image (${firstImageSrc}) after showing all images.`
+        );
+      }
+
       this.logMessage(
         `✅ Carousel auto-change verified for all ${totalImages} image${
           totalImages > 1 ? "s" : ""
-        }.`
+        } and returned to the first image.`
       );
     } catch (err: any) {
       const message = `❌ Failed to verify full carousel rotation: ${err.message}`;
@@ -975,7 +1003,7 @@ export class Utils {
     }
   }
 
-  async verifyCarouselArrowNavigation(
+  async verifyCarouselNextArrowNavigation(
     activeImageLocator: string,
     allImageLocators: string,
     nextButtonLocator: string
@@ -994,7 +1022,6 @@ export class Utils {
 
       const visitedSrcs: string[] = [];
 
-      // Navigate forward through carousel images
       for (let i = 0; i < expectedSrcs.length; i++) {
         const currentSrc = await this.getAttributeFromLocator(
           activeImageLocator,
@@ -1003,6 +1030,7 @@ export class Utils {
         if (!currentSrc) throw new Error("Failed to get current image src.");
 
         visitedSrcs.push(currentSrc);
+        this.logMessage(`➡️ Visited carousel image: ${currentSrc}`);
 
         if (i < expectedSrcs.length - 1) {
           await this.clickOnElement(nextButtonLocator);
@@ -1010,13 +1038,31 @@ export class Utils {
         }
       }
 
-      // Check if every expectedSrc is present in visitedSrcs
       const missing = expectedSrcs.filter((src) => !visitedSrcs.includes(src));
       if (missing.length > 0) {
         throw new Error(
           `Next arrow did not navigate through all images. Missing: ${missing.join(
             ", "
           )}`
+        );
+      }
+
+      const firstImageSrc = visitedSrcs[0];
+      await this.clickOnElement(nextButtonLocator);
+      await this.wait(1);
+
+      const newCurrentSrc = await this.getAttributeFromLocator(
+        activeImageLocator,
+        "src"
+      );
+
+      if (newCurrentSrc === firstImageSrc) {
+        this.logMessage(
+          `🔁 Carousel returned to the first image after last next click: ${firstImageSrc}`
+        );
+      } else {
+        throw new Error(
+          `After reaching the last image, clicking next did not return to the first image. Got: ${newCurrentSrc}, expected: ${firstImageSrc}`
         );
       }
 
@@ -1027,6 +1073,85 @@ export class Utils {
       const message = `❌ Failed to verify carousel arrow navigation: ${err.message}`;
       this.logMessage(message, "error");
       await this.captureScreenshotOnFailure("verifyCarouselArrowNavigation");
+      throw new Error(message);
+    }
+  }
+
+  async verifyCarouselPreviousArrowNavigation(
+    activeImageLocator: string,
+    allImageLocators: string,
+    prevButtonLocator: string
+  ): Promise<void> {
+    try {
+      const expectedSrcs = await this.getAttributesFromLocator(
+        allImageLocators,
+        "src"
+      );
+
+      if (expectedSrcs.length < 2) {
+        throw new Error(
+          "Carousel must contain at least 2 images to verify navigation."
+        );
+      }
+
+      const visitedSrcs: string[] = [];
+
+      // Start from current image and go backward through all images
+      for (let i = 0; i < expectedSrcs.length; i++) {
+        const currentSrc = await this.getAttributeFromLocator(
+          activeImageLocator,
+          "src"
+        );
+        if (!currentSrc) throw new Error("Failed to get current image src.");
+
+        visitedSrcs.push(currentSrc);
+        this.logMessage(`⬅️ Visited carousel image: ${currentSrc}`);
+
+        if (i < expectedSrcs.length - 1) {
+          await this.clickOnElement(prevButtonLocator);
+          await this.wait(1);
+        }
+      }
+
+      // Verify all expected images were visited (may be in reverse order)
+      const missing = expectedSrcs.filter((src) => !visitedSrcs.includes(src));
+      if (missing.length > 0) {
+        throw new Error(
+          `Previous arrow did not navigate through all images. Missing: ${missing.join(
+            ", "
+          )}`
+        );
+      }
+
+      // Now check if clicking previous again returns to the first seen image
+      const firstImageSrc = visitedSrcs[0];
+      await this.clickOnElement(prevButtonLocator);
+      await this.wait(1);
+
+      const newCurrentSrc = await this.getAttributeFromLocator(
+        activeImageLocator,
+        "src"
+      );
+
+      if (newCurrentSrc === firstImageSrc) {
+        this.logMessage(
+          `🔁 Carousel returned to the first image after last previous click: ${firstImageSrc}`
+        );
+      } else {
+        throw new Error(
+          `After reaching the first image, clicking previous did not return to the last image. Got: ${newCurrentSrc}, expected: ${firstImageSrc}`
+        );
+      }
+
+      this.logMessage(
+        `✅ Carousel previous-arrow navigation verified successfully.`
+      );
+    } catch (err: any) {
+      const message = `❌ Failed to verify carousel previous arrow navigation: ${err.message}`;
+      this.logMessage(message, "error");
+      await this.captureScreenshotOnFailure(
+        "verifyCarouselPreviousArrowNavigation"
+      );
       throw new Error(message);
     }
   }
