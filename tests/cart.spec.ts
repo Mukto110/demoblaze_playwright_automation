@@ -21,9 +21,14 @@ class CartPage extends ExpectedValueProvider {
         cartPage,
         envData,
       }) => {
-        await runner.validateAndClick(homePage.navbarCart, {
-          expectedText: homeData.navbar.cart,
-        });
+        await runner.verifyElementIsVisible(homePage.navbarCart)
+        await runner.verifyElementsAreEnabled(homePage.navbarCart)
+        
+        await runner.validateAndClick(
+          homePage.navbarCart,
+          homeData.navbar.cart
+        );
+        await runner.wait(5, { waitForSelector: cartPage.cartPageHeaderText });
         await runner.verifyUrlContains(envData.cartUrl);
         await runner.verifyContainText(
           cartPage.cartPageHeaderText,
@@ -68,6 +73,8 @@ class CartPage extends ExpectedValueProvider {
         await runner.verifyElementsIsExist(homePage.productPrices);
         await runner.verifyElementsIsExist(homePage.productDescriptions);
         const clickedProductDetails: any = [];
+        await runner.verifyElementIsVisible(homePage.productTitles)
+        await runner.verifyElementsAreEnabled(homePage.productTitles)
         const firstProductDetails =
           await runner.selectAndCaptureRandomProductDetailsAndClick(
             homePage.productContainer,
@@ -85,19 +92,22 @@ class CartPage extends ExpectedValueProvider {
           productDetailPage.productPrice,
           productDetailPage.productImg
         );
+        await runner.verifyElementIsVisible(productDetailPage.addToCartButton)
+        await runner.verifyElementsAreEnabled(productDetailPage.addToCartButton)
 
-        await runner.validateAndClick(productDetailPage.addToCartButton, {
-          expectedText: homeData.productDetails.buttonText,
-          waitForSelectorAfterClick: productDetailPage.productTitle,
-        });
-        clickedProductDetails.push(firstProductDetails);
+        await runner.validateAndClick(productDetailPage.addToCartButton,homeData.productDetails.buttonText
+         
+        );
+
         await runner.acceptWebAlert("Product added");
+        clickedProductDetails.push(firstProductDetails);
 
         console.log(clickedProductDetails);
-        await runner.validateAndClick(homePage.navbarCart, {
-          expectedText: homeData.navbar.cart,
-          waitForSelectorAfterClick: productDetailPage.productTitle,
-        });
+        await runner.verifyElementIsVisible(homePage.navbarCart,)
+        await runner.verifyElementsAreEnabled(homePage.navbarCart,)
+        await runner.validateAndClick(homePage.navbarCart, homeData.navbar.cart
+      );
+      await runner.wait(5,{waitForSelector: cartPage.cartPageHeaderText})
 
         await runner.validateProductsInCart(
           clickedProductDetails,
