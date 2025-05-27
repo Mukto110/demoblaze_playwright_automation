@@ -5,7 +5,9 @@
     "ttleSectionText": "Title",
     "priceSectionText": "Price",
     "closeSectionText": "x",
+    "orderModalHeaderText": "Place order",
     "placeOrderButtonText": "Place Order",
-    "orderModalPurchaseButtonText": "Purchase"
+    "orderModalPurchaseButtonText": "Purchase",
+    "okButtonInAlertText": "OK"
 
 }
