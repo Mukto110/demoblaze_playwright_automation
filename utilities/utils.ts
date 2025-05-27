@@ -125,31 +125,40 @@ export class Utils {
     }
   }
 
-async validateAndClick(buttonLocator: string, expectedText: string): Promise<void> {
-  const logIdentifier = `button located by "${buttonLocator}"`;
-  this.logMessage(`[INFO] Validating and attempting to click ${logIdentifier}.`);
+  async validateAndClick(
+    buttonLocator: string,
+    expectedText: string
+  ): Promise<void> {
+    const logIdentifier = `button located by "${buttonLocator}"`;
+    this.logMessage(
+      `[INFO] Validating and attempting to click ${logIdentifier}.`
+    );
 
-  try {
-    const button = this.page.locator(buttonLocator);
+    try {
+      const button = this.page.locator(buttonLocator);
 
-    // ✅ Only verify expected text
-    await expect(button).toHaveText(expectedText, { timeout: 5000 });
-    this.logMessage(`✅ ${logIdentifier} has expected text: "${expectedText}".`);
+      // ✅ Only verify expected text
+      await expect(button).toHaveText(expectedText, { timeout: 5000 });
+      this.logMessage(
+        `✅ ${logIdentifier} has expected text: "${expectedText}".`
+      );
 
-    // ✅ Perform click
-    await button.click();
-    this.logMessage(`✅ Successfully clicked ${logIdentifier}.`);
-  } catch (error: any) {
-    const errorMsg = `❌ Failed to validate or click ${logIdentifier}: ${error.message}`;
-    this.logMessage(errorMsg, "error");
+      // ✅ Perform click
+      await button.click();
+      this.logMessage(`✅ Successfully clicked ${logIdentifier}.`);
+    } catch (error: any) {
+      const errorMsg = `❌ Failed to validate or click ${logIdentifier}: ${error.message}`;
+      this.logMessage(errorMsg, "error");
 
-    const screenshotName = `Fail_${buttonLocator.replace(/[^a-zA-Z0-9_]/g, "_")}`;
-    await this.captureScreenshotOnFailure(screenshotName);
+      const screenshotName = `Fail_${buttonLocator.replace(
+        /[^a-zA-Z0-9_]/g,
+        "_"
+      )}`;
+      await this.captureScreenshotOnFailure(screenshotName);
 
-    throw new Error(errorMsg);
+      throw new Error(errorMsg);
+    }
   }
-}
-
 
   async verifyTitle(title: string): Promise<void> {
     try {
@@ -550,38 +559,43 @@ async wait(
       throw new Error(msg);
     }
   }
-async verifyElementsAreEnabled(selector: string): Promise<void> {
-  try {
-    const elements = this.page.locator(selector);
-    const count = await elements.count();
+  async verifyElementsAreEnabled(selector: string): Promise<void> {
+    try {
+      const elements = this.page.locator(selector);
+      const count = await elements.count();
 
-    if (count === 0) {
-      const msg = `❌ No elements found for selector: ${selector}`;
-      this.logMessage(msg, "error");
-      await this.captureScreenshotOnFailure(`NotFound_${selector.replace(/[^a-zA-Z0-9_]/g, "_")}`);
-      throw new Error(msg);
-    }
-
-    for (let i = 0; i < count; i++) {
-      const current = elements.nth(i);
-      const isEnabled = await current.isEnabled();
-      if (!isEnabled) {
-        const msg = `❌ Element at index ${i} (${selector}) is NOT enabled.`;
+      if (count === 0) {
+        const msg = `❌ No elements found for selector: ${selector}`;
         this.logMessage(msg, "error");
-        await this.captureScreenshotOnFailure(`NotEnabled_${selector.replace(/[^a-zA-Z0-9_]/g, "_")}`);
+        await this.captureScreenshotOnFailure(
+          `NotFound_${selector.replace(/[^a-zA-Z0-9_]/g, "_")}`
+        );
         throw new Error(msg);
       }
-      this.logMessage(`✅ Element at index ${i} (${selector}) is enabled.`);
+
+      for (let i = 0; i < count; i++) {
+        const current = elements.nth(i);
+        const isEnabled = await current.isEnabled();
+        if (!isEnabled) {
+          const msg = `❌ Element at index ${i} (${selector}) is NOT enabled.`;
+          this.logMessage(msg, "error");
+          await this.captureScreenshotOnFailure(
+            `NotEnabled_${selector.replace(/[^a-zA-Z0-9_]/g, "_")}`
+          );
+          throw new Error(msg);
+        }
+        this.logMessage(`✅ Element at index ${i} (${selector}) is enabled.`);
+      }
+
+      this.logMessage(
+        `✅ All ${count} elements matched by (${selector}) are enabled.`
+      );
+    } catch (error: any) {
+      const finalMsg = `❌ Failed while checking enabled state for elements (${selector}): ${error.message}`;
+      this.logMessage(finalMsg, "error");
+      throw new Error(finalMsg);
     }
-
-    this.logMessage(`✅ All ${count} elements matched by (${selector}) are enabled.`);
-  } catch (error: any) {
-    const finalMsg = `❌ Failed while checking enabled state for elements (${selector}): ${error.message}`;
-    this.logMessage(finalMsg, "error");
-    throw new Error(finalMsg);
   }
-}
-
 
   async verifyElementIsDisabled(
     selector: string,
@@ -1674,9 +1688,7 @@ async verifyElementsAreEnabled(selector: string): Promise<void> {
           throw new Error(errorMsg);
         }
 
-        this.logMessage(
-          `✅ Element ${i + 1} content validated in selector: "${target}"`
-        );
+        this.logMessage(`✅ Element ${i + 1} content information: "${target}"`);
       }
     } catch (error) {
       const errorMsg = `Failed to verify elements for selector: "${selector}"`;
