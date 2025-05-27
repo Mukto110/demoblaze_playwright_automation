@@ -3,28 +3,6 @@ import logger from "./logger";
 // import { allure } from "allure-playwright";
 import { ExpectedValueProvider } from "./valueProvider";
 
-interface ButtonClickOptions {
-  /** Expected text content of the button. Optional, if you don't need to validate text. */
-  expectedText?: string;
-  /** Whether to wait for a page navigation after clicking. Defaults to true. */
-  waitForNavigation?: boolean;
-  /**
-   * The expected URL after navigation. Can be a string (exact match) or RegExp (partial match).
-   * Only used if waitForNavigation is true.
-   */
-  expectedURL?: string | RegExp;
-  /**
-   * A CSS selector for an element expected to appear/become visible on the page
-   * after the button click (e.g., a success message, a new section).
-   */
-  waitForSelectorAfterClick?: string;
-  /**
-   * The state to wait for on the page after click. Default is 'load'.
-   * Possible values: 'load', 'domcontentloaded', 'networkidle'.
-   */
-  waitForLoadState?: "load" | "domcontentloaded" | "networkidle";
-}
-
 interface ProductDetails {
   index: number;
   title: string;
@@ -147,97 +125,31 @@ export class Utils {
     }
   }
 
-  async validateAndClick(
-    buttonLocator: string,
-    options?: ButtonClickOptions
-  ): Promise<void> {
-    const opts: ButtonClickOptions = {
-      waitForNavigation: true, // Default to waiting for navigation
-      waitForLoadState: "load", // Default load state
-      ...options,
-    };
+async validateAndClick(buttonLocator: string, expectedText: string): Promise<void> {
+  const logIdentifier = `button located by "${buttonLocator}"`;
+  this.logMessage(`[INFO] Validating and attempting to click ${logIdentifier}.`);
 
-    // Use the buttonLocator directly for logging
-    const logIdentifier = `button located by "${buttonLocator}"`; // Derived identifier for logging
+  try {
+    const button = this.page.locator(buttonLocator);
 
-    this.logMessage(
-      `[INFO] Validating and attempting to click ${logIdentifier}.`
-    );
-    try {
-      const button = this.page.locator(buttonLocator);
+    // ✅ Only verify expected text
+    await expect(button).toHaveText(expectedText, { timeout: 5000 });
+    this.logMessage(`✅ ${logIdentifier} has expected text: "${expectedText}".`);
 
-      // --- Pre-Click Validations (Industry Standard) ---
-      await expect(button).toBeVisible({ timeout: 10000 });
-      this.logMessage(`✅ ${logIdentifier} is visible.`);
+    // ✅ Perform click
+    await button.click();
+    this.logMessage(`✅ Successfully clicked ${logIdentifier}.`);
+  } catch (error: any) {
+    const errorMsg = `❌ Failed to validate or click ${logIdentifier}: ${error.message}`;
+    this.logMessage(errorMsg, "error");
 
-      await expect(button).toBeEnabled({ timeout: 5000 });
-      this.logMessage(`✅ ${logIdentifier} is enabled.`);
+    const screenshotName = `Fail_${buttonLocator.replace(/[^a-zA-Z0-9_]/g, "_")}`;
+    await this.captureScreenshotOnFailure(screenshotName);
 
-      if (opts.expectedText) {
-        await expect(button).toHaveText(opts.expectedText, { timeout: 5000 });
-        this.logMessage(
-          `✅ ${logIdentifier} has expected text: "${opts.expectedText}".`
-        );
-      }
-
-      // --- Perform Click and Post-Click Waits ---
-      const clickActions: Promise<any>[] = [button.click()];
-
-      if (opts.waitForNavigation) {
-        if (opts.expectedURL) {
-          clickActions.unshift(
-            this.page.waitForURL(opts.expectedURL, {
-              waitUntil: opts.waitForLoadState,
-            })
-          );
-          this.logMessage(
-            `[INFO] Waiting for URL to match: ${
-              opts.expectedURL instanceof RegExp
-                ? opts.expectedURL.source
-                : opts.expectedURL
-            }.`
-          );
-        } else {
-          clickActions.unshift(
-            this.page.waitForLoadState(opts.waitForLoadState)
-          );
-          this.logMessage(
-            `[INFO] Waiting for page load state: '${opts.waitForLoadState}'.`
-          );
-        }
-      }
-
-      if (opts.waitForSelectorAfterClick) {
-        clickActions.push(
-          this.page
-            .locator(opts.waitForSelectorAfterClick)
-            .waitFor({ state: "visible", timeout: 15000 })
-        );
-        this.logMessage(
-          `[INFO] Waiting for selector "${opts.waitForSelectorAfterClick}" to be visible after click.`
-        );
-      }
-
-      await Promise.all(clickActions);
-      this.logMessage(`[INFO] Successfully clicked ${logIdentifier}.`);
-
-      // --- Post-Click Assertions (Basic, within the function) ---
-      if (opts.waitForNavigation && opts.expectedURL) {
-        await expect(this.page).toHaveURL(opts.expectedURL, { timeout: 5000 });
-        this.logMessage(`✅ Navigated to expected URL: ${this.page.url()}.`);
-      }
-    } catch (error: any) {
-      const errorMsg = `❌ Failed to validate or click ${logIdentifier}: ${error.message}`;
-      this.logMessage(errorMsg, "error");
-      // Use a sanitized locator for screenshot name
-      const screenshotName = `Fail_${buttonLocator.replace(
-        /[^a-zA-Z0-9_]/g,
-        "_"
-      )}`;
-      await this.captureScreenshotOnFailure(screenshotName);
-      throw new Error(errorMsg);
-    }
+    throw new Error(errorMsg);
   }
+}
+
 
   async verifyTitle(title: string): Promise<void> {
     try {
@@ -633,6 +545,38 @@ export class Utils {
       throw new Error(msg);
     }
   }
+async verifyElementsAreEnabled(selector: string): Promise<void> {
+  try {
+    const elements = this.page.locator(selector);
+    const count = await elements.count();
+
+    if (count === 0) {
+      const msg = `❌ No elements found for selector: ${selector}`;
+      this.logMessage(msg, "error");
+      await this.captureScreenshotOnFailure(`NotFound_${selector.replace(/[^a-zA-Z0-9_]/g, "_")}`);
+      throw new Error(msg);
+    }
+
+    for (let i = 0; i < count; i++) {
+      const current = elements.nth(i);
+      const isEnabled = await current.isEnabled();
+      if (!isEnabled) {
+        const msg = `❌ Element at index ${i} (${selector}) is NOT enabled.`;
+        this.logMessage(msg, "error");
+        await this.captureScreenshotOnFailure(`NotEnabled_${selector.replace(/[^a-zA-Z0-9_]/g, "_")}`);
+        throw new Error(msg);
+      }
+      this.logMessage(`✅ Element at index ${i} (${selector}) is enabled.`);
+    }
+
+    this.logMessage(`✅ All ${count} elements matched by (${selector}) are enabled.`);
+  } catch (error: any) {
+    const finalMsg = `❌ Failed while checking enabled state for elements (${selector}): ${error.message}`;
+    this.logMessage(finalMsg, "error");
+    throw new Error(finalMsg);
+  }
+}
+
 
   async verifyElementIsDisabled(
     selector: string,
