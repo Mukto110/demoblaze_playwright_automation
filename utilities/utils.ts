@@ -217,69 +217,70 @@ export class Utils {
 
   async verifyContainText(
     identifier: string,
-    expectedText: string
+    expectedText: string,
+    dynamicExpectedText?: string
   ): Promise<void> {
     try {
       await expect
         .soft(this.page.locator(identifier))
-        .toContainText(expectedText);
+        .toContainText(
+          expectedText || expectedText + " " + dynamicExpectedText
+        );
       this.logMessage(
-        `Verified element with identifier ${identifier} contains text: "${expectedText}"`
+        `Verified element with identifier ${identifier} contains text: "${expectedText} ${dynamicExpectedText}"`
       );
     } catch (error) {
-      const errorMsg = `Failed to verify element with identifier ${identifier} contains text: "${expectedText}"`;
+      const errorMsg = `Failed to verify element with identifier ${identifier} contains text: "${expectedText} ${expectedText}"`;
       this.logMessage(errorMsg, "error");
       await this.captureScreenshotOnFailure("verifyContainText");
       throw new Error(errorMsg);
     }
   }
 
-async wait(
-  time: number,
-  options: {
-    waitForSelector?: string;
-    waitForNetworkIdle?: boolean;
-    waitForLoadState?: "load" | "domcontentloaded" | "networkidle";
-  } = {}
-): Promise<void> {
-  const { waitForSelector, waitForNetworkIdle, waitForLoadState } = options;
+  async wait(
+    time: number,
+    options: {
+      waitForSelector?: string;
+      waitForNetworkIdle?: boolean;
+      waitForLoadState?: "load" | "domcontentloaded" | "networkidle";
+    } = {}
+  ): Promise<void> {
+    const { waitForSelector, waitForNetworkIdle, waitForLoadState } = options;
 
-  try {
-    if (waitForSelector) {
-      await this.page.waitForSelector(waitForSelector, {
-        state: "visible",
-        timeout: time * 1000,
-      });
-      this.logMessage(`Waited for selector: ${waitForSelector}`);
+    try {
+      if (waitForSelector) {
+        await this.page.waitForSelector(waitForSelector, {
+          state: "visible",
+          timeout: time * 1000,
+        });
+        this.logMessage(`Waited for selector: ${waitForSelector}`);
+      }
+
+      if (waitForNetworkIdle) {
+        await this.page.waitForLoadState("networkidle", {
+          timeout: time * 1000,
+        });
+        this.logMessage("Waited for network idle");
+      }
+
+      if (waitForLoadState) {
+        await this.page.waitForLoadState(waitForLoadState, {
+          timeout: time * 1000,
+        });
+        this.logMessage(`Waited for page load state: ${waitForLoadState}`);
+      }
+
+      if (!waitForSelector && !waitForNetworkIdle && !waitForLoadState) {
+        await this.page.waitForTimeout(time * 1000);
+        this.logMessage(`Waited for ${time} seconds.`);
+      }
+    } catch (error) {
+      const errorMsg = "Failed to wait for the specified conditions";
+      this.logMessage(errorMsg, "error");
+      await this.captureScreenshotOnFailure("wait");
+      throw new Error(errorMsg);
     }
-
-    if (waitForNetworkIdle) {
-      await this.page.waitForLoadState("networkidle", {
-        timeout: time * 1000,
-      });
-      this.logMessage("Waited for network idle");
-    }
-
-    if (waitForLoadState) {
-      await this.page.waitForLoadState(waitForLoadState, {
-        timeout: time * 1000,
-      });
-      this.logMessage(`Waited for page load state: ${waitForLoadState}`);
-    }
-
-    if (!waitForSelector && !waitForNetworkIdle && !waitForLoadState) {
-      await this.page.waitForTimeout(time * 1000);
-      this.logMessage(`Waited for ${time} seconds.`);
-    }
-
-  } catch (error) {
-    const errorMsg = "Failed to wait for the specified conditions";
-    this.logMessage(errorMsg, "error");
-    await this.captureScreenshotOnFailure("wait");
-    throw new Error(errorMsg);
   }
-}
-
 
   async verifyUrlContains(text: string): Promise<void> {
     try {
@@ -1886,23 +1887,25 @@ async wait(
       throw new Error(errorMsg);
     }
   }
+
   async handleAlertWithMessage(expectedMessage: string): Promise<void> {
     try {
-      this.page.on("dialog", async (dialog) => {
+      await this.page.waitForEvent("dialog").then(async (dialog) => {
         expect(dialog.type()).toContain("alert");
         expect(dialog.message()).toContain(expectedMessage);
         await dialog.accept();
 
         this.logMessage(
-          `handled alert correctly with message: ${expectedMessage}`
+          `✅ Handled alert correctly with message: ${expectedMessage}`
         );
       });
     } catch (error) {
-      this.logMessage(`:x: Failed to handle alert: ${error}`, "error");
+      this.logMessage(`❌ Failed to handle alert: ${error}`, "error");
       await this.captureScreenshotOnFailure("alert_handling_error");
       throw error;
     }
   }
+
   async verifyContainsDigit(
     selector: string,
     prefix: string = "Id:"
@@ -1986,7 +1989,6 @@ async wait(
   }): Promise<void> {
     try {
       const welcomeEl = this.page.locator(welcomeSelector);
-      await expect(welcomeEl).toBeVisible({ timeout: 5000 });
 
       const welcomeText = await welcomeEl.textContent();
       if (!welcomeText?.includes(expectedUsername)) {

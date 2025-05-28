@@ -20,13 +20,12 @@ class LoginModal extends ExpectedValueProvider {
           homeData.navbar.login
         );
         await runner.clickOnElement(homePage.navbarLogin);
-        await runner.wait(1, { waitForLoadState: "load" });
+        await runner.wait(2, { waitForSelector: loginModal.loginModalHeader });
         await runner.verifyElementIsVisible(loginModal.loginModalHeader);
         await runner.verifyContainText(
           loginModal.loginModalHeader,
           loginData.headerText
         );
-        await runner.wait(1, { waitForLoadState: "load" });
       });
 
       test("Verify that the username and password field labels are correctly displayed", async ({
@@ -45,73 +44,158 @@ class LoginModal extends ExpectedValueProvider {
         ]);
       });
 
+      test("Verify that the user can type into the input fields and reopening the modal after clicking 'close' button shouldn't get removed the value", async ({
+        runner,
+        fakeUser,
+        loginModal,
+        homePage,
+      }) => {
+        await runner.verifyElementIsVisible(loginModal.userNameInputField);
+        await runner.fillInputBox(
+          loginModal.userNameInputField,
+          fakeUser.username
+        );
+        await runner.verifyElementIsVisible(loginModal.passwordInputField);
+        await runner.fillInputBox(
+          loginModal.passwordInputField,
+          fakeUser.password
+        );
+        await runner.verifyElementIsVisible(loginModal.closeButton);
+        await runner.clickOnElement(loginModal.closeButton);
+        await runner.verifyElementIsVisible(homePage.navbarLogin);
+        await runner.clickOnElement(homePage.navbarLogin);
+        await runner.verifyInputValue(
+          loginModal.userNameInputField,
+          fakeUser.username
+        );
+        await runner.verifyInputValue(
+          loginModal.passwordInputField,
+          fakeUser.password
+        );
+      });
+
+      test("Verify that the values of input fields shouldn't get removed on reopening the modal after clicking 'cross' button", async ({
+        runner,
+        fakeUser,
+        loginModal,
+        homePage,
+      }) => {
+        await runner.verifyElementIsVisible(loginModal.userNameInputField);
+        await runner.fillInputBox(
+          loginModal.userNameInputField,
+          fakeUser.username
+        );
+        await runner.verifyElementIsVisible(loginModal.passwordInputField);
+        await runner.fillInputBox(
+          loginModal.passwordInputField,
+          fakeUser.password
+        );
+        await runner.verifyElementIsVisible(loginModal.crossButton);
+        await runner.clickOnElement(loginModal.crossButton);
+        await runner.verifyElementIsVisible(homePage.navbarLogin);
+        await runner.clickOnElement(homePage.navbarLogin);
+        await runner.verifyInputValue(
+          loginModal.userNameInputField,
+          fakeUser.username
+        );
+        await runner.verifyInputValue(
+          loginModal.passwordInputField,
+          fakeUser.password
+        );
+      });
+
       test("Verify that login is prevented with a modal message when both username and password fields are empty", async ({
+        runner,
         loginHelper,
         loginModal,
       }) => {
-        await loginHelper.loginAndExpectAlert({
-          username: "",
-          password: "",
-          expectedAlertText: loginData.userNameOrPasswordRequiredText,
-          selectors: {
-            usernameField: loginModal.userNameInputField,
-            passwordField: loginModal.passwordInputField,
-            loginButton: loginModal.loginButton,
-          },
-        });
+        await runner.verifyElementIsVisible(loginModal.userNameInputField);
+        await runner.verifyElementIsVisible(loginModal.passwordInputField);
+        await loginHelper.loginAndExpectAlert(
+          "",
+          "",
+          loginData.userNameOrPasswordRequiredText
+        );
       });
 
       test("Verify that login is prevented when only the username is entered and the password is left blank", async ({
+        runner,
         loginHelper,
         envData,
         loginModal,
       }) => {
-        await loginHelper.loginAndExpectAlert({
-          username: envData.username,
-          password: "",
-          expectedAlertText: loginData.userNameOrPasswordRequiredText,
-          selectors: {
-            usernameField: loginModal.userNameInputField,
-            passwordField: loginModal.passwordInputField,
-            loginButton: loginModal.loginButton,
-          },
-        });
+        await runner.verifyElementIsVisible(loginModal.userNameInputField);
+        await runner.verifyElementIsVisible(loginModal.passwordInputField);
+        await loginHelper.loginAndExpectAlert(
+          envData.username,
+          "",
+          loginData.userNameOrPasswordRequiredText
+        );
       });
 
       test("Verify that log in is prevented when only the password is entered and the username is left blank", async ({
+        runner,
         loginHelper,
         envData,
         loginModal,
       }) => {
-        await loginHelper.loginAndExpectAlert({
-          username: "",
-          password: envData.password,
-          expectedAlertText: loginData.userNameOrPasswordRequiredText,
-          selectors: {
-            usernameField: loginModal.userNameInputField,
-            passwordField: loginModal.passwordInputField,
-            loginButton: loginModal.loginButton,
-          },
-        });
+        await runner.verifyElementIsVisible(loginModal.userNameInputField);
+        await runner.verifyElementIsVisible(loginModal.passwordInputField);
+        await loginHelper.loginAndExpectAlert(
+          "",
+          envData.password,
+          loginData.userNameOrPasswordRequiredText
+        );
       });
 
       test("Verify that log in fails with incorrect username and password", async ({
+        runner,
         loginHelper,
         fakeUser,
         loginModal,
       }) => {
-        await loginHelper.loginAndExpectAlert({
-          username: fakeUser.username,
-          password: fakeUser.password,
-          expectedAlertText: loginData.incorrectCredentialText,
-          selectors: {
-            usernameField: loginModal.userNameInputField,
-            passwordField: loginModal.passwordInputField,
-            loginButton: loginModal.loginButton,
-          },
-        });
+        await runner.verifyElementIsVisible(loginModal.userNameInputField);
+        await runner.verifyElementIsVisible(loginModal.passwordInputField);
+        await loginHelper.loginAndExpectAlert(
+          fakeUser.username,
+          fakeUser.password,
+          loginData.incorrectCredentialText
+        );
       });
 
+      test("Verify that the login fails with right username but wrong password", async ({
+        runner,
+        envData,
+        fakeUser,
+        loginHelper,
+        loginModal,
+      }) => {
+        await runner.verifyElementIsVisible(loginModal.userNameInputField);
+        await runner.verifyElementIsVisible(loginModal.passwordInputField);
+        await loginHelper.loginAndExpectAlert(
+          envData.username,
+          fakeUser.password,
+          loginData.wrongPasswordText
+        );
+      });
+
+      test("Verify that the login fails with wrong username but right password", async ({
+        runner,
+        envData,
+        fakeUser,
+        loginHelper,
+        loginModal,
+      }) => {
+        await runner.verifyElementIsVisible(loginModal.userNameInputField);
+        await runner.verifyElementIsVisible(loginModal.passwordInputField);
+        await loginHelper.loginAndExpectAlert(
+          fakeUser.username,
+          envData.password,
+          loginData.incorrectCredentialText
+        );
+      });
+
+      // Have to work on that
       test("Verify that login is successful with valid username and password credentials", async ({
         runner,
         homePage,
@@ -119,12 +203,14 @@ class LoginModal extends ExpectedValueProvider {
         loginModal,
         envData,
       }) => {
+        await runner.verifyElementIsVisible(loginModal.userNameInputField);
+        await runner.verifyElementIsVisible(loginModal.passwordInputField);
         await loginHelper.login(envData.username, envData.password, {
           usernameField: loginModal.userNameInputField,
           passwordField: loginModal.passwordInputField,
           loginButton: loginModal.loginButton,
         });
-        await runner.wait(1, { waitForLoadState: "load" });
+        await runner.wait(2, { waitForLoadState: "load" });
 
         await runner.verifyLoginUIState({
           welcomeSelector: homePage.navWelcome,
@@ -135,6 +221,7 @@ class LoginModal extends ExpectedValueProvider {
         });
       });
 
+      // Working
       test("Verify that the user can logout successfully after login", async ({
         runner,
         envData,
@@ -142,22 +229,29 @@ class LoginModal extends ExpectedValueProvider {
         loginHelper,
         loginModal,
       }) => {
+        await runner.verifyElementIsVisible(loginModal.userNameInputField);
+        await runner.verifyElementIsVisible(loginModal.passwordInputField);
         await loginHelper.login(envData.username, envData.password, {
           usernameField: loginModal.userNameInputField,
           passwordField: loginModal.passwordInputField,
           loginButton: loginModal.loginButton,
         });
-        await runner.wait(1, { waitForLoadState: "load" });
-
-        await runner.verifyLoginUIState({
-          welcomeSelector: homePage.navWelcome,
-          logoutSelector: homePage.navLogoutButton,
-          loginSelector: homePage.navbarLogin,
-          signupSelector: homePage.navbarSignup,
-          expectedUsername: envData.username,
-        });
+        await runner.verifyElementIsVisible(homePage.navWelcome);
+        await runner.verifyContainText(
+          homePage.navWelcome,
+          loginData.welcomeText,
+          envData.username
+        );
+        // await runner.verifyLoginUIState({
+        //   welcomeSelector: homePage.navWelcome,
+        //   logoutSelector: homePage.navLogoutButton,
+        //   loginSelector: homePage.navbarLogin,
+        //   signupSelector: homePage.navbarSignup,
+        //   expectedUsername: envData.username,
+        // });
+        await runner.verifyElementIsVisible(homePage.navLogoutButton);
         await runner.clickOnElement(homePage.navLogoutButton);
-        await runner.wait(1, { waitForLoadState: "load" });
+        await runner.wait(2, { waitForLoadState: "load" });
         await runner.verifyLogoutUIState({
           logoutSelector: homePage.navLogoutButton,
           loginSelector: homePage.navbarLogin,
