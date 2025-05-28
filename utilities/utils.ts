@@ -1890,7 +1890,7 @@ export class Utils {
 
   async handleAlertWithMessage(expectedMessage: string): Promise<void> {
     try {
-      await this.page.waitForEvent("dialog").then(async (dialog) => {
+      this.page.on("dialog", async (dialog) => {
         expect(dialog.type()).toContain("alert");
         expect(dialog.message()).toContain(expectedMessage);
         await dialog.accept();
