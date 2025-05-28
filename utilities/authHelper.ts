@@ -13,18 +13,10 @@ export class LoginHelper {
     this.loginModal = new LoginModal(page);
   }
 
-  async login(
-    username: string,
-    password: string,
-    selectors: {
-      usernameField: string;
-      passwordField: string;
-      loginButton: string;
-    }
-  ): Promise<void> {
-    await this.utils.fillInputBox(selectors.usernameField, username);
-    await this.utils.fillInputBox(selectors.passwordField, password);
-    await this.page.locator(selectors.loginButton).click();
+  async login(username: string, password: string): Promise<void> {
+    await this.utils.fillInputBox(this.loginModal.userNameInputField, username);
+    await this.utils.fillInputBox(this.loginModal.passwordInputField, password);
+    await this.page.locator(this.loginModal.loginButton).click();
   }
 
   async loginAndExpectAlert(
