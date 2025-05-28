@@ -318,7 +318,7 @@ class CartPage extends ExpectedValueProvider {
           homeData.navbar.cart
         );
         await runner.wait(5, {
-          waitForSelector: cartPage.cartedProductsDetails,
+          waitForSelector: cartPage.cartedProductsImg,
         });
         await runner.validateProductsInCart(
           clickedProductDetails,
@@ -342,7 +342,7 @@ class CartPage extends ExpectedValueProvider {
           homeData.navbar.cart
         );
         await runner.wait(5, {
-          waitForSelector: cartPage.cartedProductsDetails,
+          waitForSelector: cartPage.cartedProductsImg,
         });
         await runner.validateProductsInCart(
           clickedProductDetails,
@@ -450,7 +450,7 @@ class CartPage extends ExpectedValueProvider {
           homeData.navbar.cart
         );
         await runner.wait(5, {
-          waitForSelector: cartPage.cartedProductsDetails,
+          waitForSelector: cartPage.cartedProductsImg,
         });
         await runner.validateProductsInCart(
           clickedProductDetails,
@@ -472,7 +472,7 @@ class CartPage extends ExpectedValueProvider {
 
         console.log(updatedExpectedProducts);
         await runner.wait(5, {
-          waitForSelector: cartPage.cartedProductsDetails,
+          waitForSelector: cartPage.cartedProductsImg,
         });
         await runner.validateProductsInCart(
           updatedExpectedProducts,
