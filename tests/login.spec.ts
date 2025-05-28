@@ -195,7 +195,6 @@ class LoginModal extends ExpectedValueProvider {
         );
       });
 
-      // Have to work on that
       test("Verify that login is successful with valid username and password credentials", async ({
         runner,
         homePage,
@@ -205,23 +204,24 @@ class LoginModal extends ExpectedValueProvider {
       }) => {
         await runner.verifyElementIsVisible(loginModal.userNameInputField);
         await runner.verifyElementIsVisible(loginModal.passwordInputField);
-        await loginHelper.login(envData.username, envData.password, {
-          usernameField: loginModal.userNameInputField,
-          passwordField: loginModal.passwordInputField,
-          loginButton: loginModal.loginButton,
-        });
-        await runner.wait(2, { waitForLoadState: "load" });
+        await loginHelper.login(envData.username, envData.password);
 
-        await runner.verifyLoginUIState({
-          welcomeSelector: homePage.navWelcome,
-          logoutSelector: homePage.navLogoutButton,
-          loginSelector: homePage.navbarLogin,
-          signupSelector: homePage.navbarSignup,
-          expectedUsername: envData.username,
-        });
+        await runner.verifyElementIsVisible(homePage.navWelcome);
+        await runner.verifyContainText(
+          homePage.navWelcome,
+          loginData.welcomeText,
+          envData.username
+        );
+        await runner.verifyElementIsVisible(homePage.navLogoutButton);
+        await runner.verifyContainText(
+          homePage.navLogoutButton,
+          homeData.navbar.logout
+        );
+
+        await runner.verifyElementIsNotVisible(homePage.navbarLogin);
+        await runner.verifyElementIsNotVisible(homePage.navbarSignup);
       });
 
-      // Working
       test("Verify that the user can logout successfully after login", async ({
         runner,
         envData,
@@ -231,33 +231,35 @@ class LoginModal extends ExpectedValueProvider {
       }) => {
         await runner.verifyElementIsVisible(loginModal.userNameInputField);
         await runner.verifyElementIsVisible(loginModal.passwordInputField);
-        await loginHelper.login(envData.username, envData.password, {
-          usernameField: loginModal.userNameInputField,
-          passwordField: loginModal.passwordInputField,
-          loginButton: loginModal.loginButton,
-        });
+        await loginHelper.login(envData.username, envData.password);
+        await runner.wait(5, { waitForSelector: homePage.navWelcome });
         await runner.verifyElementIsVisible(homePage.navWelcome);
         await runner.verifyContainText(
           homePage.navWelcome,
           loginData.welcomeText,
           envData.username
         );
-        // await runner.verifyLoginUIState({
-        //   welcomeSelector: homePage.navWelcome,
-        //   logoutSelector: homePage.navLogoutButton,
-        //   loginSelector: homePage.navbarLogin,
-        //   signupSelector: homePage.navbarSignup,
-        //   expectedUsername: envData.username,
-        // });
+        await runner.verifyElementIsNotVisible(homePage.navbarLogin);
+        await runner.verifyElementIsNotVisible(homePage.navbarSignup);
         await runner.verifyElementIsVisible(homePage.navLogoutButton);
+        await runner.verifyContainText(
+          homePage.navLogoutButton,
+          homeData.navbar.logout
+        );
         await runner.clickOnElement(homePage.navLogoutButton);
-        await runner.wait(2, { waitForLoadState: "load" });
-        await runner.verifyLogoutUIState({
-          logoutSelector: homePage.navLogoutButton,
-          loginSelector: homePage.navbarLogin,
-          signupSelector: homePage.navbarSignup,
-          welcomeSelector: homePage.navWelcome,
-        });
+        await runner.wait(5, { waitForSelector: homePage.navbarLogin });
+        await runner.verifyElementIsVisible(homePage.navbarLogin);
+        await runner.verifyContainText(
+          homePage.navbarLogin,
+          homeData.navbar.login
+        );
+        await runner.verifyElementIsVisible(homePage.navbarSignup);
+        await runner.verifyContainText(
+          homePage.navbarSignup,
+          homeData.navbar.signup
+        );
+        await runner.verifyElementIsNotVisible(homePage.navWelcome);
+        await runner.verifyElementIsNotVisible(homePage.navLogoutButton);
       });
 
       test("Verify that the login modal closes when the 'X' icon is clicked", async ({

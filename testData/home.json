@@ -8,7 +8,8 @@
     "about": "About us",
     "cart": "Cart",
     "login": "Log in",
-    "signup": "Sign up"
+    "signup": "Sign up",
+    "logout": "Log out"
   },
 
   "categories": {
