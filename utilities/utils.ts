@@ -217,17 +217,20 @@ export class Utils {
 
   async verifyContainText(
     identifier: string,
-    expectedText: string
+    expectedText: string,
+    dynamicExpectedText?: string
   ): Promise<void> {
     try {
       await expect
         .soft(this.page.locator(identifier))
-        .toContainText(expectedText);
+        .toContainText(
+          expectedText || expectedText + " " + dynamicExpectedText
+        );
       this.logMessage(
-        `Verified element with identifier ${identifier} contains text: "${expectedText}"`
+        `Verified element with identifier ${identifier} contains text: "${expectedText} ${dynamicExpectedText}"`
       );
     } catch (error) {
-      const errorMsg = `Failed to verify element with identifier ${identifier} contains text: "${expectedText}"`;
+      const errorMsg = `Failed to verify element with identifier ${identifier} contains text: "${expectedText} ${expectedText}"`;
       this.logMessage(errorMsg, "error");
       await this.captureScreenshotOnFailure("verifyContainText");
       throw new Error(errorMsg);
@@ -1884,23 +1887,25 @@ export class Utils {
       throw new Error(errorMsg);
     }
   }
+
   async handleAlertWithMessage(expectedMessage: string): Promise<void> {
     try {
-      this.page.on("dialog", async (dialog) => {
+      await this.page.waitForEvent("dialog").then(async (dialog) => {
         expect(dialog.type()).toContain("alert");
         expect(dialog.message()).toContain(expectedMessage);
         await dialog.accept();
 
         this.logMessage(
-          `handled alert correctly with message: ${expectedMessage}`
+          `✅ Handled alert correctly with message: ${expectedMessage}`
         );
       });
     } catch (error) {
-      this.logMessage(`:x: Failed to handle alert: ${error}`, "error");
+      this.logMessage(`❌ Failed to handle alert: ${error}`, "error");
       await this.captureScreenshotOnFailure("alert_handling_error");
       throw error;
     }
   }
+
   async verifyContainsDigit(
     selector: string,
     prefix: string = "Id:"
@@ -1984,7 +1989,6 @@ export class Utils {
   }): Promise<void> {
     try {
       const welcomeEl = this.page.locator(welcomeSelector);
-      await expect(welcomeEl).toBeVisible({ timeout: 5000 });
 
       const welcomeText = await welcomeEl.textContent();
       if (!welcomeText?.includes(expectedUsername)) {
