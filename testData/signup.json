@@ -1,3 +1,7 @@
 {
-    "signUpModalTitle": "Sign up"
+    "headerText": "Sign up",
+    "labels": {
+        "username": "Username:",
+        "password": "Password:"
+    }
 }

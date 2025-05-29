@@ -3,8 +3,8 @@ import { Utils } from "./utils";
 import { HomePage } from "../pageObjectModel/homePage.ts";
 import { FakeUser } from "./fakeData.ts";
 import { EnvData } from "./env.ts";
-import { SignupModal } from "../pageObjectModel/signUpModal.ts";
-import { LoginHelper } from "../utilities/authHelper.ts";
+import { SignUpModal } from "../pageObjectModel/signUpModal.ts";
+import { LoginHelper, SignupHelper } from "../utilities/authHelper.ts";
 import { ProductDetailPage } from "../pageObjectModel/productDetailPage.ts";
 import { LoginModal } from "../pageObjectModel/loginModal.ts";
 import { CartPage } from "../pageObjectModel/cartPage.ts";
@@ -16,8 +16,9 @@ const test = base.extend<{
   homePage: HomePage;
   fakeUser: FakeUser;
   envData: EnvData;
-  signUpModal: SignupModal;
+  signUpModal: SignUpModal;
   loginHelper: LoginHelper;
+  signUpHelper: SignupHelper;
   productDetailPage: ProductDetailPage;
   loginModal: LoginModal;
   cartPage: CartPage;
@@ -44,14 +45,19 @@ const test = base.extend<{
     await use(loginHelperInstance);
   },
 
+  signUpHelper: async ({ page }: { page: Page }, use) => {
+    const signUpHelperInstance = new SignupHelper(page);
+    await use(signUpHelperInstance);
+  },
+
   homePage: async ({ page }: { page: Page }, use) => {
     const homePageInstance = new HomePage(page);
     await use(homePageInstance);
   },
 
   signUpModal: async ({ page }: { page: Page }, use) => {
-    const signUpModalInstance = new SignupModal(page);
-    await use(signUpModalInstance);
+    const SignUpModalInstance = new SignUpModal(page);
+    await use(SignUpModalInstance);
   },
 
   productDetailPage: async ({ page }: { page: Page }, use) => {

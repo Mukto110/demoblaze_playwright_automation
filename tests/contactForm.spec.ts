@@ -49,9 +49,9 @@ class ContactFormTest extends ExpectedValueProvider {
         runner,
         contactModal,
       }) => {
-        await runner.typeText(contactModal.emailInput, "dlkjfaslkdjflaksd");
-        await runner.typeText(contactModal.nameInput, "ajsoiweurowmc");
-        await runner.typeText(
+        await runner.fillInputBox(contactModal.emailInput, "dlkjfaslkdjflaksd");
+        await runner.fillInputBox(contactModal.nameInput, "ajsoiweurowmc");
+        await runner.fillInputBox(
           contactModal.messageTextarea,
           "somethingsomethingsomething"
         );
