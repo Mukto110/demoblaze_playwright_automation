@@ -20,17 +20,16 @@ export class Utils {
     this.expected = new ExpectedValueProvider();
   }
 
-  private async captureScreenshotOnFailure(testName: string): Promise<void> {
+  public async captureScreenshotOnFailure(testName: string): Promise<void> {
     try {
       const screenshot = await this.page.screenshot();
-      //   allure.attachment(`${testName} Screenshot`, screenshot, "image/png");
       logger.error(`${testName} failed. Screenshot captured.`);
     } catch (error) {
       logger.error("Error capturing screenshot:", error);
     }
   }
 
-  private logMessage(
+  public logMessage(
     message: string,
     level: "info" | "error" | "warn" = "info"
   ): void {

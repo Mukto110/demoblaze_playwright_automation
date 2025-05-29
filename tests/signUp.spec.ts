@@ -158,7 +158,6 @@ class SignUpModal extends ExpectedValueProvider {
 
       test("Verify that signup is prevented with a modal message when both username and password fields are empty", async ({
         runner,
-        fakeUser,
         signUpHelper,
         signUpModal,
       }) => {
@@ -198,6 +197,52 @@ class SignUpModal extends ExpectedValueProvider {
           "",
           fakeUser.password,
           signUpData.userNameOrPasswordRequiredText
+        );
+      });
+
+      test("Verify that a user can register with valid and unique credentials", async ({
+        runner,
+        signUpModal,
+        signUpHelper,
+        fakeUser,
+      }) => {
+        await runner.verifyElementIsVisible(signUpModal.usernameInputField);
+        await runner.verifyElementIsVisible(signUpModal.passwordInputField);
+        await signUpHelper.signupAndExpectAlert(
+          fakeUser.username,
+          fakeUser.password,
+          signUpData.signUpSuccessText
+        );
+      });
+
+      test("Verify that user cannot register with existing username", async ({
+        runner,
+        signUpHelper,
+        envData,
+        signUpModal,
+      }) => {
+        await runner.verifyElementIsVisible(signUpModal.usernameInputField);
+        await runner.verifyElementIsVisible(signUpModal.passwordInputField);
+        await signUpHelper.signupAndExpectAlert(
+          envData.username,
+          envData.password,
+          signUpData.userExistText
+        );
+      });
+
+      // working
+      test("Verify that registration fails when the password is shorter than 6 characters", async ({
+        runner,
+        fakeUser,
+        signUpModal,
+        signUpHelper,
+      }) => {
+        await runner.verifyElementIsVisible(signUpModal.usernameInputField);
+        await runner.verifyElementIsVisible(signUpModal.passwordInputField);
+        await signUpHelper.signupAndExpectAlert(
+          fakeUser.username,
+          fakeUser.passwordLessThanSix,
+          signUpData.closeButtonText
         );
       });
 
