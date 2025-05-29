@@ -11,6 +11,7 @@ export class HomePage {
   readonly navbarSignup: string;
   readonly navLogoutButton: string;
   readonly navWelcome: string;
+  readonly navItems: string;
   readonly categoriesHeader: string;
   readonly categoriesPhones: string;
   readonly categoriesLaptops: string;
@@ -47,6 +48,7 @@ export class HomePage {
     this.navbarSignup = `css=a[id='signin2']`;
     this.navLogoutButton = `css=a[id='logout2']`;
     this.navWelcome = `css=a[id='nameofuser']`;
+    this.navItems = `css= div[id="navbarExample"] ul[class="navbar-nav ml-auto"] li`;
     this.categoriesHeader = `css=div[class='list-group'] a[id='cat']`;
     this.categoriesPhones = `xpath=//a[@id='itemc' and text()='Phones']`;
     this.categoriesLaptops = `xpath=//a[@id='itemc' and text()='Laptops']`;

@@ -48,6 +48,19 @@ class HomePageTest extends ExpectedValueProvider {
         );
       });
 
+      test("Verify  shows the proper items visible in navbar", async ({
+        runner,
+        homePage,
+      }) => {
+        console.log(await runner.validateVisibleNavItems(homePage.navItems, [
+          homeData.navbar.home,
+          homeData.navbar.contact,
+          homeData.navbar.about,
+          homeData.navbar.cart,
+          homeData.navbar.login,
+          homeData.navbar.signup,
+        ]))
+      });
       test("Verify navbar contact, about us, login and signup shows the correct modal", async ({
         runner,
         homePage,
