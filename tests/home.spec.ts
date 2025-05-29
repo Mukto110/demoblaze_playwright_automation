@@ -122,7 +122,7 @@ class HomePageTest extends ExpectedValueProvider {
         await runner.verifyElementIsVisible(signUpModal.SignUpModalHeader);
         await runner.verifyContainText(
           signUpModal.SignUpModalHeader,
-          signupData.SignUpModalHeader
+          signupData.headerText
         );
         await runner.clickOnElement(signUpModal.closeButton);
       });
