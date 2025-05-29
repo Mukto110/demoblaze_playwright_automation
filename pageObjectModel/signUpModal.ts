@@ -1,17 +1,23 @@
 import { Page } from "@playwright/test";
 
-export class SignupModal {
-  readonly signUpModalTitle: string;
-  readonly usernameTextField: string;
-  readonly passwordTextField: string;
-  readonly closeButton: string;
+export class SignUpModal {
+  readonly SignUpModalHeader: string;
+  readonly userNameLabel: string;
+  readonly passwordLabel: string;
+  readonly usernameInputField: string;
+  readonly passwordInputField: string;
   readonly signUpButton: string;
+  readonly closeButton: string;
+  readonly crossButton: string;
 
   constructor(page: Page) {
-    this.signUpModalTitle = `css=h5[id='signInModalLabel']`;
-    this.usernameTextField = `css=#sign-username`;
-    this.passwordTextField = `css=#sign-password`;
-    this.closeButton = `css=body > div:nth-child(2) > div:nth-child(1) > div:nth-child(1) > div:nth-child(3) > button:nth-child(1)`;
-    this.signUpButton = `css=body > div:nth-child(2) > div:nth-child(1) > div:nth-child(1) > div:nth-child(3) > button:nth-child(2)`;
+    this.SignUpModalHeader = `css=h5[id='signInModalLabel']`;
+    this.userNameLabel = `css=label[for='sign-username']`;
+    this.passwordLabel = `css=label[for='sign-password']`;
+    this.usernameInputField = `css=input[id='sign-username']`;
+    this.passwordInputField = `css=input[id='sign-password'`;
+    this.signUpButton = `css=button[onclick='register()']`;
+    this.closeButton = `css=div[id='signInModal'] div[class='modal-content'] div[class='modal-footer'] button:nth-child(1)`;
+    this.crossButton = `xpath=div[id='signInModal'] span[aria-hidden='true']`;
   }
 }
