@@ -32,16 +32,14 @@ class LoginModal extends ExpectedValueProvider {
         runner,
         loginModal,
       }) => {
-        await runner.validateLabels([
-          {
-            selector: loginModal.usernameLabel,
-            expectedText: loginData.labels.userName,
-          },
-          {
-            selector: loginModal.passwordLabel,
-            expectedText: loginData.labels.Password,
-          },
-        ]);
+        await runner.validateLabel(
+          loginModal.usernameLabel,
+          loginData.labels.userName
+        );
+        await runner.validateLabel(
+          loginModal.passwordLabel,
+          loginData.labels.Password
+        );
       });
 
       test("Verify that the user can type into the input fields and reopening the modal after clicking 'close' button shouldn't get removed the value", async ({
@@ -51,11 +49,21 @@ class LoginModal extends ExpectedValueProvider {
         homePage,
       }) => {
         await runner.verifyElementIsVisible(loginModal.userNameInputField);
+        await runner.validateAttribute(
+          loginModal.userNameInputField,
+          "type",
+          "text"
+        );
         await runner.fillInputBox(
           loginModal.userNameInputField,
           fakeUser.username
         );
         await runner.verifyElementIsVisible(loginModal.passwordInputField);
+        await runner.validateAttribute(
+          loginModal.passwordInputField,
+          "type",
+          "password"
+        );
         await runner.fillInputBox(
           loginModal.passwordInputField,
           fakeUser.password
@@ -205,7 +213,7 @@ class LoginModal extends ExpectedValueProvider {
         await runner.verifyElementIsVisible(loginModal.userNameInputField);
         await runner.verifyElementIsVisible(loginModal.passwordInputField);
         await loginHelper.login(envData.username, envData.password);
-
+        await runner.wait(5, { waitForSelector: homePage.navWelcome });
         await runner.verifyElementIsVisible(homePage.navWelcome);
         await runner.verifyContainText(
           homePage.navWelcome,

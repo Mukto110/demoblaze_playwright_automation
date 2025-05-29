@@ -519,21 +519,6 @@ export class Utils {
     }
   }
 
-  async typeText(selector: string, text: string): Promise<void> {
-    try {
-      const locator = this.page.locator(selector);
-      await expect(locator).toBeVisible(); // ensure visible
-      await locator.fill(""); // clear existing value
-      await locator.type(text); // type the text
-      this.logMessage(`Typed "${text}" into '${selector}'`);
-    } catch (err: any) {
-      const msg = `Failed to type into '${selector}': ${err.message}`;
-      this.logMessage(msg, "error");
-      await this.captureScreenshotOnFailure("typeText");
-      throw new Error(msg);
-    }
-  }
-
   async verifyInputValue(
     selector: string,
     expected: string,
@@ -1961,20 +1946,6 @@ export class Utils {
     }
   }
 
-  async validateLabels(
-    labels: Array<{ selector: string; expectedText: string }>
-  ): Promise<void> {
-    try {
-      for (const label of labels) {
-        await this.validateLabel(label.selector, label.expectedText);
-      }
-    } catch (error) {
-      this.logMessage(`Failed to validate labels: ${error}`);
-      await this.captureScreenshotOnFailure("validate_labels_error");
-      throw error;
-    }
-  }
-
   async verifyFieldIsPasswordType(selector: string): Promise<void> {
     try {
       const inputType = await this.page.getAttribute(selector, "type");
@@ -1997,126 +1968,129 @@ export class Utils {
     }
   }
 
-async validateVisibleNavItems(
-  navItemSelector: string, // e.g. "ul.navbar-nav > li"
-  expectedVisibleTexts: string[] // e.g. ["Home", "Cart", "Logout", "Welcome John"]
-): Promise<string[]> {
-  try {
+  async validateVisibleNavItems(
+    navItemSelector: string, // e.g. "ul.navbar-nav > li"
+    expectedVisibleTexts: string[] // e.g. ["Home", "Cart", "Logout", "Welcome John"]
+  ): Promise<string[]> {
+    try {
+      const navItems = this.page.locator(navItemSelector);
+      const visibleTexts: string[] = [];
+
+      const count = await navItems.count();
+
+      for (let i = 0; i < count; i++) {
+        const item = navItems.nth(i);
+        if (await item.isVisible()) {
+          const text = (await item.innerText()).replace(/\s+/g, " ").trim();
+          visibleTexts.push(text);
+        }
+      }
+
+      // Debug logs
+      this.logMessage(
+        `🔍 Actual visible nav items: [${visibleTexts.join(", ")}]`
+      );
+      this.logMessage(
+        `📌 Expected visible nav items: [${expectedVisibleTexts.join(", ")}]`
+      );
+
+      // Assert
+      expect(visibleTexts).toEqual(expectedVisibleTexts);
+      this.logMessage("✅ Navbar items validated successfully.");
+
+      return visibleTexts; // ✅ return list of visible items
+    } catch (error: any) {
+      const errorMsg = `❌ Navbar validation failed: ${error.message}`;
+      this.logMessage(errorMsg, "error");
+      await this.captureScreenshotOnFailure("validateVisibleNavItems");
+      throw new Error(errorMsg);
+    }
+  }
+
+  async validateExclusiveHoverColorChangeForNavItems(
+    this: any,
+    navItemSelector: string,
+    visibleNavTexts: string[],
+    expectedHoverRgb: string
+  ): Promise<void> {
     const navItems = this.page.locator(navItemSelector);
-    const visibleTexts: string[] = [];
+    const total = await navItems.count();
 
-    const count = await navItems.count();
+    for (const visibleText of visibleNavTexts) {
+      let matchIndex = -1;
 
-    for (let i = 0; i < count; i++) {
-      const item = navItems.nth(i);
-      if (await item.isVisible()) {
+      for (let i = 0; i < total; i++) {
+        const item = navItems.nth(i);
+        if (!(await item.isVisible())) continue;
+
+        const rawText = await item.innerText();
+        const cleanText = rawText.replace(/\s+/g, " ").trim();
+
+        // 🧼 Normalize screen-reader artifacts (e.g., '(current)')
+        const normalizedText = cleanText.replace("(current)", "").trim();
+
+        if (normalizedText === visibleText) {
+          matchIndex = i;
+          break;
+        }
+      }
+
+      if (matchIndex === -1) {
+        throw new Error(
+          `❌ Could not find nav item matching text: "${visibleText}"`
+        );
+      }
+
+      const currentItem = navItems.nth(matchIndex);
+      await currentItem.hover();
+      await this.page.waitForTimeout(150);
+
+      for (let j = 0; j < total; j++) {
+        const item = navItems.nth(j);
+        if (!(await item.isVisible())) continue;
+
         const text = (await item.innerText()).replace(/\s+/g, " ").trim();
-        visibleTexts.push(text);
+        const normalizedText = text.replace("(current)", "").trim();
+
+        const color = await item.evaluate((el) => getComputedStyle(el).color);
+
+        if (normalizedText === visibleText) {
+          assert.strictEqual(
+            color,
+            expectedHoverRgb,
+            `❌ Hovered nav item "${visibleText}" did not match expected hover color. Got: ${color}`
+          );
+        } else {
+          assert.strictEqual(
+            color,
+            "rgb(255, 255, 255)",
+            `❌ Nav item "${normalizedText}" changed unexpectedly while hovering "${visibleText}"`
+          );
+        }
       }
+
+      this.logMessage(`✅ Hover color verified for: "${visibleText}"`);
     }
 
-    // Debug logs
-    this.logMessage(`🔍 Actual visible nav items: [${visibleTexts.join(", ")}]`);
-    this.logMessage(`📌 Expected visible nav items: [${expectedVisibleTexts.join(", ")}]`);
-
-    // Assert
-    expect(visibleTexts).toEqual(expectedVisibleTexts);
-    this.logMessage("✅ Navbar items validated successfully.");
-
-    return visibleTexts; // ✅ return list of visible items
-  } catch (error: any) {
-    const errorMsg = `❌ Navbar validation failed: ${error.message}`;
-    this.logMessage(errorMsg, "error");
-    await this.captureScreenshotOnFailure("validateVisibleNavItems");
-    throw new Error(errorMsg);
-  }
-}
-
-
-  
-async  validateExclusiveHoverColorChangeForNavItems(
-  this: any,
-  navItemSelector: string,
-  visibleNavTexts: string[],
-  expectedHoverRgb: string
-): Promise<void> {
-  const navItems = this.page.locator(navItemSelector);
-  const total = await navItems.count();
-
-  for (const visibleText of visibleNavTexts) {
-    let matchIndex = -1;
-
-    for (let i = 0; i < total; i++) {
-      const item = navItems.nth(i);
-      if (!(await item.isVisible())) continue;
-
-      const rawText = await item.innerText();
-      const cleanText = rawText.replace(/\s+/g, " ").trim();
-
-      // 🧼 Normalize screen-reader artifacts (e.g., '(current)')
-      const normalizedText = cleanText.replace("(current)", "").trim();
-
-      if (normalizedText === visibleText) {
-        matchIndex = i;
-        break;
-      }
-    }
-
-    if (matchIndex === -1) {
-      throw new Error(`❌ Could not find nav item matching text: "${visibleText}"`);
-    }
-
-    const currentItem = navItems.nth(matchIndex);
-    await currentItem.hover();
-    await this.page.waitForTimeout(150);
-
-    for (let j = 0; j < total; j++) {
-      const item = navItems.nth(j);
-      if (!(await item.isVisible())) continue;
-
-      const text = (await item.innerText()).replace(/\s+/g, " ").trim();
-      const normalizedText = text.replace("(current)", "").trim();
-
-      const color = await item.evaluate(el => getComputedStyle(el).color);
-
-      if (normalizedText === visibleText) {
-        assert.strictEqual(
-          color,
-          expectedHoverRgb,
-          `❌ Hovered nav item "${visibleText}" did not match expected hover color. Got: ${color}`
-        );
-      } else {
-        assert.strictEqual(
-          color,
-          "rgb(255, 255, 255)",
-          `❌ Nav item "${normalizedText}" changed unexpectedly while hovering "${visibleText}"`
-        );
-      }
-    }
-
-    this.logMessage(`✅ Hover color verified for: "${visibleText}"`);
+    this.logMessage("✅ All hover validations on visible nav items passed.");
   }
 
-  this.logMessage("✅ All hover validations on visible nav items passed.");
-}
-async verifyContainsValue(
-  selector: string,
-  expectedValue: string
-): Promise<void> {
-  try {
-    const input = this.page.locator(selector);
-    await expect(input).toHaveValue(expectedValue, { timeout: 5000 });
+  async verifyContainsValue(
+    selector: string,
+    expectedValue: string
+  ): Promise<void> {
+    try {
+      const input = this.page.locator(selector);
+      await expect(input).toHaveValue(expectedValue, { timeout: 5000 });
 
-    this.logMessage(
-      `✅ Verified input field "${selector}" contains value: "${expectedValue}".`
-    );
-  } catch (error) {
-    const errorMsg = `❌ Input field "${selector}" did not contain expected value: "${expectedValue}".`;
-    this.logMessage(errorMsg, "error");
-    await this.captureScreenshotOnFailure("verifyInputContainsValue");
-    throw new Error(errorMsg);
+      this.logMessage(
+        `✅ Verified input field "${selector}" contains value: "${expectedValue}".`
+      );
+    } catch (error) {
+      const errorMsg = `❌ Input field "${selector}" did not contain expected value: "${expectedValue}".`;
+      this.logMessage(errorMsg, "error");
+      await this.captureScreenshotOnFailure("verifyInputContainsValue");
+      throw new Error(errorMsg);
+    }
   }
-}
-
-  
 }
