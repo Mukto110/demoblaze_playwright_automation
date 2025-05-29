@@ -242,7 +242,7 @@ class SignUpModal extends ExpectedValueProvider {
         await signUpHelper.signupAndExpectAlert(
           fakeUser.username,
           fakeUser.passwordLessThanSix,
-          signUpData.closeButtonText
+          signUpData.passwordLessThanText
         );
       });
 
