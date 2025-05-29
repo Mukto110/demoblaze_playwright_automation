@@ -112,7 +112,7 @@ class CartPage extends ExpectedValueProvider {
           homePage.navbarCart,
           homeData.navbar.cart
         );
-        await runner.wait(5, { waitForSelector: cartPage.cartPageHeaderText });
+        await runner.wait(5, { waitForSelector: cartPage.cartedProductsImg });
 
         await runner.validateProductsInCart(
           clickedProductDetails,
@@ -216,7 +216,7 @@ class CartPage extends ExpectedValueProvider {
           homeData.navbar.cart
         );
         await runner.wait(5, {
-          waitForSelector: cartPage.cartedProductsDetails,
+          waitForSelector: cartPage.cartedProductsImg,
         });
         await runner.validateProductsInCart(
           clickedProductDetails,
@@ -478,7 +478,7 @@ class CartPage extends ExpectedValueProvider {
 
         console.log(updatedExpectedProducts);
         await runner.wait(5, {
-          waitForSelector: cartPage.cartedProductsImg,
+          waitForSelector: cartPage.cartedProductsDetails,
         });
         await runner.validateProductsInCart(
           updatedExpectedProducts,
@@ -587,7 +587,7 @@ class CartPage extends ExpectedValueProvider {
           homeData.navbar.cart
         );
         await runner.wait(5, {
-          waitForSelector: cartPage.cartedProductsDetails,
+          waitForSelector: cartPage.cartedProductsImg,
         });
 
         const totalPriceValue = await runner.validateProductsInCart(
@@ -746,7 +746,7 @@ class CartPage extends ExpectedValueProvider {
           homeData.navbar.cart
         );
         await runner.wait(5, {
-          waitForSelector: cartPage.cartedProductsDetails,
+          waitForSelector: cartPage.cartedProductsImg,
         });
 
         const totalPriceValue = await runner.validateProductsInCart(
@@ -908,7 +908,7 @@ class CartPage extends ExpectedValueProvider {
           homeData.navbar.cart
         );
         await runner.wait(5, {
-          waitForSelector: cartPage.cartedProductsDetails,
+          waitForSelector: cartPage.cartedProductsImg,
         });
 
         const totalPriceValue = await runner.validateProductsInCart(
@@ -1070,7 +1070,7 @@ class CartPage extends ExpectedValueProvider {
           homeData.navbar.cart
         );
         await runner.wait(5, {
-          waitForSelector: cartPage.cartedProductsDetails,
+          waitForSelector: cartPage.cartedProductsImg,
         });
 
         const totalPriceValue = await runner.validateProductsInCart(
@@ -1263,7 +1263,7 @@ class CartPage extends ExpectedValueProvider {
           homeData.navbar.cart
         );
         await runner.wait(5, {
-          waitForSelector: cartPage.cartedProductsDetails,
+          waitForSelector: cartPage.cartedProductsImg,
         });
 
         const totalPriceValue = await runner.validateProductsInCart(
