@@ -1,13 +1,16 @@
 {
-    "cartPageHeaderText": "Products",
-    "cartPageTotalText": "Total",
-    "picSectionText": "Pic",
-    "ttleSectionText": "Title",
-    "priceSectionText": "Price",
-    "closeSectionText": "x",
-    "orderModalHeaderText": "Place order",
-    "placeOrderButtonText": "Place Order",
-    "orderModalPurchaseButtonText": "Purchase",
-    "okButtonInAlertText": "OK"
-
+  "cartPageHeaderText": "Products",
+  "cartPageTotalText": "Total",
+  "picSectionText": "Pic",
+  "ttleSectionText": "Title",
+  "priceSectionText": "Price",
+  "closeSectionText": "x",
+  "porductAddedConfirmationAlert": "Product added",
+  "requiredFieldConfirmationAlert": "Please fill out Name and Creditcard",
+  "sucessfulOrderConfirmationMessage": "Thank you for your purchase!",
+  "orderModalHeaderText": "Place order",
+  "placeOrderButtonText": "Place Order",
+  "orderModalCloseButtonText": "Close",
+  "orderModalPurchaseButtonText": "Purchase",
+  "okButtonInAlertText": "OK"
 }
