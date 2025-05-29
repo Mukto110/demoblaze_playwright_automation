@@ -9,5 +9,6 @@
     "userNameOrPasswordRequiredText": "Please fill out Username and Password.",
     "incorrectCredentialText": "User does not exist.",
     "wrongPasswordText": "Wrong password.",
-    "welcomeText": "Welcome"
+    "welcomeText": "Welcome",
+    "closeButtonText": "Close"
 }

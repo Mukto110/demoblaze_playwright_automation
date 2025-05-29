@@ -25,11 +25,11 @@ class SignUpModal extends ExpectedValueProvider {
         );
         await runner.clickOnElement(homePage.navbarSignup);
         await runner.wait(2, {
-          waitForSelector: signUpModal.SignUpModalHeader,
+          waitForSelector: signUpModal.signUpModalHeader,
         });
-        await runner.verifyElementIsVisible(signUpModal.SignUpModalHeader);
+        await runner.verifyElementIsVisible(signUpModal.signUpModalHeader);
         await runner.verifyContainText(
-          signUpModal.SignUpModalHeader,
+          signUpModal.signUpModalHeader,
           signUpData.headerText
         );
       });
@@ -47,6 +47,157 @@ class SignUpModal extends ExpectedValueProvider {
         await runner.verifyContainText(
           signUpModal.passwordLabel,
           signUpData.labels.password
+        );
+      });
+
+      test("Verify that the user can type into the input fields and reopening the modal after clicking 'close' button shouldn't get removed the value", async ({
+        runner,
+        fakeUser,
+        homePage,
+        signUpModal,
+      }) => {
+        await runner.verifyElementIsVisible(signUpModal.usernameInputField);
+        await runner.validateAttribute(
+          signUpModal.usernameInputField,
+          "type",
+          "text"
+        );
+        await runner.fillInputBox(
+          signUpModal.usernameInputField,
+          fakeUser.username
+        );
+        await runner.verifyElementIsVisible(signUpModal.passwordInputField);
+        await runner.validateAttribute(
+          signUpModal.passwordInputField,
+          "type",
+          "password"
+        );
+        await runner.fillInputBox(
+          signUpModal.passwordInputField,
+          fakeUser.password
+        );
+        await runner.verifyElementIsVisible(signUpModal.closeButton);
+        await runner.verifyContainText(
+          signUpModal.closeButton,
+          signUpData.closeButtonText
+        );
+        await runner.clickOnElement(signUpModal.closeButton);
+        await runner.verifyElementIsVisible(homePage.navbarSignup);
+        await runner.verifyContainText(
+          homePage.navbarSignup,
+          homeData.navbar.signup
+        );
+        await runner.clickOnElement(homePage.navbarSignup);
+        await runner.verifyElementIsVisible(signUpModal.signUpModalHeader);
+        await runner.verifyContainText(
+          signUpModal.signUpModalHeader,
+          signUpData.headerText
+        );
+        await runner.verifyElementIsVisible(signUpModal.usernameInputField);
+        await runner.verifyToHaveValue(
+          signUpModal.usernameInputField,
+          fakeUser.username
+        );
+        await runner.verifyElementIsVisible(signUpModal.passwordInputField);
+        await runner.verifyToHaveValue(
+          signUpModal.passwordInputField,
+          fakeUser.password
+        );
+      });
+
+      test("Verify that the values of input fields shouldn't get removed on reopening the modal after clicking 'cross' button", async ({
+        runner,
+        homePage,
+        signUpModal,
+        fakeUser,
+      }) => {
+        await runner.verifyElementIsVisible(signUpModal.usernameInputField);
+        await runner.validateAttribute(
+          signUpModal.usernameInputField,
+          "type",
+          "text"
+        );
+        await runner.fillInputBox(
+          signUpModal.usernameInputField,
+          fakeUser.username
+        );
+        await runner.verifyElementIsVisible(signUpModal.passwordInputField);
+        await runner.validateAttribute(
+          signUpModal.passwordInputField,
+          "type",
+          "password"
+        );
+        await runner.fillInputBox(
+          signUpModal.passwordInputField,
+          fakeUser.password
+        );
+        await runner.verifyElementIsVisible(signUpModal.crossButton);
+        await runner.clickOnElement(signUpModal.crossButton);
+        await runner.verifyElementIsVisible(homePage.navbarSignup);
+        await runner.verifyContainText(
+          homePage.navbarSignup,
+          homeData.navbar.signup
+        );
+        await runner.clickOnElement(homePage.navbarSignup);
+        await runner.verifyElementIsVisible(signUpModal.signUpModalHeader);
+        await runner.verifyContainText(
+          signUpModal.signUpModalHeader,
+          signUpData.headerText
+        );
+        await runner.verifyElementIsVisible(signUpModal.usernameInputField);
+        await runner.verifyToHaveValue(
+          signUpModal.usernameInputField,
+          fakeUser.username
+        );
+        await runner.verifyElementIsVisible(signUpModal.passwordInputField);
+        await runner.verifyToHaveValue(
+          signUpModal.passwordInputField,
+          fakeUser.password
+        );
+      });
+
+      test("Verify that signup is prevented with a modal message when both username and password fields are empty", async ({
+        runner,
+        fakeUser,
+        signUpHelper,
+        signUpModal,
+      }) => {
+        await runner.verifyElementIsVisible(signUpModal.usernameInputField);
+        await runner.verifyElementIsVisible(signUpModal.passwordInputField);
+        await signUpHelper.signupAndExpectAlert(
+          "",
+          "",
+          signUpData.userNameOrPasswordRequiredText
+        );
+      });
+
+      test("Verify that signup is prevented when only the username is entered and the password is left blank", async ({
+        runner,
+        fakeUser,
+        signUpModal,
+        signUpHelper,
+      }) => {
+        await runner.verifyElementIsVisible(signUpModal.usernameInputField);
+        await runner.verifyElementIsVisible(signUpModal.passwordInputField);
+        await signUpHelper.signupAndExpectAlert(
+          fakeUser.username,
+          "",
+          signUpData.userNameOrPasswordRequiredText
+        );
+      });
+
+      test("Verify that signup is prevented when only the password is entered and the username is left blank", async ({
+        runner,
+        fakeUser,
+        signUpModal,
+        signUpHelper,
+      }) => {
+        await runner.verifyElementIsVisible(signUpModal.usernameInputField);
+        await runner.verifyElementIsVisible(signUpModal.passwordInputField);
+        await signUpHelper.signupAndExpectAlert(
+          "",
+          fakeUser.password,
+          signUpData.userNameOrPasswordRequiredText
         );
       });
 
