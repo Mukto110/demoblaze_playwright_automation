@@ -5,5 +5,8 @@
         "password": "Password:"
     },
     "closeButtonText": "Close",
-    "userNameOrPasswordRequiredText": "Please fill out Username and Password."
+    "userNameOrPasswordRequiredText": "Please fill out Username and Password.",
+    "signUpSuccessText": "Sign up successful.",
+    "userExistText": "This user already exist.",
+    "passwordLessThanText": "jasldkfjlasdjflkasdjf."
 }

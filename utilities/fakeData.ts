@@ -11,6 +11,7 @@ export class FakeUser {
   card: string;
   month: string;
   year: string;
+  passwordLessThanSix: string;
 
   constructor(page: Page) {
     this.username = faker.internet.username();
@@ -22,5 +23,6 @@ export class FakeUser {
     this.card = faker.lorem.word();
     this.month = faker.lorem.word();
     this.year = faker.lorem.word();
+    this.passwordLessThanSix = faker.internet.password({ length: 4 });
   }
 }

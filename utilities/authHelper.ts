@@ -15,9 +15,23 @@ export class LoginHelper {
   }
 
   async login(username: string, password: string): Promise<void> {
-    await this.utils.fillInputBox(this.loginModal.userNameInputField, username);
-    await this.utils.fillInputBox(this.loginModal.passwordInputField, password);
-    await this.page.locator(this.loginModal.loginButton).click();
+    try {
+      await this.utils.fillInputBox(
+        this.loginModal.userNameInputField,
+        username
+      );
+      await this.utils.fillInputBox(
+        this.loginModal.passwordInputField,
+        password
+      );
+      await this.page.locator(this.loginModal.loginButton).click();
+      this.utils.logMessage(`Login attempted with username: "${username}"`);
+    } catch (error) {
+      const errorMsg = `Failed to perform login with username: "${username}"`;
+      this.utils.logMessage(errorMsg, "error");
+      await this.utils.captureScreenshotOnFailure("login");
+      throw new Error(errorMsg);
+    }
   }
 
   async loginAndExpectAlert(
@@ -25,13 +39,26 @@ export class LoginHelper {
     password: string,
     expectedAlertText: string
   ): Promise<void> {
-    const alertPromise = this.utils.handleAlertWithMessage(expectedAlertText);
+    try {
+      await this.utils.handleAlertWithMessage(expectedAlertText);
 
-    await this.page.locator(this.loginModal.userNameInputField).fill(username);
-    await this.page.locator(this.loginModal.passwordInputField).fill(password);
-    await this.page.locator(this.loginModal.loginButton).click();
+      await this.page
+        .locator(this.loginModal.userNameInputField)
+        .fill(username);
+      await this.page
+        .locator(this.loginModal.passwordInputField)
+        .fill(password);
+      await this.page.locator(this.loginModal.loginButton).click();
 
-    await alertPromise;
+      this.utils.logMessage(
+        `Login attempted with expected alert: "${expectedAlertText}"`
+      );
+    } catch (error) {
+      const errorMsg = `Failed login attempt with alert expectation: "${expectedAlertText}"`;
+      this.utils.logMessage(errorMsg, "error");
+      await this.utils.captureScreenshotOnFailure("loginAndExpectAlert");
+      throw new Error(errorMsg);
+    }
   }
 }
 
@@ -47,15 +74,23 @@ export class SignupHelper {
   }
 
   async signup(username: string, password: string): Promise<void> {
-    await this.utils.fillInputBox(
-      this.signUpModal.usernameInputField,
-      username
-    );
-    await this.utils.fillInputBox(
-      this.signUpModal.passwordInputField,
-      password
-    );
-    await this.utils.clickOnElement(this.signUpModal.signUpButton);
+    try {
+      await this.utils.fillInputBox(
+        this.signUpModal.usernameInputField,
+        username
+      );
+      await this.utils.fillInputBox(
+        this.signUpModal.passwordInputField,
+        password
+      );
+      await this.utils.clickOnElement(this.signUpModal.signUpButton);
+      this.utils.logMessage(`Signup attempted with username: "${username}"`);
+    } catch (error) {
+      const errorMsg = `Failed to perform signup with username: "${username}"`;
+      this.utils.logMessage(errorMsg, "error");
+      await this.utils.captureScreenshotOnFailure("signup");
+      throw new Error(errorMsg);
+    }
   }
 
   async signupAndExpectAlert(
@@ -63,18 +98,27 @@ export class SignupHelper {
     password: string,
     expectedAlertText: string
   ): Promise<void> {
-    const alertPromise = this.utils.handleAlertWithMessage(expectedAlertText);
+    try {
+      await this.utils.handleAlertWithMessage(expectedAlertText);
 
-    await this.utils.fillInputBox(
-      this.signUpModal.usernameInputField,
-      username
-    );
-    await this.utils.fillInputBox(
-      this.signUpModal.passwordInputField,
-      password
-    );
-    await this.utils.clickOnElement(this.signUpModal.signUpButton);
+      await this.utils.fillInputBox(
+        this.signUpModal.usernameInputField,
+        username
+      );
+      await this.utils.fillInputBox(
+        this.signUpModal.passwordInputField,
+        password
+      );
+      await this.utils.clickOnElement(this.signUpModal.signUpButton);
 
-    await alertPromise;
+      this.utils.logMessage(
+        `Signup attempted with expected alert: "${expectedAlertText}"`
+      );
+    } catch (error) {
+      const errorMsg = `Failed signup attempt with alert expectation: "${expectedAlertText}"`;
+      this.utils.logMessage(errorMsg, "error");
+      await this.utils.captureScreenshotOnFailure("signupAndExpectAlert");
+      throw new Error(errorMsg);
+    }
   }
 }
