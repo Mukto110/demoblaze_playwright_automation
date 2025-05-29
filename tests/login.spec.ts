@@ -69,6 +69,10 @@ class LoginModal extends ExpectedValueProvider {
           fakeUser.password
         );
         await runner.verifyElementIsVisible(loginModal.closeButton);
+        await runner.verifyContainText(
+          loginModal.closeButton,
+          loginData.closeButtonText
+        );
         await runner.clickOnElement(loginModal.closeButton);
         await runner.verifyElementIsVisible(homePage.navbarLogin);
         await runner.clickOnElement(homePage.navbarLogin);
@@ -119,6 +123,11 @@ class LoginModal extends ExpectedValueProvider {
       }) => {
         await runner.verifyElementIsVisible(loginModal.userNameInputField);
         await runner.verifyElementIsVisible(loginModal.passwordInputField);
+        await runner.validateAttribute(
+          loginModal.loginButton,
+          "type",
+          "button"
+        );
         await loginHelper.loginAndExpectAlert(
           "",
           "",

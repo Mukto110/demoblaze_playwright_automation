@@ -3,5 +3,7 @@
     "labels": {
         "username": "Username:",
         "password": "Password:"
-    }
+    },
+    "closeButtonText": "Close",
+    "userNameOrPasswordRequiredText": "Please fill out Username and Password."
 }
