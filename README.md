@@ -176,12 +176,14 @@ Known Issues / Bugs	To be filled
 ---
 
 
-✅ Final Status  
-Area	Status  
-Manual Test Scenarios	✅ Done  
-Automation Complete	✅ Done  
-Documentation	✅ Finalized  
-Ready for Handover	✅ Yes  
+```markdown
+| Area                   | Status       |
+|------------------------|--------------|
+| Manual Test Scenarios  | ✅ Done      |
+| Automation Complete    | ✅ Done      |
+| Documentation          | ✅ Finalized |
+| Ready for Handover     | ✅ Yes       |
+```
 
 
 ---
