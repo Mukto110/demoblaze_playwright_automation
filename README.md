@@ -122,7 +122,7 @@ npx playwright test tests/login.spec.ts
 npx playwright show-report
 ```
 
-
+---
 
 
 📝 Sample Test Data
@@ -133,6 +133,7 @@ Contact	fakerJs
 Message	fakerJs
 
 
+---
 
 
 📊 Test Execution Summary
@@ -158,7 +159,7 @@ Known Issues / Bugs	To be filled
 
 
 
-
+---
 
 🧩 Lessons Learned & Improvements
  Add more edge cases for login validation
@@ -172,7 +173,7 @@ Known Issues / Bugs	To be filled
  Use authHelper to reduce login/signup code duplication
 
 
-
+---
 
 
 ✅ Final Status
@@ -182,7 +183,7 @@ Automation Complete	✅ Done
 Documentation	✅ Finalized
 Ready for Handover	✅ Yes
 
-
+---
 
 🔜 Next Steps
  Final regression run
@@ -191,6 +192,7 @@ Ready for Handover	✅ Yes
 
  Share documentation with QA and Dev teams
 
+---
 
 End of Document
 
