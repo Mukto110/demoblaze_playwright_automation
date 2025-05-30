@@ -16,13 +16,11 @@ class SignUpModal extends ExpectedValueProvider {
         await runner.navigateTo(envData.baseUrl);
         await runner.verifyElementIsVisible(homePage.homePageLogo);
         await runner.verifyUrlContains(envData.baseUrl);
-        await runner.verifyElementIsVisible(homePage.navbarLogin);
-        await runner.verifyContainText(
-          homePage.navbarLogin,
-          homeData.navbar.login
-        );
-        await runner.clickOnElement(homePage.navbarSignup);
-        await runner.wait(2, {
+        await runner.verifyElementIsVisible(homePage.navbarSignup);
+        await runner.verifyElementsAreEnabled(homePage.navbarSignup);
+        
+        await runner.validateAndClick(homePage.navbarSignup,homeData.navbar.signup);
+        await runner.wait(5, {
           waitForSelector: signUpModal.signUpModalHeader,
         });
         await runner.verifyElementIsVisible(signUpModal.signUpModalHeader);
@@ -81,17 +79,13 @@ class SignUpModal extends ExpectedValueProvider {
           fakeUser.password
         );
         await runner.verifyElementIsVisible(signUpModal.closeButton);
-        await runner.verifyContainText(
-          signUpModal.closeButton,
-          signUpData.closeButtonText
-        );
-        await runner.clickOnElement(signUpModal.closeButton);
+        await runner.verifyElementsAreEnabled(signUpModal.closeButton);
+        
+        await runner.validateAndClick(signUpModal.closeButton,signUpData.closeButtonText);
         await runner.verifyElementIsVisible(homePage.navbarSignup);
-        await runner.verifyContainText(
-          homePage.navbarSignup,
-          homeData.navbar.signup
-        );
-        await runner.clickOnElement(homePage.navbarSignup);
+        await runner.verifyElementsAreEnabled(homePage.navbarSignup);
+        
+        await runner.validateAndClick(homePage.navbarSignup,homeData.navbar.signup);
         await runner.verifyElementIsVisible(signUpModal.signUpModalHeader);
         await runner.verifyContainText(
           signUpModal.signUpModalHeader,
@@ -136,13 +130,12 @@ class SignUpModal extends ExpectedValueProvider {
           fakeUser.password
         );
         await runner.verifyElementIsVisible(signUpModal.crossButton);
+        await runner.verifyElementsAreEnabled(signUpModal.crossButton);
         await runner.clickOnElement(signUpModal.crossButton);
         await runner.verifyElementIsVisible(homePage.navbarSignup);
-        await runner.verifyContainText(
-          homePage.navbarSignup,
-          homeData.navbar.signup
-        );
-        await runner.clickOnElement(homePage.navbarSignup);
+        await runner.verifyElementsAreEnabled(homePage.navbarSignup);
+        
+        await runner.validateAndClick(homePage.navbarSignup,homeData.navbar.signup);
         await runner.verifyElementIsVisible(signUpModal.signUpModalHeader);
         await runner.verifyContainText(
           signUpModal.signUpModalHeader,
@@ -167,6 +160,9 @@ class SignUpModal extends ExpectedValueProvider {
       }) => {
         await runner.verifyElementIsVisible(signUpModal.usernameInputField);
         await runner.verifyElementIsVisible(signUpModal.passwordInputField);
+        await runner.verifyElementIsVisible(signUpModal.signUpButton);
+        await runner.verifyElementsAreEnabled(signUpModal.signUpButton);
+
         await runner.handleAlertWithMessage(
           signUpData.userNameOrPasswordRequiredText
         );
@@ -181,6 +177,8 @@ class SignUpModal extends ExpectedValueProvider {
       }) => {
         await runner.verifyElementIsVisible(signUpModal.usernameInputField);
         await runner.verifyElementIsVisible(signUpModal.passwordInputField);
+        await runner.verifyElementIsVisible(signUpModal.signUpButton);
+        await runner.verifyElementsAreEnabled(signUpModal.signUpButton);
         await runner.handleAlertWithMessage(
           signUpData.userNameOrPasswordRequiredText
         );
@@ -195,6 +193,8 @@ class SignUpModal extends ExpectedValueProvider {
       }) => {
         await runner.verifyElementIsVisible(signUpModal.usernameInputField);
         await runner.verifyElementIsVisible(signUpModal.passwordInputField);
+        await runner.verifyElementIsVisible(signUpModal.signUpButton);
+        await runner.verifyElementsAreEnabled(signUpModal.signUpButton);
         await runner.handleAlertWithMessage(
           signUpData.userNameOrPasswordRequiredText
         );
@@ -209,6 +209,8 @@ class SignUpModal extends ExpectedValueProvider {
       }) => {
         await runner.verifyElementIsVisible(signUpModal.usernameInputField);
         await runner.verifyElementIsVisible(signUpModal.passwordInputField);
+        await runner.verifyElementIsVisible(signUpModal.signUpButton);
+        await runner.verifyElementsAreEnabled(signUpModal.signUpButton);
         await signUpHelper.signup(fakeUser.username, fakeUser.password);
         await runner.acceptWebAlert(signUpData.signUpSuccessText);
       });
@@ -221,6 +223,8 @@ class SignUpModal extends ExpectedValueProvider {
       }) => {
         await runner.verifyElementIsVisible(signUpModal.usernameInputField);
         await runner.verifyElementIsVisible(signUpModal.passwordInputField);
+        await runner.verifyElementIsVisible(signUpModal.signUpButton);
+        await runner.verifyElementsAreEnabled(signUpModal.signUpButton);
         await signUpHelper.signup(envData.username, envData.password);
         await runner.acceptWebAlert(signUpData.userExistText);
       });
@@ -233,6 +237,8 @@ class SignUpModal extends ExpectedValueProvider {
       }) => {
         await runner.verifyElementIsVisible(signUpModal.usernameInputField);
         await runner.verifyElementIsVisible(signUpModal.passwordInputField);
+        await runner.verifyElementIsVisible(signUpModal.signUpButton);
+        await runner.verifyElementsAreEnabled(signUpModal.signUpButton);
         await signUpHelper.signup(
           fakeUser.username,
           fakeUser.passwordLessThanSix
@@ -251,6 +257,8 @@ class SignUpModal extends ExpectedValueProvider {
       }) => {
         await runner.verifyElementIsVisible(signUpModal.usernameInputField);
         await runner.verifyElementIsVisible(signUpModal.passwordInputField);
+        await runner.verifyElementIsVisible(signUpModal.signUpButton);
+        await runner.verifyElementsAreEnabled(signUpModal.signUpButton);
         await signUpHelper.signup(fakeUser.username, fakeUser.password);
         await runner.acceptWebAlert(signUpData.signUpSuccessText);
         await runner.verifyElementIsVisible(homePage.navbarLogin);
@@ -265,8 +273,10 @@ class SignUpModal extends ExpectedValueProvider {
           loginModal.loginModalHeader,
           loginData.headerText
         );
+        await runner.verifyElementIsVisible(homePage.navbarLogin);
+        await runner.verifyElementsAreEnabled(homePage.navbarLogin);
         await loginHelper.login(fakeUser.username, fakeUser.password);
-        await runner.wait(6,{waitForSelector:homePage.navLogoutButton});
+        await runner.wait(5,{waitForSelector:homePage.navLogoutButton});
         await runner.validateVisibleNavItems(homePage.navItems, [
           homeData.navbar.home,
           homeData.navbar.contact,
