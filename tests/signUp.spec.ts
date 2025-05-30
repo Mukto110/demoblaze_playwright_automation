@@ -2,10 +2,8 @@ import { test } from "../utilities/fixtures";
 import { ExpectedValueProvider } from "../utilities/valueProvider";
 import homeData from "../testData/home.json";
 import signUpData from "../testData/signup.json";
+import loginData from "../testData/login.json";
 
-// test("", async ({runner}) => {
-
-// })
 
 class SignUpModal extends ExpectedValueProvider {
   constructor() {
@@ -48,6 +46,12 @@ class SignUpModal extends ExpectedValueProvider {
           signUpModal.passwordLabel,
           signUpData.labels.password
         );
+      });
+      test("Verify that the password input field masks the entered characters", async ({
+        runner,
+        signUpModal,
+      }) => {
+        await runner.verifyFieldIsPasswordType(signUpModal.passwordInputField);
       });
 
       test("Verify that the user can type into the input fields and reopening the modal after clicking 'close' button shouldn't get removed the value", async ({
@@ -163,12 +167,10 @@ class SignUpModal extends ExpectedValueProvider {
       }) => {
         await runner.verifyElementIsVisible(signUpModal.usernameInputField);
         await runner.verifyElementIsVisible(signUpModal.passwordInputField);
-        await runner.handleAlertWithMessage(signUpData.userNameOrPasswordRequiredText)
-        await signUpHelper.signup(
-          "",
-          ""
-          
+        await runner.handleAlertWithMessage(
+          signUpData.userNameOrPasswordRequiredText
         );
+        await signUpHelper.signup("", "");
       });
 
       test("Verify that signup is prevented when only the username is entered and the password is left blank", async ({
@@ -179,12 +181,10 @@ class SignUpModal extends ExpectedValueProvider {
       }) => {
         await runner.verifyElementIsVisible(signUpModal.usernameInputField);
         await runner.verifyElementIsVisible(signUpModal.passwordInputField);
-        await runner.handleAlertWithMessage(signUpData.userNameOrPasswordRequiredText)
-        await signUpHelper.signup(
-          fakeUser.username,
-          "",
-          
+        await runner.handleAlertWithMessage(
+          signUpData.userNameOrPasswordRequiredText
         );
+        await signUpHelper.signup(fakeUser.username, "");
       });
 
       test("Verify that signup is prevented when only the password is entered and the username is left blank", async ({
@@ -195,12 +195,10 @@ class SignUpModal extends ExpectedValueProvider {
       }) => {
         await runner.verifyElementIsVisible(signUpModal.usernameInputField);
         await runner.verifyElementIsVisible(signUpModal.passwordInputField);
-        await runner.handleAlertWithMessage(signUpData.userNameOrPasswordRequiredText)
-        await signUpHelper.signup(
-          "",
-          fakeUser.password,
-          
+        await runner.handleAlertWithMessage(
+          signUpData.userNameOrPasswordRequiredText
         );
+        await signUpHelper.signup("", fakeUser.password);
       });
 
       test("Verify that a user can register with valid and unique credentials", async ({
@@ -211,12 +209,8 @@ class SignUpModal extends ExpectedValueProvider {
       }) => {
         await runner.verifyElementIsVisible(signUpModal.usernameInputField);
         await runner.verifyElementIsVisible(signUpModal.passwordInputField);
-        await signUpHelper.signup(
-          fakeUser.username,
-          fakeUser.password,
-          
-        );
-        await runner.acceptWebAlert(signUpData.signUpSuccessText)
+        await signUpHelper.signup(fakeUser.username, fakeUser.password);
+        await runner.acceptWebAlert(signUpData.signUpSuccessText);
       });
 
       test("Verify that user cannot register with existing username", async ({
@@ -227,15 +221,10 @@ class SignUpModal extends ExpectedValueProvider {
       }) => {
         await runner.verifyElementIsVisible(signUpModal.usernameInputField);
         await runner.verifyElementIsVisible(signUpModal.passwordInputField);
-        await signUpHelper.signup(
-          envData.username,
-          envData.password
-          
-        );
-        await runner.acceptWebAlert(signUpData.userExistText)
+        await signUpHelper.signup(envData.username, envData.password);
+        await runner.acceptWebAlert(signUpData.userExistText);
       });
 
-    
       test("Verify that registration fails when the password is shorter than 6 characters", async ({
         runner,
         fakeUser,
@@ -247,21 +236,46 @@ class SignUpModal extends ExpectedValueProvider {
         await signUpHelper.signup(
           fakeUser.username,
           fakeUser.passwordLessThanSix
-          
         );
-        await runner.acceptWebAlert(signUpData.passwordLessThanText)
+        await runner.acceptWebAlert(signUpData.passwordLessThanText);
+        
       });
       test("Verify that registration is succesfull and then user is logged in succesfully", async ({
         runner,
         fakeUser,
         signUpModal,
         signUpHelper,
+        homePage,
+        loginModal,
+        loginHelper,
       }) => {
-        
+        await runner.verifyElementIsVisible(signUpModal.usernameInputField);
+        await runner.verifyElementIsVisible(signUpModal.passwordInputField);
+        await signUpHelper.signup(fakeUser.username, fakeUser.password);
+        await runner.acceptWebAlert(signUpData.signUpSuccessText);
+        await runner.verifyElementIsVisible(homePage.navbarLogin);
+        await runner.verifyElementsAreEnabled(homePage.navbarLogin);
+        await runner.validateAndClick(
+          homePage.navbarLogin,
+          homeData.navbar.login
+        );
 
+        await runner.verifyElementIsVisible(loginModal.loginModalHeader);
+        await runner.verifyContainText(
+          loginModal.loginModalHeader,
+          loginData.headerText
+        );
+        await loginHelper.login(fakeUser.username, fakeUser.password);
+        await runner.wait(6,{waitForSelector:homePage.navLogoutButton});
+        await runner.validateVisibleNavItems(homePage.navItems, [
+          homeData.navbar.home,
+          homeData.navbar.contact,
+          homeData.navbar.about,
+          homeData.navbar.cart,
+          homeData.navbar.logout,
+          `Welcome ${fakeUser.username}`,
+        ]);
       });
-
-     
     });
   }
 }

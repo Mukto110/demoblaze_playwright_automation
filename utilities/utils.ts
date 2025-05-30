@@ -1967,44 +1967,48 @@ export class Utils {
     }
   }
 
-  async validateVisibleNavItems(
-    navItemSelector: string, // e.g. "ul.navbar-nav > li"
-    expectedVisibleTexts: string[] // e.g. ["Home", "Cart", "Logout", "Welcome John"]
-  ): Promise<string[]> {
-    try {
-      const navItems = this.page.locator(navItemSelector);
-      const visibleTexts: string[] = [];
+async validateVisibleNavItems(
+  navItemSelector: string,
+  expectedVisibleTexts: string[]
+): Promise<string[]> {
+  try {
+    const navItems = this.page.locator(navItemSelector);
+    const visibleTexts: string[] = [];
 
-      const count = await navItems.count();
+    const count = await navItems.count();
 
-      for (let i = 0; i < count; i++) {
-        const item = navItems.nth(i);
-        if (await item.isVisible()) {
-          const text = (await item.innerText()).replace(/\s+/g, " ").trim();
-          visibleTexts.push(text);
-        }
+    for (let i = 0; i < count; i++) {
+      const item = navItems.nth(i);
+      if (await item.isVisible()) {
+        let text = await item.innerText();
+
+        // Normalize: collapse whitespace, remove "(current)" if any
+        text = text.replace(/\s+/g, " ").replace("(current)", "").trim();
+
+        visibleTexts.push(text);
       }
-
-      // Debug logs
-      this.logMessage(
-        `🔍 Actual visible nav items: [${visibleTexts.join(", ")}]`
-      );
-      this.logMessage(
-        `📌 Expected visible nav items: [${expectedVisibleTexts.join(", ")}]`
-      );
-
-      // Assert
-      expect(visibleTexts).toEqual(expectedVisibleTexts);
-      this.logMessage("✅ Navbar items validated successfully.");
-
-      return visibleTexts; // ✅ return list of visible items
-    } catch (error: any) {
-      const errorMsg = `❌ Navbar validation failed: ${error.message}`;
-      this.logMessage(errorMsg, "error");
-      await this.captureScreenshotOnFailure("validateVisibleNavItems");
-      throw new Error(errorMsg);
     }
+
+    // Normalize expected as well
+    const expectedNormalized = expectedVisibleTexts.map(txt =>
+      txt.replace(/\s+/g, " ").replace("(current)", "").trim()
+    );
+
+    // Debug logs
+    this.logMessage(`🔍 Actual visible nav items: [${visibleTexts.join(", ")}]`);
+    this.logMessage(`📌 Expected visible nav items: [${expectedNormalized.join(", ")}]`);
+
+    expect(visibleTexts).toEqual(expectedNormalized);
+    this.logMessage("✅ Navbar items validated successfully.");
+
+    return visibleTexts;
+  } catch (error: any) {
+    const errorMsg = `❌ Navbar validation failed: ${error.message}`;
+    this.logMessage(errorMsg, "error");
+    await this.captureScreenshotOnFailure("validateVisibleNavItems");
+    throw new Error(errorMsg);
   }
+}
 
   async validateExclusiveHoverColorChangeForNavItems(
     this: any,
