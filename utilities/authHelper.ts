@@ -33,33 +33,6 @@ export class LoginHelper {
       throw new Error(errorMsg);
     }
   }
-
-  async loginAndExpectAlert(
-    username: string,
-    password: string,
-    expectedAlertText: string
-  ): Promise<void> {
-    try {
-      await this.utils.handleAlertWithMessage(expectedAlertText);
-
-      await this.page
-        .locator(this.loginModal.userNameInputField)
-        .fill(username);
-      await this.page
-        .locator(this.loginModal.passwordInputField)
-        .fill(password);
-      await this.page.locator(this.loginModal.loginButton).click();
-
-      this.utils.logMessage(
-        `Login attempted with expected alert: "${expectedAlertText}"`
-      );
-    } catch (error) {
-      const errorMsg = `Failed login attempt with alert expectation: "${expectedAlertText}"`;
-      this.utils.logMessage(errorMsg, "error");
-      await this.utils.captureScreenshotOnFailure("loginAndExpectAlert");
-      throw new Error(errorMsg);
-    }
-  }
 }
 
 export class SignupHelper {
@@ -89,35 +62,6 @@ export class SignupHelper {
       const errorMsg = `Failed to perform signup with username: "${username}"`;
       this.utils.logMessage(errorMsg, "error");
       await this.utils.captureScreenshotOnFailure("signup");
-      throw new Error(errorMsg);
-    }
-  }
-
-  async signupAndExpectAlert(
-    username: string,
-    password: string,
-    expectedAlertText: string
-  ): Promise<void> {
-    try {
-      await this.utils.handleAlertWithMessage(expectedAlertText);
-
-      await this.utils.fillInputBox(
-        this.signUpModal.usernameInputField,
-        username
-      );
-      await this.utils.fillInputBox(
-        this.signUpModal.passwordInputField,
-        password
-      );
-      await this.utils.clickOnElement(this.signUpModal.signUpButton);
-
-      this.utils.logMessage(
-        `Signup attempted with expected alert: "${expectedAlertText}"`
-      );
-    } catch (error) {
-      const errorMsg = `Failed signup attempt with alert expectation: "${expectedAlertText}"`;
-      this.utils.logMessage(errorMsg, "error");
-      await this.utils.captureScreenshotOnFailure("signupAndExpectAlert");
       throw new Error(errorMsg);
     }
   }

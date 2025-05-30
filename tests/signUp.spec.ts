@@ -163,10 +163,11 @@ class SignUpModal extends ExpectedValueProvider {
       }) => {
         await runner.verifyElementIsVisible(signUpModal.usernameInputField);
         await runner.verifyElementIsVisible(signUpModal.passwordInputField);
-        await signUpHelper.signupAndExpectAlert(
+        await runner.handleAlertWithMessage(signUpData.userNameOrPasswordRequiredText)
+        await signUpHelper.signup(
           "",
-          "",
-          signUpData.userNameOrPasswordRequiredText
+          ""
+          
         );
       });
 
@@ -178,10 +179,11 @@ class SignUpModal extends ExpectedValueProvider {
       }) => {
         await runner.verifyElementIsVisible(signUpModal.usernameInputField);
         await runner.verifyElementIsVisible(signUpModal.passwordInputField);
-        await signUpHelper.signupAndExpectAlert(
+        await runner.handleAlertWithMessage(signUpData.userNameOrPasswordRequiredText)
+        await signUpHelper.signup(
           fakeUser.username,
           "",
-          signUpData.userNameOrPasswordRequiredText
+          
         );
       });
 
@@ -193,10 +195,11 @@ class SignUpModal extends ExpectedValueProvider {
       }) => {
         await runner.verifyElementIsVisible(signUpModal.usernameInputField);
         await runner.verifyElementIsVisible(signUpModal.passwordInputField);
-        await signUpHelper.signupAndExpectAlert(
+        await runner.handleAlertWithMessage(signUpData.userNameOrPasswordRequiredText)
+        await signUpHelper.signup(
           "",
           fakeUser.password,
-          signUpData.userNameOrPasswordRequiredText
+          
         );
       });
 
@@ -208,11 +211,12 @@ class SignUpModal extends ExpectedValueProvider {
       }) => {
         await runner.verifyElementIsVisible(signUpModal.usernameInputField);
         await runner.verifyElementIsVisible(signUpModal.passwordInputField);
-        await signUpHelper.signupAndExpectAlert(
+        await signUpHelper.signup(
           fakeUser.username,
           fakeUser.password,
-          signUpData.signUpSuccessText
+          
         );
+        await runner.acceptWebAlert(signUpData.signUpSuccessText)
       });
 
       test("Verify that user cannot register with existing username", async ({
@@ -223,14 +227,15 @@ class SignUpModal extends ExpectedValueProvider {
       }) => {
         await runner.verifyElementIsVisible(signUpModal.usernameInputField);
         await runner.verifyElementIsVisible(signUpModal.passwordInputField);
-        await signUpHelper.signupAndExpectAlert(
+        await signUpHelper.signup(
           envData.username,
-          envData.password,
-          signUpData.userExistText
+          envData.password
+          
         );
+        await runner.acceptWebAlert(signUpData.userExistText)
       });
 
-      // working
+    
       test("Verify that registration fails when the password is shorter than 6 characters", async ({
         runner,
         fakeUser,
@@ -239,137 +244,24 @@ class SignUpModal extends ExpectedValueProvider {
       }) => {
         await runner.verifyElementIsVisible(signUpModal.usernameInputField);
         await runner.verifyElementIsVisible(signUpModal.passwordInputField);
-        await signUpHelper.signupAndExpectAlert(
+        await signUpHelper.signup(
           fakeUser.username,
-          fakeUser.passwordLessThanSix,
-          signUpData.passwordLessThanText
+          fakeUser.passwordLessThanSix
+          
         );
+        await runner.acceptWebAlert(signUpData.passwordLessThanText)
+      });
+      test("Verify that registration is succesfull and then user is logged in succesfully", async ({
+        runner,
+        fakeUser,
+        signUpModal,
+        signUpHelper,
+      }) => {
+        
+
       });
 
-      // <-------------------------------------------------------------------------------------------->
-
-      // test("Verify that the signup modal opens when clicking the Sign up button ", async ({
-      //   runner,
-      //   homePage,
-      //   SignUpModal,
-      //   fakeUser,
-      // }) => {
-      //   await runner.verifyElementIsVisible(homePage.navbarSignup);
-      //   await runner.clickOnElement(homePage.navbarSignup);
-      //   await runner.verifyContainText(
-      //     SignUpModal.SignUpModalHeader,
-      //     "Sign up"
-      //   );
-      //   await runner.verifyElementIsVisible(SignUpModal.usernameTextField);
-      //   await runner.verifyElementIsVisible(SignUpModal.passwordTextField);
-      //   await runner.verifyElementIsVisible(SignUpModal.closeButton);
-      //   await runner.verifyElementIsVisible(SignUpModal.signUpButton);
-      // });
-      // test("Verify that a new user can register with valid, unique credentials ", async ({
-      //   runner,
-      //   homePage,
-      //   SignUpModal,
-      //   fakeUser,
-      // }) => {
-      //   await runner.verifyElementIsVisible(homePage.navbarSignup);
-      //   await runner.clickOnElement(homePage.navbarSignup);
-      //   await runner.verifyContainText(
-      //     SignUpModal.SignUpModalHeader,
-      //     "Sign up"
-      //   );
-      //   await runner.fillInputBox(
-      //     SignUpModal.usernameTextField,
-      //     fakeUser.username
-      //   );
-      //   await runner.fillInputBox(
-      //     SignUpModal.passwordTextField,
-      //     fakeUser.password
-      //   );
-      //   await runner.handleAlertWithMessage("Sign up successful.");
-      //   await runner.clickOnElement(SignUpModal.signUpButton);
-      // });
-      // test("Verify that an error message is shown when registering with existing username T", async ({
-      //   runner,
-      //   homePage,
-      //   SignUpModal,
-      //   fakeUser,
-      // }) => {
-      //   await runner.verifyElementIsVisible(homePage.navbarSignup);
-      //   await runner.clickOnElement(homePage.navbarSignup);
-      //   await runner.verifyContainText(
-      //     SignUpModal.SignUpModalHeader,
-      //     "Sign up"
-      //   );
-      //   await runner.fillInputBox(
-      //     SignUpModal.usernameTextField,
-      //     fakeUser.username
-      //   );
-      //   await runner.fillInputBox(
-      //     SignUpModal.passwordTextField,
-      //     fakeUser.password
-      //   );
-      //   await runner.handleAlertWithMessage("This user already exist.");
-      //   await runner.clickOnElement(SignUpModal.signUpButton);
-      // });
-      // test("Verify mandatory field validation when signup fields are empty", async ({
-      //   runner,
-      //   homePage,
-      //   SignUpModal,
-      //   fakeUser,
-      // }) => {
-      //   await runner.verifyElementIsVisible(homePage.navbarSignup);
-      //   await runner.clickOnElement(homePage.navbarSignup);
-      //   await runner.verifyContainText(
-      //     SignUpModal.SignUpModalHeader,
-      //     "Sign up"
-      //   );
-      //   await runner.fillInputBox(SignUpModal.usernameTextField, "");
-      //   await runner.fillInputBox(SignUpModal.passwordTextField, "");
-      //   await runner.handleAlertWithMessage(
-      //     "Please fill out Username and Password."
-      //   );
-      //   await runner.clickOnElement(SignUpModal.signUpButton);
-      // });
-      // test("Verify that closing the signup modal works as expected ", async ({
-      //   runner,
-      //   homePage,
-      //   SignUpModal,
-      //   envData,
-      // }) => {
-      //   await runner.verifyElementIsVisible(homePage.navbarSignup);
-      //   await runner.clickOnElement(homePage.navbarSignup);
-      //   await runner.verifyContainText(
-      //     SignUpModal.SignUpModalHeader,
-      //     "Sign up"
-      //   );
-      //   await runner.clickOnElement(SignUpModal.closeButton);
-      //   await runner.verifyUrlContains(envData.baseUrl);
-      //   await runner.verifyElementIsVisible(homePage.homePageLogo);
-      // });
-      // test("Verify that the password field must contain more than 6 characters during user registration ", async ({
-      //   runner,
-      //   homePage,
-      //   SignUpModal,
-      //   envData,
-      //   fakeUser,
-      // }) => {
-      //   await runner.verifyElementIsVisible(homePage.navbarSignup);
-      //   await runner.clickOnElement(homePage.navbarSignup);
-      //   await runner.verifyContainText(
-      //     SignUpModal.SignUpModalHeader,
-      //     "Sign up"
-      //   );
-      //   await runner.fillInputBox(
-      //     SignUpModal.usernameTextField,
-      //     fakeUser.username
-      //   );
-      //   await runner.fillInputBox(SignUpModal.passwordTextField, "ash");
-      //   await runner.validateMinLengthAfterSubmit(
-      //     SignUpModal.passwordTextField,
-      //     SignUpModal.signUpButton,
-      //     4
-      //   );
-      // });
+     
     });
   }
 }

@@ -8,5 +8,5 @@
     "userNameOrPasswordRequiredText": "Please fill out Username and Password.",
     "signUpSuccessText": "Sign up successful.",
     "userExistText": "This user already exist.",
-    "passwordLessThanText": "jasldkfjlasdjflkasdjf."
+    "passwordLessThanText": "password less than six charecters"
 }

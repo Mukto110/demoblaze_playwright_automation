@@ -128,10 +128,11 @@ class LoginModal extends ExpectedValueProvider {
           "type",
           "button"
         );
-        await loginHelper.loginAndExpectAlert(
+        await runner.handleAlertWithMessage(loginData.userNameOrPasswordRequiredText
+)
+        await loginHelper.login(
           "",
           "",
-          loginData.userNameOrPasswordRequiredText
         );
       });
 
@@ -143,10 +144,11 @@ class LoginModal extends ExpectedValueProvider {
       }) => {
         await runner.verifyElementIsVisible(loginModal.userNameInputField);
         await runner.verifyElementIsVisible(loginModal.passwordInputField);
-        await loginHelper.loginAndExpectAlert(
+        await runner.handleAlertWithMessage(loginData.userNameOrPasswordRequiredText)
+        await loginHelper.login(
           envData.username,
           "",
-          loginData.userNameOrPasswordRequiredText
+          
         );
       });
 
@@ -158,10 +160,11 @@ class LoginModal extends ExpectedValueProvider {
       }) => {
         await runner.verifyElementIsVisible(loginModal.userNameInputField);
         await runner.verifyElementIsVisible(loginModal.passwordInputField);
-        await loginHelper.loginAndExpectAlert(
+        await runner.handleAlertWithMessage(loginData.userNameOrPasswordRequiredText)
+        await loginHelper.login(
           "",
           envData.password,
-          loginData.userNameOrPasswordRequiredText
+          
         );
       });
 
@@ -173,10 +176,11 @@ class LoginModal extends ExpectedValueProvider {
       }) => {
         await runner.verifyElementIsVisible(loginModal.userNameInputField);
         await runner.verifyElementIsVisible(loginModal.passwordInputField);
-        await loginHelper.loginAndExpectAlert(
+        await runner.handleAlertWithMessage(loginData.incorrectCredentialText)
+        await loginHelper.login(
           fakeUser.username,
           fakeUser.password,
-          loginData.incorrectCredentialText
+          
         );
       });
 
@@ -189,10 +193,11 @@ class LoginModal extends ExpectedValueProvider {
       }) => {
         await runner.verifyElementIsVisible(loginModal.userNameInputField);
         await runner.verifyElementIsVisible(loginModal.passwordInputField);
-        await loginHelper.loginAndExpectAlert(
+        await runner.handleAlertWithMessage(loginData.wrongPasswordText)
+        await loginHelper.login(
           envData.username,
           fakeUser.password,
-          loginData.wrongPasswordText
+          
         );
       });
 
@@ -205,10 +210,10 @@ class LoginModal extends ExpectedValueProvider {
       }) => {
         await runner.verifyElementIsVisible(loginModal.userNameInputField);
         await runner.verifyElementIsVisible(loginModal.passwordInputField);
-        await loginHelper.loginAndExpectAlert(
+        await runner.handleAlertWithMessage(loginData.incorrectCredentialText)
+        await loginHelper.login(
           fakeUser.username,
-          envData.password,
-          loginData.incorrectCredentialText
+          envData.password
         );
       });
 
