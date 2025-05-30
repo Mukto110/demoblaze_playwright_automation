@@ -48,6 +48,7 @@ class HomePageTest extends ExpectedValueProvider {
         );
       });
 
+      // Working
       test("Verify proper visibility of navigation bar items", async ({
         runner,
         homePage,
@@ -60,6 +61,12 @@ class HomePageTest extends ExpectedValueProvider {
           homeData.navbar.login,
           homeData.navbar.signup,
         ]);
+        await runner.mouseHover(homePage.navbarHome);
+        await runner.verifyElementToHaveCSSProperty(
+          homePage.navbarHome,
+          "color",
+          homeData.navItemsColorOnHover
+        );
       });
 
       test("Verify navbar contact, about us, login and signup shows the correct modal", async ({

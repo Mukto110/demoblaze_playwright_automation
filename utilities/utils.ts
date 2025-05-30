@@ -1967,48 +1967,52 @@ export class Utils {
     }
   }
 
-async validateVisibleNavItems(
-  navItemSelector: string,
-  expectedVisibleTexts: string[]
-): Promise<string[]> {
-  try {
-    const navItems = this.page.locator(navItemSelector);
-    const visibleTexts: string[] = [];
+  async validateVisibleNavItems(
+    navItemSelector: string,
+    expectedVisibleTexts: string[]
+  ): Promise<string[]> {
+    try {
+      const navItems = this.page.locator(navItemSelector);
+      const visibleTexts: string[] = [];
 
-    const count = await navItems.count();
+      const count = await navItems.count();
 
-    for (let i = 0; i < count; i++) {
-      const item = navItems.nth(i);
-      if (await item.isVisible()) {
-        let text = await item.innerText();
+      for (let i = 0; i < count; i++) {
+        const item = navItems.nth(i);
+        if (await item.isVisible()) {
+          let text = await item.innerText();
 
-        // Normalize: collapse whitespace, remove "(current)" if any
-        text = text.replace(/\s+/g, " ").replace("(current)", "").trim();
+          // Normalize: collapse whitespace, remove "(current)" if any
+          text = text.replace(/\s+/g, " ").replace("(current)", "").trim();
 
-        visibleTexts.push(text);
+          visibleTexts.push(text);
+        }
       }
+
+      // Normalize expected as well
+      const expectedNormalized = expectedVisibleTexts.map((txt) =>
+        txt.replace(/\s+/g, " ").replace("(current)", "").trim()
+      );
+
+      // Debug logs
+      this.logMessage(
+        `🔍 Actual visible nav items: [${visibleTexts.join(", ")}]`
+      );
+      this.logMessage(
+        `📌 Expected visible nav items: [${expectedNormalized.join(", ")}]`
+      );
+
+      expect(visibleTexts).toEqual(expectedNormalized);
+      this.logMessage("✅ Navbar items validated successfully.");
+
+      return visibleTexts;
+    } catch (error: any) {
+      const errorMsg = `❌ Navbar validation failed: ${error.message}`;
+      this.logMessage(errorMsg, "error");
+      await this.captureScreenshotOnFailure("validateVisibleNavItems");
+      throw new Error(errorMsg);
     }
-
-    // Normalize expected as well
-    const expectedNormalized = expectedVisibleTexts.map(txt =>
-      txt.replace(/\s+/g, " ").replace("(current)", "").trim()
-    );
-
-    // Debug logs
-    this.logMessage(`🔍 Actual visible nav items: [${visibleTexts.join(", ")}]`);
-    this.logMessage(`📌 Expected visible nav items: [${expectedNormalized.join(", ")}]`);
-
-    expect(visibleTexts).toEqual(expectedNormalized);
-    this.logMessage("✅ Navbar items validated successfully.");
-
-    return visibleTexts;
-  } catch (error: any) {
-    const errorMsg = `❌ Navbar validation failed: ${error.message}`;
-    this.logMessage(errorMsg, "error");
-    await this.captureScreenshotOnFailure("validateVisibleNavItems");
-    throw new Error(errorMsg);
   }
-}
 
   async validateExclusiveHoverColorChangeForNavItems(
     this: any,
@@ -2094,6 +2098,70 @@ async validateVisibleNavItems(
       this.logMessage(errorMsg, "error");
       await this.captureScreenshotOnFailure("verifyInputContainsValue");
       throw new Error(errorMsg);
+    }
+  }
+
+  async verifyElementToHaveCSSProperty(
+    identifier: string | string[],
+    property: string,
+    expectedValue: string,
+    timeout = 3000
+  ): Promise<void> {
+    const identifiers = Array.isArray(identifier) ? identifier : [identifier];
+
+    for (const id of identifiers) {
+      try {
+        await this.page.waitForSelector(id, { state: "visible" });
+        const elements = this.page.locator(id);
+        const count = await elements.count();
+
+        if (count === 0) {
+          throw new Error(`❌ No elements found for identifier "${id}".`);
+        }
+
+        for (let i = 0; i < count; i++) {
+          const element = elements.nth(i);
+          await element.waitFor({ state: "visible" });
+
+          try {
+            await expect(element).toHaveCSS(property, expectedValue, {
+              timeout,
+            });
+
+            this.logMessage(
+              `✅ CSS property "${property}" of "${id}" at index ${i} is as expected: "${expectedValue}".`
+            );
+          } catch {
+            // Dynamically fetch the property
+            const actualValue = await element.evaluate(
+              (el, prop) =>
+                window.getComputedStyle(el).getPropertyValue(prop).trim(),
+              property
+            );
+            console.log(`🔍 [DEBUG] ${property} = "${actualValue}"`);
+
+            if (actualValue !== expectedValue.trim()) {
+              const errorMsg = `❌ Expected CSS property "${property}" to be "${expectedValue}", but found "${actualValue}" for "${id}" at index ${i}.`;
+              this.logMessage(errorMsg, "error");
+              await this.captureScreenshotOnFailure(
+                "verifyElementToHaveCSSProperty"
+              );
+              throw new Error(errorMsg);
+            }
+
+            this.logMessage(
+              `✅ CSS property "${property}" of "${id}" at index ${i} matches expected value (via fallback): "${actualValue}".`
+            );
+          }
+        }
+      } catch (error) {
+        const errorMsg = `❌ Failed to verify CSS property "${property}" for: ${id} | Reason: ${
+          error instanceof Error ? error.message : error
+        }`;
+        this.logMessage(errorMsg, "error");
+        await this.captureScreenshotOnFailure("verifyElementToHaveCSSProperty");
+        throw error instanceof Error ? error : new Error(String(error));
+      }
     }
   }
 }

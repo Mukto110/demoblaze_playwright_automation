@@ -40,7 +40,7 @@ export class HomePage {
   constructor(page: Page) {
     this.homePageLogo = `css=nav[id='narvbarx'] a[id='nava']`;
     this.homePageLogoImage = `css=nav[id='narvbarx'] a[id='nava'] img`;
-    this.navbarHome = `css=ul[class='navbar-nav ml-auto'] a[href='index.html']`;
+    this.navbarHome = `css=ul[class='navbar-nav ml-auto'] li[class='nav-item active'] a[href='index.html']`;
     this.navbarContact = `css=a[data-target='#exampleModal']`;
     this.navbarAbout = `css=a[data-target='#videoModal']`;
     this.navbarCart = `css=a[id='cartur']`;
