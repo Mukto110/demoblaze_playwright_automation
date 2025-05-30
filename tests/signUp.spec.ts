@@ -4,7 +4,6 @@ import homeData from "../testData/home.json";
 import signUpData from "../testData/signup.json";
 import loginData from "../testData/login.json";
 
-
 class SignUpModal extends ExpectedValueProvider {
   constructor() {
     super();
@@ -17,11 +16,16 @@ class SignUpModal extends ExpectedValueProvider {
         await runner.verifyElementIsVisible(homePage.homePageLogo);
         await runner.verifyUrlContains(envData.baseUrl);
         await runner.verifyElementIsVisible(homePage.navbarLogin);
-        await runner.verifyContainText(
-          homePage.navbarLogin,
-          homeData.navbar.login
+        await runner.mouseHover(homePage.navbarSignup);
+        await runner.verifyElementToHaveCSSProperty(
+          homePage.navbarSignup,
+          "color",
+          homeData.navItemsColorOnHover
         );
-        await runner.clickOnElement(homePage.navbarSignup);
+        await runner.validateAndClick(
+          homePage.navbarSignup,
+          homeData.navbar.signup
+        );
         await runner.wait(2, {
           waitForSelector: signUpModal.signUpModalHeader,
         });
@@ -46,12 +50,6 @@ class SignUpModal extends ExpectedValueProvider {
           signUpModal.passwordLabel,
           signUpData.labels.password
         );
-      });
-      test("Verify that the password input field masks the entered characters", async ({
-        runner,
-        signUpModal,
-      }) => {
-        await runner.verifyFieldIsPasswordType(signUpModal.passwordInputField);
       });
 
       test("Verify that the user can type into the input fields and reopening the modal after clicking 'close' button shouldn't get removed the value", async ({
@@ -107,6 +105,13 @@ class SignUpModal extends ExpectedValueProvider {
           signUpModal.passwordInputField,
           fakeUser.password
         );
+      });
+
+      test("Verify that the password input field masks the entered characters", async ({
+        runner,
+        signUpModal,
+      }) => {
+        await runner.verifyFieldIsPasswordType(signUpModal.passwordInputField);
       });
 
       test("Verify that the values of input fields shouldn't get removed on reopening the modal after clicking 'cross' button", async ({
@@ -225,6 +230,7 @@ class SignUpModal extends ExpectedValueProvider {
         await runner.acceptWebAlert(signUpData.userExistText);
       });
 
+      // BUG_SIGNUP_01 -> Register is accepting the password shorter than 6 characters
       test("Verify that registration fails when the password is shorter than 6 characters", async ({
         runner,
         fakeUser,
@@ -238,8 +244,8 @@ class SignUpModal extends ExpectedValueProvider {
           fakeUser.passwordLessThanSix
         );
         await runner.acceptWebAlert(signUpData.passwordLessThanText);
-        
       });
+
       test("Verify that registration is succesfull and then user is logged in succesfully", async ({
         runner,
         fakeUser,
@@ -266,7 +272,7 @@ class SignUpModal extends ExpectedValueProvider {
           loginData.headerText
         );
         await loginHelper.login(fakeUser.username, fakeUser.password);
-        await runner.wait(6,{waitForSelector:homePage.navLogoutButton});
+        await runner.wait(6, { waitForSelector: homePage.navLogoutButton });
         await runner.validateVisibleNavItems(homePage.navItems, [
           homeData.navbar.home,
           homeData.navbar.contact,

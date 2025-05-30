@@ -1,6 +1,7 @@
 import { test } from "../utilities/fixtures";
 import { ExpectedValueProvider } from "../utilities/valueProvider";
 import aboutUsData from "../testData/aboutUs.json";
+import homeData from "../testData/home.json";
 
 class AboutUsTest extends ExpectedValueProvider {
   runTest() {
@@ -8,6 +9,12 @@ class AboutUsTest extends ExpectedValueProvider {
       test.beforeEach(async ({ runner, envData, homePage, aboutModal }) => {
         await runner.navigateTo(envData.baseUrl);
         await runner.verifyElementIsVisible(homePage.navbarAbout);
+        await runner.mouseHover(homePage.navbarAbout);
+        await runner.verifyElementToHaveCSSProperty(
+          homePage.navbarAbout,
+          "color",
+          homeData.navItemsColorOnHover
+        );
         await runner.clickOnElement(homePage.navbarAbout);
         await runner.verifyElementIsVisible(aboutModal.title);
         await runner.verifyContainText(
@@ -31,8 +38,10 @@ class AboutUsTest extends ExpectedValueProvider {
 
       // BUG_ABOUT_US_02 -> Video is not playing correctly
       test("video plays correctly", async ({ runner, aboutModal }) => {
+        await runner.verifyElementIsVisible(aboutModal.playButton);
+        await runner.validateAttribute(aboutModal.playButton, "type", "button");
         await runner.clickOnElement(aboutModal.playButton);
-        await runner.wait(2);
+        await runner.wait(2, { waitForSelector: aboutModal.video });
         const videoCurrentTime = await runner.getVideoCurrentTime(
           aboutModal.video
         );

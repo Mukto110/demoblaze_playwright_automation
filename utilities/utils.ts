@@ -376,7 +376,7 @@ export class Utils {
       // Use Promise.all to wait for the dialog event AND accept it.
       // This prevents a race condition where the dialog might appear before waitForEvent is set up.
       const [dialog] = await Promise.all([
-        this.page.waitForEvent("dialog", { timeout: 10000 }), // Wait for a dialog (alert, confirm, prompt)
+        this.page.waitForEvent("dialog", { timeout: 5000 }), // Wait for a dialog (alert, confirm, prompt)
         // No click action here, assuming the alert is triggered by a previous action
         // If the alert is triggered by a specific click *within this function*,
         // that click would be the second element in this Promise.all array.
@@ -2105,6 +2105,7 @@ export class Utils {
     identifier: string | string[],
     property: string,
     expectedValue: string,
+    isHover: boolean = false,
     timeout = 3000
   ): Promise<void> {
     const identifiers = Array.isArray(identifier) ? identifier : [identifier];
@@ -2123,6 +2124,14 @@ export class Utils {
           const element = elements.nth(i);
           await element.waitFor({ state: "visible" });
 
+          if (isHover) {
+            await element.hover();
+            this.logMessage(
+              `Hovered over element with identifier: ${id} at index ${i}`
+            );
+            await this.page.waitForTimeout(300);
+          }
+
           try {
             await expect(element).toHaveCSS(property, expectedValue, {
               timeout,
@@ -2132,7 +2141,6 @@ export class Utils {
               `✅ CSS property "${property}" of "${id}" at index ${i} is as expected: "${expectedValue}".`
             );
           } catch {
-            // Dynamically fetch the property
             const actualValue = await element.evaluate(
               (el, prop) =>
                 window.getComputedStyle(el).getPropertyValue(prop).trim(),

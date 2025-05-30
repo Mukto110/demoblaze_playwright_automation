@@ -17,7 +17,7 @@ export class LoginModal {
     this.userNameInputField = `css=input[id='loginusername']`;
     this.passwordInputField = `css=input[id='loginpassword']`;
     this.loginButton = `css=button[onclick='logIn()']`;
-    this.crossButton = `css=div[id='logInModal'] span[aria-hidden='true']`;
+    this.crossButton = `css=div[id='logInModal'] button[aria-label='Close']`;
     this.closeButton = `xpath=//div[@id='logInModal']//button[@type='button'][normalize-space()='Close']`;
   }
 }
