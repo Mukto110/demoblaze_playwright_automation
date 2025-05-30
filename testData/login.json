@@ -5,7 +5,6 @@
         "Password": "Password:" 
     },
     "buttonText": "Log in",
-    "inputFillOutErrorText": "Please fill out Username and Password.",
     "userNameOrPasswordRequiredText": "Please fill out Username and Password.",
     "incorrectCredentialText": "User does not exist.",
     "wrongPasswordText": "Wrong password.",

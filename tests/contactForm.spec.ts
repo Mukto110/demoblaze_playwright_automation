@@ -1,6 +1,7 @@
 import { test } from "../utilities/fixtures";
 import { ExpectedValueProvider } from "../utilities/valueProvider";
 import contactModalData from "../testData/contact.json";
+import homeData from "../testData/home.json";
 
 class ContactFormTest extends ExpectedValueProvider {
   runTest() {
@@ -8,6 +9,12 @@ class ContactFormTest extends ExpectedValueProvider {
       test.beforeEach(async ({ runner, homePage, contactModal, envData }) => {
         await runner.navigateTo(envData.baseUrl);
         await runner.verifyElementIsVisible(homePage.navbarContact);
+        await runner.mouseHover(homePage.navbarContact);
+        await runner.verifyElementToHaveCSSProperty(
+          homePage.navbarContact,
+          "color",
+          homeData.navItemsColorOnHover
+        );
         await runner.clickOnElement(homePage.navbarContact);
         await runner.verifyElementIsVisible(contactModal.header);
         await runner.verifyContainText(

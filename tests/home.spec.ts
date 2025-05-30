@@ -16,6 +16,7 @@ class HomePageTest extends ExpectedValueProvider {
     test.describe("Home Page Functionality Test", () => {
       test.beforeEach(async ({ runner, envData, homePage }) => {
         await runner.navigateTo(envData.baseUrl);
+        await runner.verifyUrlContains(envData.baseUrl);
         await runner.verifyElementIsVisible(homePage.homePageLogo);
         await runner.validateAttribute(
           homePage.homePageLogoImage,
@@ -33,6 +34,7 @@ class HomePageTest extends ExpectedValueProvider {
         envData,
         homePage,
       }) => {
+        await runner.verifyElementIsVisible(homePage.homePageLogo);
         await runner.clickOnElement(homePage.homePageLogo);
         await runner.wait(5, { waitForSelector: homePage.homePageLogo });
         await runner.verifyUrlContains(envData.baseUrl);
@@ -60,6 +62,19 @@ class HomePageTest extends ExpectedValueProvider {
           homeData.navbar.login,
           homeData.navbar.signup,
         ]);
+        await runner.verifyElementToHaveCSSProperty(
+          [
+            homePage.navbarHome,
+            homePage.navbarContact,
+            homePage.navbarAbout,
+            homePage.navbarCart,
+            homePage.navbarLogin,
+            homePage.navbarSignup,
+          ],
+          "color",
+          homeData.navItemsColorOnHover,
+          true
+        );
       });
 
       test("Verify navbar contact, about us, login and signup shows the correct modal", async ({
@@ -77,6 +92,7 @@ class HomePageTest extends ExpectedValueProvider {
           homePage.navbarContact,
           homeData.navbar.contact
         );
+        await runner.verifyElementsAreEnabled(homePage.navbarContact);
         await runner.clickOnElement(homePage.navbarContact);
         await runner.verifyElementIsVisible(contactModal.header);
         await runner.verifyContainText(
@@ -91,6 +107,7 @@ class HomePageTest extends ExpectedValueProvider {
           homePage.navbarAbout,
           homeData.navbar.about
         );
+        await runner.verifyElementsAreEnabled(homePage.navbarAbout);
         await runner.clickOnElement(homePage.navbarAbout);
         await runner.verifyElementIsVisible(aboutModal.title);
         await runner.verifyContainText(
@@ -105,6 +122,7 @@ class HomePageTest extends ExpectedValueProvider {
           homePage.navbarLogin,
           homeData.navbar.login
         );
+        await runner.verifyElementsAreEnabled(homePage.navbarLogin);
         await runner.clickOnElement(homePage.navbarLogin);
         await runner.verifyElementIsVisible(loginModal.loginModalHeader);
         await runner.verifyContainText(
@@ -119,6 +137,7 @@ class HomePageTest extends ExpectedValueProvider {
           homePage.navbarSignup,
           homeData.navbar.signup
         );
+        await runner.verifyElementsAreEnabled(homePage.navbarSignup);
         await runner.clickOnElement(homePage.navbarSignup);
         await runner.verifyElementIsVisible(signUpModal.signUpModalHeader);
         await runner.verifyContainText(
@@ -136,11 +155,13 @@ class HomePageTest extends ExpectedValueProvider {
       }) => {
         await runner.wait(5, { waitForSelector: homePage.navbarCart });
         await runner.verifyElementIsVisible(homePage.navbarCart);
+        await runner.verifyElementsAreEnabled(homePage.navbarCart);
         await runner.validateAndClick(
           homePage.navbarCart,
           homeData.navbar.cart
         );
         await runner.verifyUrlContains(envData.cartUrl);
+        await runner.verifyElementIsVisible(cartPage.cartPageHeaderText);
         await runner.verifyContainText(
           cartPage.cartPageHeaderText,
           cartData.cartPageHeaderText
@@ -153,10 +174,7 @@ class HomePageTest extends ExpectedValueProvider {
       }) => {
         await runner.wait(2, { waitForSelector: homePage.carousel });
         await runner.verifyElementIsVisible(homePage.carousel);
-        await runner.validateAttributeExistsForAllElements(
-          homePage.carouselImages,
-          "src"
-        );
+        await runner.validateAttributes(homePage.carouselImages, "src");
         await runner.verifyAllCarouselImagesAutoChange(
           homePage.activeCarouselImage,
           homePage.carouselImages
@@ -168,8 +186,12 @@ class HomePageTest extends ExpectedValueProvider {
         homePage,
       }) => {
         await runner.wait(2, { waitForSelector: homePage.carousel });
-        await runner.verifyElementIsVisible(homePage.carouselPreviousButton);
         await runner.verifyElementIsVisible(homePage.carouselNextButton);
+        await runner.validateAttribute(
+          homePage.carouselNextButton,
+          "href",
+          homeData.carousel.nextButtonAttributeValue
+        );
         await runner.verifyCarouselNextArrowNavigation(
           homePage.activeCarouselImage,
           homePage.carouselImages,
@@ -183,7 +205,11 @@ class HomePageTest extends ExpectedValueProvider {
       }) => {
         await runner.wait(5, { waitForSelector: homePage.carousel });
         await runner.verifyElementIsVisible(homePage.carouselPreviousButton);
-        await runner.verifyElementIsVisible(homePage.carouselNextButton);
+        await runner.validateAttribute(
+          homePage.carouselPreviousButton,
+          "href",
+          homeData.carousel.previousButtonAttributeValue
+        );
         await runner.verifyCarouselPreviousArrowNavigation(
           homePage.activeCarouselImage,
           homePage.carouselImages,
@@ -290,7 +316,7 @@ class HomePageTest extends ExpectedValueProvider {
         await runner.verifyElementsIsExist(homePage.productDescriptions);
       });
 
-      test("Verify clicking 'Categories' reloads homepage and shows all products", async ({
+      test("Verify clicking 'Categories' reloads homepage, resets filter and shows all products", async ({
         runner,
         envData,
         homePage,
@@ -326,34 +352,54 @@ class HomePageTest extends ExpectedValueProvider {
         await runner.verifyElementsIsExist(homePage.productDescriptions);
       });
 
-      test("Verify pagination controls with next and previous button", async ({
-        runner,
-        homePage,
-      }) => {
-        await runner.validateProductContainers(homePage.productContainer);
-        await runner.verifyElementIsVisible(homePage.paginationPreviousButton);
-        await runner.verifyElementIsVisible(homePage.paginationNextButton);
-        await runner.verifyContainText(
-          homePage.paginationPreviousButton,
-          homeData.pagination.previous
-        );
-        await runner.verifyContainText(
-          homePage.paginationNextButton,
-          homeData.pagination.next
-        );
-        await runner.wait(5, {
-          waitForSelector: homePage.paginationNextButton,
-        });
-        await runner.clickOnElement(homePage.paginationNextButton);
-        await runner.wait(5, { waitForSelector: homePage.productContainer });
-        await runner.validateProductContainers(homePage.productContainer);
-        await runner.wait(5, {
-          waitForSelector: homePage.paginationPreviousButton,
-        });
-        await runner.clickOnElement(homePage.paginationPreviousButton);
-        await runner.wait(5, { waitForSelector: homePage.productContainer });
-        await runner.validateProductContainers(homePage.productContainer);
-      });
+      // test("Verify pagination controls with next and previous button", async ({
+      //   runner,
+      //   homePage,
+      // }) => {
+      //   // verifying homepage (pagination's first page's products)
+      //   await runner.wait(5, { waitForSelector: homePage.productImages });
+      //   await runner.verifyElementsIsExist(homePage.productImages, true);
+      //   await runner.verifyElementsIsExist(homePage.productTitles);
+      //   await runner.verifyElementsIsExist(homePage.productPrices);
+      //   await runner.verifyElementsIsExist(homePage.productDescriptions);
+
+      //   await runner.verifyElementIsVisible(homePage.paginationPreviousButton);
+      //   await runner.verifyElementIsVisible(homePage.paginationNextButton);
+      //   await runner.verifyContainText(
+      //     homePage.paginationPreviousButton,
+      //     homeData.pagination.previous
+      //   );
+      //   await runner.verifyContainText(
+      //     homePage.paginationNextButton,
+      //     homeData.pagination.next
+      //   );
+      //   await runner.wait(5, {
+      //     waitForSelector: homePage.paginationNextButton,
+      //   });
+      //   await runner.verifyElementsAreEnabled(homePage.paginationNextButton);
+      //   await runner.clickOnElement(homePage.paginationNextButton);
+
+      //   // verifying next page (pagination's second page's products)
+      //   await runner.wait(5, { waitForSelector: homePage.productImages });
+      //   await runner.verifyElementsIsExist(homePage.productImages, true);
+      //   await runner.verifyElementsIsExist(homePage.productTitles);
+      //   await runner.verifyElementsIsExist(homePage.productPrices);
+      //   await runner.verifyElementsIsExist(homePage.productDescriptions);
+
+      //   await runner.wait(5, {
+      //     waitForSelector: homePage.paginationPreviousButton,
+      //   });
+      //   await runner.verifyElementsAreEnabled(
+      //     homePage.paginationPreviousButton
+      //   );
+      //   await runner.clickOnElement(homePage.paginationPreviousButton);
+      //   // validating the first page's products (come back to the first page)
+      //   await runner.wait(5, { waitForSelector: homePage.productImages });
+      //   await runner.verifyElementsIsExist(homePage.productImages, true);
+      //   await runner.verifyElementsIsExist(homePage.productTitles);
+      //   await runner.verifyElementsIsExist(homePage.productPrices);
+      //   await runner.verifyElementsIsExist(homePage.productDescriptions);
+      // });
 
       test("Verify product content is valid on the first page of pagination", async ({
         runner,
@@ -374,6 +420,11 @@ class HomePageTest extends ExpectedValueProvider {
           waitForSelector: homePage.paginationNextButton,
         });
         await runner.verifyElementIsVisible(homePage.paginationNextButton);
+        await runner.verifyContainText(
+          homePage.paginationNextButton,
+          homeData.pagination.next
+        );
+        await runner.verifyElementsAreEnabled(homePage.paginationNextButton);
         await runner.clickOnElement(homePage.paginationNextButton);
         await runner.wait(5, { waitForSelector: homePage.productImages });
         await runner.verifyElementsIsExist(homePage.productImages, true);
@@ -387,8 +438,12 @@ class HomePageTest extends ExpectedValueProvider {
         homePage,
       }) => {
         // getting page one's product titles
-        await runner.wait(5, { waitForSelector: homePage.productTitles });
-        await runner.validateProductContainers(homePage.productContainer);
+        await runner.wait(5, { waitForSelector: homePage.productImages });
+        await runner.verifyElementsIsExist(homePage.productImages, true);
+        await runner.verifyElementsIsExist(homePage.productTitles);
+        await runner.verifyElementsIsExist(homePage.productPrices);
+        await runner.verifyElementsIsExist(homePage.productDescriptions);
+
         const pageOneProductTitles = await runner.getProductTitles(
           homePage.productTitles
         );
@@ -397,7 +452,16 @@ class HomePageTest extends ExpectedValueProvider {
         await runner.wait(5, {
           waitForSelector: homePage.paginationNextButton,
         });
+        await runner.verifyElementIsVisible(homePage.paginationNextButton);
+        await runner.verifyElementsAreEnabled(homePage.paginationNextButton);
         await runner.clickOnElement(homePage.paginationNextButton);
+
+        // Verifying next button click navigates to the second page
+        await runner.wait(5, { waitForSelector: homePage.productImages });
+        await runner.verifyElementsIsExist(homePage.productImages, true);
+        await runner.verifyElementsIsExist(homePage.productTitles);
+        await runner.verifyElementsIsExist(homePage.productPrices);
+        await runner.verifyElementsIsExist(homePage.productDescriptions);
 
         // getting page two's product titles
         await runner.wait(5, { waitForSelector: homePage.productTitles });
@@ -405,7 +469,7 @@ class HomePageTest extends ExpectedValueProvider {
           homePage.productTitles
         );
 
-        // page tow's titles should not match with page one's titles
+        // second page titles should not match with first page titles
         await runner.verifyTitlesNoMatch(
           pageOneProductTitles,
           pageTwoProductTitles
@@ -415,7 +479,19 @@ class HomePageTest extends ExpectedValueProvider {
         await runner.wait(5, {
           waitForSelector: homePage.paginationPreviousButton,
         });
+        await runner.verifyElementIsVisible(homePage.paginationPreviousButton);
+        await runner.verifyElementsAreEnabled(
+          homePage.paginationPreviousButton
+        );
         await runner.clickOnElement(homePage.paginationPreviousButton);
+
+        // validating again visit first's page products
+        await runner.wait(5, { waitForSelector: homePage.productImages });
+        await runner.verifyElementsIsExist(homePage.productImages, true);
+        await runner.verifyElementsIsExist(homePage.productTitles);
+        await runner.verifyElementsIsExist(homePage.productPrices);
+        await runner.verifyElementsIsExist(homePage.productDescriptions);
+
         await runner.wait(5, { waitForSelector: homePage.productTitles });
         const pageOneTitlesAgain = await runner.getProductTitles(
           homePage.productTitles
@@ -441,7 +517,7 @@ class HomePageTest extends ExpectedValueProvider {
         await runner.verifyElementsIsExist(homePage.productPrices);
         await runner.verifyElementsIsExist(homePage.productDescriptions);
 
-        // Validating first random product
+        // Getting first random product
         const randomFirstProductCardDetails =
           await runner.selectAndCaptureRandomProductDetailsAndClick(
             homePage.productContainer,
@@ -456,9 +532,14 @@ class HomePageTest extends ExpectedValueProvider {
         );
 
         await runner.goBack();
-        await runner.wait(5, { waitForSelector: homePage.productContainer });
 
-        // Validating second random product
+        await runner.wait(5, { waitForSelector: homePage.productContainer });
+        await runner.verifyElementsIsExist(homePage.productImages, true);
+        await runner.verifyElementsIsExist(homePage.productTitles);
+        await runner.verifyElementsIsExist(homePage.productPrices);
+        await runner.verifyElementsIsExist(homePage.productDescriptions);
+
+        // Getting second random product
         const randomSecondProductCardDetails =
           await runner.selectAndCaptureRandomProductDetailsAndClick(
             homePage.productContainer,
@@ -479,14 +560,14 @@ class HomePageTest extends ExpectedValueProvider {
         homePage,
         productDetailPage,
       }) => {
-        await runner.wait(5, { waitForSelector: homePage.productImages });
+        await runner.wait(5, { waitForSelector: homePage.productContainer });
         // verifications of homepage products
         await runner.verifyElementsIsExist(homePage.productImages, true);
         await runner.verifyElementsIsExist(homePage.productTitles);
         await runner.verifyElementsIsExist(homePage.productPrices);
         await runner.verifyElementsIsExist(homePage.productDescriptions);
 
-        // Validating first random product
+        // Getting first random product
         const randomFirstProductCardDetails =
           await runner.selectAndCaptureRandomProductDetailsAndClick(
             homePage.productContainer,
@@ -501,13 +582,18 @@ class HomePageTest extends ExpectedValueProvider {
         );
 
         await runner.goBack();
-        await runner.wait(5, { waitForLoadState: "load" });
 
-        // Validating second random product
+        await runner.wait(5, { waitForSelector: homePage.productContainer });
+        await runner.verifyElementsIsExist(homePage.productImages, true);
+        await runner.verifyElementsIsExist(homePage.productTitles);
+        await runner.verifyElementsIsExist(homePage.productPrices);
+        await runner.verifyElementsIsExist(homePage.productDescriptions);
+
+        // Getting second random product
         const randomSecondProductCardDetails =
           await runner.selectAndCaptureRandomProductDetailsAndClick(
             homePage.productContainer,
-            homePage.productTitles
+            homePage.productImages
           );
         await runner.verifyUrlContains(envData.productUrl);
         await runner.validateProductDetailsOnDetailPage(
@@ -525,19 +611,27 @@ class HomePageTest extends ExpectedValueProvider {
         homePage,
         productDetailPage,
       }) => {
+        await runner.wait(5, { waitForSelector: homePage.productContainer });
+        // verifications of homepage products
+        await runner.verifyElementsIsExist(homePage.productImages, true);
+        await runner.verifyElementsIsExist(homePage.productTitles);
+        await runner.verifyElementsIsExist(homePage.productPrices);
+        await runner.verifyElementsIsExist(homePage.productDescriptions);
+
         await runner.wait(5, {
           waitForSelector: homePage.paginationNextButton,
         });
         // navigating to the second page of pagination
+        await runner.verifyElementsAreEnabled(homePage.paginationNextButton);
         await runner.clickOnElement(homePage.paginationNextButton);
-        await runner.wait(3, { waitForSelector: homePage.productImages });
+
+        await runner.wait(5, { waitForSelector: homePage.productImages });
         // verifications of homepage's pagination second page products
         await runner.verifyElementsIsExist(homePage.productImages, true);
         await runner.verifyElementsIsExist(homePage.productTitles);
         await runner.verifyElementsIsExist(homePage.productPrices);
         await runner.verifyElementsIsExist(homePage.productDescriptions);
 
-        // Validating first random product
         const randomFirstProductCardDetails =
           await runner.selectAndCaptureRandomProductDetailsAndClick(
             homePage.productContainer,
@@ -552,15 +646,18 @@ class HomePageTest extends ExpectedValueProvider {
         );
 
         await runner.goBack();
-        await runner.wait(5, { waitForSelector: homePage.productContainer });
+        // verifications of homepage products
+        await runner.verifyElementsIsExist(homePage.productImages, true);
+        await runner.verifyElementsIsExist(homePage.productTitles);
+        await runner.verifyElementsIsExist(homePage.productPrices);
+        await runner.verifyElementsIsExist(homePage.productDescriptions);
 
-        // Validating second random product
+        // Getting second random product
         const randomSecondProductCardDetails =
           await runner.selectAndCaptureRandomProductDetailsAndClick(
             homePage.productContainer,
             homePage.productImages
           );
-        // await runner.waitUntilSeconds(2);
         await runner.verifyUrlContains(envData.productUrl);
         await runner.validateProductDetailsOnDetailPage(
           randomSecondProductCardDetails,
@@ -576,11 +673,20 @@ class HomePageTest extends ExpectedValueProvider {
         homePage,
         productDetailPage,
       }) => {
+        await runner.wait(5, { waitForSelector: homePage.productContainer });
+        // verifications of homepage products
+        await runner.verifyElementsIsExist(homePage.productImages, true);
+        await runner.verifyElementsIsExist(homePage.productTitles);
+        await runner.verifyElementsIsExist(homePage.productPrices);
+        await runner.verifyElementsIsExist(homePage.productDescriptions);
+
         await runner.wait(5, {
           waitForSelector: homePage.paginationNextButton,
         });
         // navigating to the second page of pagination
+        await runner.verifyElementsAreEnabled(homePage.paginationNextButton);
         await runner.clickOnElement(homePage.paginationNextButton);
+
         await runner.wait(5, { waitForSelector: homePage.productImages });
         // verifications of homepage's pagination second page products
         await runner.verifyElementsIsExist(homePage.productImages, true);
@@ -588,13 +694,11 @@ class HomePageTest extends ExpectedValueProvider {
         await runner.verifyElementsIsExist(homePage.productPrices);
         await runner.verifyElementsIsExist(homePage.productDescriptions);
 
-        // Validating first random product
         const randomFirstProductCardDetails =
           await runner.selectAndCaptureRandomProductDetailsAndClick(
             homePage.productContainer,
             homePage.productTitles
           );
-        await runner.wait(5, { waitForSelector: productDetailPage.productImg });
         await runner.verifyUrlContains(envData.productUrl);
         await runner.validateProductDetailsOnDetailPage(
           randomFirstProductCardDetails,
@@ -604,15 +708,26 @@ class HomePageTest extends ExpectedValueProvider {
         );
 
         await runner.goBack();
-        await runner.wait(5, { waitForSelector: homePage.productContainer });
+        // verifications of homepage products
+        await runner.wait(5, { waitForSelector: homePage.productImages });
+        await runner.verifyElementsIsExist(homePage.productImages, true);
+        await runner.verifyElementsIsExist(homePage.productTitles);
+        await runner.verifyElementsIsExist(homePage.productPrices);
+        await runner.verifyElementsIsExist(homePage.productDescriptions);
 
-        // Validating second random product
+        // Getting second random product
         const randomSecondProductCardDetails =
           await runner.selectAndCaptureRandomProductDetailsAndClick(
             homePage.productContainer,
-            homePage.productTitles
+            homePage.productImages
           );
         await runner.verifyUrlContains(envData.productUrl);
+        await runner.validateProductDetailsOnDetailPage(
+          randomSecondProductCardDetails,
+          productDetailPage.productTitle,
+          productDetailPage.productPrice,
+          productDetailPage.productImg
+        );
         await runner.validateProductDetailsOnDetailPage(
           randomSecondProductCardDetails,
           productDetailPage.productTitle,

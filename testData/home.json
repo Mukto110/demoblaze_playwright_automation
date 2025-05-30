@@ -2,6 +2,8 @@
   "homeLogoText": "PRODUCT STORE",
   "homeLogoSrcValue": "bm.png",
 
+  "navItemsColorOnHover": "rgb(33, 232, 203)",
+
   "navbar": {
     "home": "Home (current)",
     "contact": "Contact",
@@ -10,6 +12,11 @@
     "login": "Log in",
     "signup": "Sign up",
     "logout": "Log out"
+  },
+
+  "carousel": {
+    "nextButtonAttributeValue": "#carouselExampleIndicators",
+    "previousButtonAttributeValue": "#carouselExampleIndicators"
   },
 
   "categories": {

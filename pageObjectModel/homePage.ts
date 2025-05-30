@@ -40,7 +40,7 @@ export class HomePage {
   constructor(page: Page) {
     this.homePageLogo = `css=nav[id='narvbarx'] a[id='nava']`;
     this.homePageLogoImage = `css=nav[id='narvbarx'] a[id='nava'] img`;
-    this.navbarHome = `css=ul[class='navbar-nav ml-auto'] a[href='index.html']`;
+    this.navbarHome = `css=ul[class='navbar-nav ml-auto'] li[class='nav-item active'] a[href='index.html']`;
     this.navbarContact = `css=a[data-target='#exampleModal']`;
     this.navbarAbout = `css=a[data-target='#videoModal']`;
     this.navbarCart = `css=a[id='cartur']`;
@@ -62,8 +62,8 @@ export class HomePage {
     this.carousel = `css=div[id='contcar'] div[id='carouselExampleIndicators']`;
     this.carouselImages = `css=div[class='carousel-inner'] div img`;
     this.activeCarouselImage = `css=.carousel-item.active img`;
-    this.carouselNextButton = `css=a[data-slide='next'] span[class='carousel-control-next-icon']`;
-    this.carouselPreviousButton = `css=a[data-slide='prev'] span[class='carousel-control-prev-icon']`;
+    this.carouselNextButton = `css=a[class='carousel-control-next']`;
+    this.carouselPreviousButton = `css=a[class='carousel-control-prev']`;
     this.footer = `css=div[id='footc']`;
     this.footerHeaderAboutUsText = `css=div[class='col-sm-4 col-lg-4 col-md-4'] b`;
     this.footerHeaderGetInTouchText = `css=div[class='col-sm-3 col-lg-3 col-md-3'] b`;

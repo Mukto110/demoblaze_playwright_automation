@@ -376,7 +376,7 @@ export class Utils {
       // Use Promise.all to wait for the dialog event AND accept it.
       // This prevents a race condition where the dialog might appear before waitForEvent is set up.
       const [dialog] = await Promise.all([
-        this.page.waitForEvent("dialog", { timeout: 10000 }), // Wait for a dialog (alert, confirm, prompt)
+        this.page.waitForEvent("dialog", { timeout: 5000 }), // Wait for a dialog (alert, confirm, prompt)
         // No click action here, assuming the alert is triggered by a previous action
         // If the alert is triggered by a specific click *within this function*,
         // that click would be the second element in this Promise.all array.
@@ -869,10 +869,10 @@ export class Utils {
     }
   }
 
+  // fixed
   async verifyAllCarouselImagesAutoChange(
     activeImageLocator: string,
-    allImagesLocator: string,
-    waitTimeInSeconds = 4
+    allImagesLocator: string
   ): Promise<void> {
     try {
       const totalImages = await this.page.locator(allImagesLocator).count();
@@ -880,9 +880,10 @@ export class Utils {
 
       let firstImageSrc: string | undefined;
       let firstImageSeenAgain = false;
+      // this.page.locator(locator).getAttribute(attributeName)
 
-      for (let i = 0; i < totalImages + 2; i++) {
-        const currentSrc = await this.getAttributeFromLocator(
+      for (let i = 0; i < totalImages * 2; i++) {
+        const currentSrc = await this.page.getAttribute(
           activeImageLocator,
           "src"
         );
@@ -897,7 +898,7 @@ export class Utils {
           seenImages.push(currentSrc);
           this.logMessage(`ℹ️ Detected new carousel image: ${currentSrc}`);
           if (seenImages.length === 1) {
-            firstImageSrc = currentSrc; // Capturing first image's src
+            firstImageSrc = currentSrc;
           }
         }
 
@@ -905,7 +906,7 @@ export class Utils {
           break;
         }
 
-        await this.wait(waitTimeInSeconds);
+        await this.page.waitForTimeout(4000);
       }
 
       if (seenImages.length !== totalImages) {
@@ -915,8 +916,8 @@ export class Utils {
       }
 
       for (let i = 0; i < totalImages + 2; i++) {
-        await this.wait(waitTimeInSeconds);
-        const currentSrc = await this.getAttributeFromLocator(
+        await this.page.waitForTimeout(4000);
+        const currentSrc = await this.page.getAttribute(
           activeImageLocator,
           "src"
         );
@@ -1710,10 +1711,7 @@ export class Utils {
     }
   }
 
-  async validateAttributeExistsForAllElements(
-    selector: string,
-    attribute: string
-  ): Promise<void> {
+  async validateAttributes(selector: string, attribute: string): Promise<void> {
     try {
       const elements = this.page.locator(selector);
       const count = await elements.count();
@@ -1967,48 +1965,52 @@ export class Utils {
     }
   }
 
-async validateVisibleNavItems(
-  navItemSelector: string,
-  expectedVisibleTexts: string[]
-): Promise<string[]> {
-  try {
-    const navItems = this.page.locator(navItemSelector);
-    const visibleTexts: string[] = [];
+  async validateVisibleNavItems(
+    navItemSelector: string,
+    expectedVisibleTexts: string[]
+  ): Promise<string[]> {
+    try {
+      const navItems = this.page.locator(navItemSelector);
+      const visibleTexts: string[] = [];
 
-    const count = await navItems.count();
+      const count = await navItems.count();
 
-    for (let i = 0; i < count; i++) {
-      const item = navItems.nth(i);
-      if (await item.isVisible()) {
-        let text = await item.innerText();
+      for (let i = 0; i < count; i++) {
+        const item = navItems.nth(i);
+        if (await item.isVisible()) {
+          let text = await item.innerText();
 
-        // Normalize: collapse whitespace, remove "(current)" if any
-        text = text.replace(/\s+/g, " ").replace("(current)", "").trim();
+          // Normalize: collapse whitespace, remove "(current)" if any
+          text = text.replace(/\s+/g, " ").replace("(current)", "").trim();
 
-        visibleTexts.push(text);
+          visibleTexts.push(text);
+        }
       }
+
+      // Normalize expected as well
+      const expectedNormalized = expectedVisibleTexts.map((txt) =>
+        txt.replace(/\s+/g, " ").replace("(current)", "").trim()
+      );
+
+      // Debug logs
+      this.logMessage(
+        `🔍 Actual visible nav items: [${visibleTexts.join(", ")}]`
+      );
+      this.logMessage(
+        `📌 Expected visible nav items: [${expectedNormalized.join(", ")}]`
+      );
+
+      expect(visibleTexts).toEqual(expectedNormalized);
+      this.logMessage("✅ Navbar items validated successfully.");
+
+      return visibleTexts;
+    } catch (error: any) {
+      const errorMsg = `❌ Navbar validation failed: ${error.message}`;
+      this.logMessage(errorMsg, "error");
+      await this.captureScreenshotOnFailure("validateVisibleNavItems");
+      throw new Error(errorMsg);
     }
-
-    // Normalize expected as well
-    const expectedNormalized = expectedVisibleTexts.map(txt =>
-      txt.replace(/\s+/g, " ").replace("(current)", "").trim()
-    );
-
-    // Debug logs
-    this.logMessage(`🔍 Actual visible nav items: [${visibleTexts.join(", ")}]`);
-    this.logMessage(`📌 Expected visible nav items: [${expectedNormalized.join(", ")}]`);
-
-    expect(visibleTexts).toEqual(expectedNormalized);
-    this.logMessage("✅ Navbar items validated successfully.");
-
-    return visibleTexts;
-  } catch (error: any) {
-    const errorMsg = `❌ Navbar validation failed: ${error.message}`;
-    this.logMessage(errorMsg, "error");
-    await this.captureScreenshotOnFailure("validateVisibleNavItems");
-    throw new Error(errorMsg);
   }
-}
 
   async validateExclusiveHoverColorChangeForNavItems(
     this: any,
@@ -2094,6 +2096,78 @@ async validateVisibleNavItems(
       this.logMessage(errorMsg, "error");
       await this.captureScreenshotOnFailure("verifyInputContainsValue");
       throw new Error(errorMsg);
+    }
+  }
+
+  async verifyElementToHaveCSSProperty(
+    identifier: string | string[],
+    property: string,
+    expectedValue: string,
+    isHover: boolean = false,
+    timeout = 3000
+  ): Promise<void> {
+    const identifiers = Array.isArray(identifier) ? identifier : [identifier];
+
+    for (const id of identifiers) {
+      try {
+        await this.page.waitForSelector(id, { state: "visible" });
+        const elements = this.page.locator(id);
+        const count = await elements.count();
+
+        if (count === 0) {
+          throw new Error(`❌ No elements found for identifier "${id}".`);
+        }
+
+        for (let i = 0; i < count; i++) {
+          const element = elements.nth(i);
+          await element.waitFor({ state: "visible" });
+
+          if (isHover) {
+            await element.hover();
+            this.logMessage(
+              `Hovered over element with identifier: ${id} at index ${i}`
+            );
+            await this.page.waitForTimeout(300);
+          }
+
+          try {
+            await expect(element).toHaveCSS(property, expectedValue, {
+              timeout,
+            });
+
+            this.logMessage(
+              `✅ CSS property "${property}" of "${id}" at index ${i} is as expected: "${expectedValue}".`
+            );
+          } catch {
+            const actualValue = await element.evaluate(
+              (el, prop) =>
+                window.getComputedStyle(el).getPropertyValue(prop).trim(),
+              property
+            );
+            console.log(`🔍 [DEBUG] ${property} = "${actualValue}"`);
+
+            if (actualValue !== expectedValue.trim()) {
+              const errorMsg = `❌ Expected CSS property "${property}" to be "${expectedValue}", but found "${actualValue}" for "${id}" at index ${i}.`;
+              this.logMessage(errorMsg, "error");
+              await this.captureScreenshotOnFailure(
+                "verifyElementToHaveCSSProperty"
+              );
+              throw new Error(errorMsg);
+            }
+
+            this.logMessage(
+              `✅ CSS property "${property}" of "${id}" at index ${i} matches expected value (via fallback): "${actualValue}".`
+            );
+          }
+        }
+      } catch (error) {
+        const errorMsg = `❌ Failed to verify CSS property "${property}" for: ${id} | Reason: ${
+          error instanceof Error ? error.message : error
+        }`;
+        this.logMessage(errorMsg, "error");
+        await this.captureScreenshotOnFailure("verifyElementToHaveCSSProperty");
+        throw error instanceof Error ? error : new Error(String(error));
+      }
     }
   }
 }
