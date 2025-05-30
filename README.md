@@ -125,24 +125,29 @@ npx playwright show-report
 ---
 
 
-📝 Sample Test Data
-Type	Sample
-Username	provat1234
-Password	12345678
-Contact	fakerJs
-Message	fakerJs
+## 📝 Sample Test Data
+
+| Type     | Sample      |
+|----------|-------------|
+| Username | provat1234  |
+| Password | 12345678    |
+| Contact  | fakerJs     |
+| Message  | fakerJs     |
 
 
 ---
 
 
-📊 Test Execution Summary
-Metric	Value
-Total Test Scenarios	To be filled
-Automated Test Scenarios	To be filled
-Pass Rate	To be filled
-Execution Time	To be filled
-Known Issues / Bugs	To be filled
+## 📊 Test Execution Summary
+
+| Metric                  | Value          |
+|-------------------------|----------------|
+| Total Test Scenarios     | To be filled   |
+| Automated Test Scenarios | To be filled   |
+| Pass Rate               | To be filled   |
+| Execution Time          | To be filled   |
+| Known Issues / Bugs      | To be filled   |
+
 
 
 
