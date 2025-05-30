@@ -25,6 +25,7 @@ A Playwright-powered test automation project for validating the functionality an
 
 ---
 
+
 ## 📂 Folder Structure
 ```plaintext
 demoblaze-automation/
@@ -94,6 +95,8 @@ demoblaze-automation/
 
 ---
 
+
+
 ## ▶️ How to Run the Tests
 
 ```bash
@@ -120,12 +123,15 @@ npx playwright show-report
 ```
 
 
+
+
 📝 Sample Test Data
 Type	Sample
 Username	provat1234
 Password	12345678
 Contact	fakerJs
 Message	fakerJs
+
 
 
 
@@ -138,6 +144,10 @@ Execution Time	To be filled
 Known Issues / Bugs	To be filled
 
 
+
+///
+
+
 📁 Reports & Artifacts
 
 📌 Allure Report Path: /demoblaze-automation/allure-results/
@@ -145,6 +155,9 @@ Known Issues / Bugs	To be filled
 🖼️ Screenshots on Failure: tests/screenshots/
 
 📽️ Video Recordings (if enabled): tests/videos/
+
+
+
 
 
 🧩 Lessons Learned & Improvements
@@ -157,6 +170,8 @@ Known Issues / Bugs	To be filled
  Split test fixtures for better maintainability
 
  Use authHelper to reduce login/signup code duplication
+
+
 
 
 
