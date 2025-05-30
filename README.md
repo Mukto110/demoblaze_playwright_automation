@@ -153,7 +153,7 @@ npx playwright show-report
 ---
 
 
-📁 Reports & Artifacts
+## 📁 Reports & Artifacts
 
 📌 Allure Report Path: /demoblaze-automation/allure-results/
 
@@ -165,7 +165,7 @@ npx playwright show-report
 
 ---
 
-🧩 Lessons Learned & Improvements
+## 🧩 Lessons Learned & Improvements
  Add more edge cases for login validation
 
  Enhance selectors using data-testid for stability
@@ -193,7 +193,7 @@ npx playwright show-report
 
 ---
 
-🔜 Next Steps
+ ## 🔜 Next Steps
  Final regression run
 
  Merge automation code into main
@@ -202,7 +202,7 @@ npx playwright show-report
 
 ---
 
-End of Document
+## End of Document
 
 ---
 
