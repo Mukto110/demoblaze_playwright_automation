@@ -14,6 +14,11 @@
     "logout": "Log out"
   },
 
+  "carousel": {
+    "nextButtonAttributeValue": "#carouselExampleIndicators",
+    "previousButtonAttributeValue": "#carouselExampleIndicators"
+  },
+
   "categories": {
     "header": "CATEGORIES",
     "phones": "Phones",

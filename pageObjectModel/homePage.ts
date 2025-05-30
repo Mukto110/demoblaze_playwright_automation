@@ -62,8 +62,8 @@ export class HomePage {
     this.carousel = `css=div[id='contcar'] div[id='carouselExampleIndicators']`;
     this.carouselImages = `css=div[class='carousel-inner'] div img`;
     this.activeCarouselImage = `css=.carousel-item.active img`;
-    this.carouselNextButton = `css=a[data-slide='next'] span[class='carousel-control-next-icon']`;
-    this.carouselPreviousButton = `css=a[data-slide='prev'] span[class='carousel-control-prev-icon']`;
+    this.carouselNextButton = `css=a[class='carousel-control-next']`;
+    this.carouselPreviousButton = `css=a[class='carousel-control-prev']`;
     this.footer = `css=div[id='footc']`;
     this.footerHeaderAboutUsText = `css=div[class='col-sm-4 col-lg-4 col-md-4'] b`;
     this.footerHeaderGetInTouchText = `css=div[class='col-sm-3 col-lg-3 col-md-3'] b`;

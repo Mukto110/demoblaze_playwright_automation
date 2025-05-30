@@ -869,10 +869,10 @@ export class Utils {
     }
   }
 
+  // fixed
   async verifyAllCarouselImagesAutoChange(
     activeImageLocator: string,
-    allImagesLocator: string,
-    waitTimeInSeconds = 4
+    allImagesLocator: string
   ): Promise<void> {
     try {
       const totalImages = await this.page.locator(allImagesLocator).count();
@@ -880,9 +880,10 @@ export class Utils {
 
       let firstImageSrc: string | undefined;
       let firstImageSeenAgain = false;
+      // this.page.locator(locator).getAttribute(attributeName)
 
-      for (let i = 0; i < totalImages + 2; i++) {
-        const currentSrc = await this.getAttributeFromLocator(
+      for (let i = 0; i < totalImages * 2; i++) {
+        const currentSrc = await this.page.getAttribute(
           activeImageLocator,
           "src"
         );
@@ -897,7 +898,7 @@ export class Utils {
           seenImages.push(currentSrc);
           this.logMessage(`ℹ️ Detected new carousel image: ${currentSrc}`);
           if (seenImages.length === 1) {
-            firstImageSrc = currentSrc; // Capturing first image's src
+            firstImageSrc = currentSrc;
           }
         }
 
@@ -905,7 +906,7 @@ export class Utils {
           break;
         }
 
-        await this.wait(waitTimeInSeconds);
+        await this.page.waitForTimeout(4000);
       }
 
       if (seenImages.length !== totalImages) {
@@ -915,8 +916,8 @@ export class Utils {
       }
 
       for (let i = 0; i < totalImages + 2; i++) {
-        await this.wait(waitTimeInSeconds);
-        const currentSrc = await this.getAttributeFromLocator(
+        await this.page.waitForTimeout(4000);
+        const currentSrc = await this.page.getAttribute(
           activeImageLocator,
           "src"
         );
@@ -1710,10 +1711,7 @@ export class Utils {
     }
   }
 
-  async validateAttributeExistsForAllElements(
-    selector: string,
-    attribute: string
-  ): Promise<void> {
+  async validateAttributes(selector: string, attribute: string): Promise<void> {
     try {
       const elements = this.page.locator(selector);
       const count = await elements.count();
