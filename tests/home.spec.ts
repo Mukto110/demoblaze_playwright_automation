@@ -168,7 +168,7 @@ class HomePageTest extends ExpectedValueProvider {
         );
       });
 
-      test("Verify hero banner carousel is displayed, functional, and auto changes", async ({
+      test("Verify hero banner carousel is displayed and auto changes", async ({
         runner,
         homePage,
       }) => {
@@ -352,55 +352,6 @@ class HomePageTest extends ExpectedValueProvider {
         await runner.verifyElementsIsExist(homePage.productDescriptions);
       });
 
-      // test("Verify pagination controls with next and previous button", async ({
-      //   runner,
-      //   homePage,
-      // }) => {
-      //   // verifying homepage (pagination's first page's products)
-      //   await runner.wait(5, { waitForSelector: homePage.productImages });
-      //   await runner.verifyElementsIsExist(homePage.productImages, true);
-      //   await runner.verifyElementsIsExist(homePage.productTitles);
-      //   await runner.verifyElementsIsExist(homePage.productPrices);
-      //   await runner.verifyElementsIsExist(homePage.productDescriptions);
-
-      //   await runner.verifyElementIsVisible(homePage.paginationPreviousButton);
-      //   await runner.verifyElementIsVisible(homePage.paginationNextButton);
-      //   await runner.verifyContainText(
-      //     homePage.paginationPreviousButton,
-      //     homeData.pagination.previous
-      //   );
-      //   await runner.verifyContainText(
-      //     homePage.paginationNextButton,
-      //     homeData.pagination.next
-      //   );
-      //   await runner.wait(5, {
-      //     waitForSelector: homePage.paginationNextButton,
-      //   });
-      //   await runner.verifyElementsAreEnabled(homePage.paginationNextButton);
-      //   await runner.clickOnElement(homePage.paginationNextButton);
-
-      //   // verifying next page (pagination's second page's products)
-      //   await runner.wait(5, { waitForSelector: homePage.productImages });
-      //   await runner.verifyElementsIsExist(homePage.productImages, true);
-      //   await runner.verifyElementsIsExist(homePage.productTitles);
-      //   await runner.verifyElementsIsExist(homePage.productPrices);
-      //   await runner.verifyElementsIsExist(homePage.productDescriptions);
-
-      //   await runner.wait(5, {
-      //     waitForSelector: homePage.paginationPreviousButton,
-      //   });
-      //   await runner.verifyElementsAreEnabled(
-      //     homePage.paginationPreviousButton
-      //   );
-      //   await runner.clickOnElement(homePage.paginationPreviousButton);
-      //   // validating the first page's products (come back to the first page)
-      //   await runner.wait(5, { waitForSelector: homePage.productImages });
-      //   await runner.verifyElementsIsExist(homePage.productImages, true);
-      //   await runner.verifyElementsIsExist(homePage.productTitles);
-      //   await runner.verifyElementsIsExist(homePage.productPrices);
-      //   await runner.verifyElementsIsExist(homePage.productDescriptions);
-      // });
-
       test("Verify product content is valid on the first page of pagination", async ({
         runner,
         homePage,
@@ -423,6 +374,11 @@ class HomePageTest extends ExpectedValueProvider {
         await runner.verifyContainText(
           homePage.paginationNextButton,
           homeData.pagination.next
+        );
+        await runner.validateAttribute(
+          homePage.paginationNextButton,
+          "id",
+          "next2"
         );
         await runner.verifyElementsAreEnabled(homePage.paginationNextButton);
         await runner.clickOnElement(homePage.paginationNextButton);
@@ -482,6 +438,11 @@ class HomePageTest extends ExpectedValueProvider {
         await runner.verifyElementIsVisible(homePage.paginationPreviousButton);
         await runner.verifyElementsAreEnabled(
           homePage.paginationPreviousButton
+        );
+        await runner.validateAttribute(
+          homePage.paginationPreviousButton,
+          "id",
+          "prev2"
         );
         await runner.clickOnElement(homePage.paginationPreviousButton);
 
