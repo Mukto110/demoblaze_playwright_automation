@@ -5,8 +5,8 @@
   "scripts": {
     "test:chrome": "npx playwright test --project=Chromium",
     "allure:generate": "allure generate allure-results -o allure-report --clean",
-    "allure:open": "allure open allure-report",
-    "test:allure": "npm run test:chrome && npm run allure:generate && npm run allure:open"
+    "allure:open": "allure open allure-report && rm -rf allure-results allure-report",
+    "allure:delete": "rm -rf allure-results allure-report"
   },
   "keywords": [],
   "author": "",
