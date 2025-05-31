@@ -4,5 +4,10 @@
         "emailLabe": "Contact Email:",
         "nameLabel": "Contact Name:",
         "messageLabel": "Message:"
-    }
+    },
+    "sendButtonText": "Send message",
+    "successAlertText": "Thanks for the message!!",
+    "closeButtonText": "Close",
+    "allFieldRequiredText": "All the fields must be filled!!",
+    "whiteSpaceNotAllowedText": "Whitespace does not allowed!!"
 }

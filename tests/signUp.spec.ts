@@ -265,7 +265,7 @@ class SignUpModal extends ExpectedValueProvider {
         await runner.acceptWebAlert(signUpData.passwordLessThanText);
       });
 
-      test("Verify that registration is succesfull and then user is logged in succesfully", async ({
+      test("Verify that registration is successful and then user is logged in successfully", async ({
         runner,
         fakeUser,
         signUpModal,
@@ -296,7 +296,6 @@ class SignUpModal extends ExpectedValueProvider {
         await runner.verifyElementsAreEnabled(homePage.navbarLogin);
         await loginHelper.login(fakeUser.username, fakeUser.password);
         await runner.wait(5, { waitForSelector: homePage.navLogoutButton });
-        await runner.wait(6, { waitForSelector: homePage.navLogoutButton });
         await runner.validateVisibleNavItems(homePage.navItems, [
           homeData.navbar.home,
           homeData.navbar.contact,

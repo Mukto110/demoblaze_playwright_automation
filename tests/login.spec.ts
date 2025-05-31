@@ -41,10 +41,12 @@ class LoginModal extends ExpectedValueProvider {
         runner,
         loginModal,
       }) => {
+        await runner.verifyElementIsVisible(loginModal.usernameLabel);
         await runner.validateLabel(
           loginModal.usernameLabel,
           loginData.labels.userName
         );
+        await runner.verifyElementIsVisible(loginModal.passwordInputField);
         await runner.validateLabel(
           loginModal.passwordLabel,
           loginData.labels.Password
@@ -268,7 +270,6 @@ class LoginModal extends ExpectedValueProvider {
         await runner.verifyElementsAreEnabled(loginModal.loginButton);
         await loginHelper.login(envData.username, envData.password);
         await runner.wait(5, { waitForSelector: homePage.navLogoutButton });
-        await runner.wait(6, { waitForSelector: homePage.navLogoutButton });
         await runner.validateVisibleNavItems(homePage.navItems, [
           homeData.navbar.home,
           homeData.navbar.contact,

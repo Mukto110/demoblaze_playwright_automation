@@ -55,8 +55,8 @@ export class HomePage {
     this.categoriesMonitors = `xpath=//a[@id='itemc' and text()='Monitors']`;
     this.firstProductCardTitle = `css=div[id='tbodyid'] div:nth-child(1) div:nth-child(1) div:nth-child(2) h4:nth-child(1) a`;
     this.secondProductCardTitle = `css=div[id='tbodyid'] div:nth-child(2) div:nth-child(1) div:nth-child(2) h4:nth-child(1) a`;
-    this.paginationPreviousButton = `css=li[class='page-item'] button[id='prev2']`;
-    this.paginationNextButton = `css=li[class='page-item'] button[id='next2']`;
+    this.paginationPreviousButton = `css=button[id='prev2']`;
+    this.paginationNextButton = `css=button[id='next2']`;
     this.firstProductImage = `css=div[id='tbodyid'] div:nth-child(1) div:nth-child(1) a:nth-child(1) img:nth-child(1)`;
     this.secondProductImage = `css=div[id='tbodyid'] div:nth-child(2) div:nth-child(1) a:nth-child(1) img:nth-child(1)`;
     this.carousel = `css=div[id='contcar'] div[id='carouselExampleIndicators']`;

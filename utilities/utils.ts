@@ -160,21 +160,16 @@ export class Utils {
     }
   }
 
-  async verifyTitle(title: string): Promise<void> {
-    try {
-      await expect(this.page).toHaveTitle(title);
-      this.logMessage(`Verified page title: "${title}"`);
-    } catch (error) {
-      const errorMsg = `Failed to verify title: "${title}"`;
-      this.logMessage(errorMsg, "error");
-      await this.captureScreenshotOnFailure("verifyTitle");
-      throw new Error(errorMsg);
-    }
-  }
-
   async fillInputBox(identifier: string, text: string): Promise<void> {
     try {
-      await this.page.locator(identifier).fill(text);
+      const inputLocator = this.page.locator(identifier);
+      const currentValue = await inputLocator.inputValue();
+
+      if (currentValue.trim() !== "") {
+        await inputLocator.clear();
+      }
+
+      await inputLocator.fill(text);
       this.logMessage(`Filled input box (${identifier}) with text: "${text}"`);
     } catch (error) {
       const errorMsg = `Failed to fill input box (${identifier}) with text: "${text}"`;
@@ -335,34 +330,17 @@ export class Utils {
 
   async isElementVisible(identifier: string): Promise<boolean> {
     try {
-      return await this.page.locator(identifier).isVisible();
-    } catch {
+      const isVisible = await this.page.locator(identifier).isVisible();
+      this.logMessage(
+        `Checked visibility for element with identifier: ${identifier} — Result: ${isVisible}`
+      );
+      return isVisible;
+    } catch (error) {
+      const errorMsg = `Failed to check visibility of element with identifier: ${identifier}`;
+      this.logMessage(errorMsg, "error");
+      await this.captureScreenshotOnFailure("isElementVisible");
       return false;
     }
-  }
-
-  async scrollToBottom() {
-    await this.page.evaluate(() => {
-      window.scrollTo(0, document.body.scrollHeight);
-    });
-    await this.page.waitForTimeout(1000);
-  }
-
-  async waitForDownload(
-    clickAction: () => Promise<void>,
-    downloadPath?: string
-  ) {
-    const [download] = await Promise.all([
-      this.page.waitForEvent("download"),
-      clickAction(),
-    ]);
-
-    const suggestedFilename = download.suggestedFilename();
-    const savePath = downloadPath || `downloads/${suggestedFilename}`;
-
-    await download.saveAs(savePath);
-    console.log(`✅ File downloaded successfully: ${savePath}`);
-    return savePath;
   }
 
   async acceptWebAlert(expectedAlertMessage: string | RegExp): Promise<void> {
@@ -416,104 +394,76 @@ export class Utils {
     }
   }
 
-  async validateMinLengthAfterSubmit(
-    inputSelector: string,
-    submitSelector: string,
-    minLength: number
+  async verifyNotEqual(
+    actual: any,
+    expected: any,
+    message?: string
   ): Promise<void> {
     try {
-      // Click the submit button
-      await this.page.locator(submitSelector).click();
-      this.logMessage(`Clicked submit button: ${submitSelector}`);
-
-      // Wait briefly for validation logic to run (DOM update, message, etc.)
-      await this.page.waitForTimeout(500);
-
-      // Get the value of the input field
-      const inputField = this.page.locator(inputSelector);
-      await expect(inputField).toBeVisible();
-
-      const value = await inputField.inputValue();
-
-      if (value.length <= minLength) {
-        throw new Error(
-          `Expected input to have less than ${minLength} characters for validation error, but got ${value.length}.`
-        );
-      }
-
+      expect(
+        actual,
+        message || `Expected values to be different but got the same: ${actual}`
+      ).not.toBe(expected);
       this.logMessage(
-        `Validation triggered successfully: input has ${value.length} characters (expected less than ${minLength}).`
+        `✅ Verified values are not equal — Actual: ${actual}, Expected: ${expected}`
       );
     } catch (error) {
-      const errorMsg = `Min-length validation failed after submit: ${error.message}`;
+      const errorMsg =
+        message ||
+        `❌ Verification failed: expected values to be different but got the same — ${actual}`;
       this.logMessage(errorMsg, "error");
-      await this.captureScreenshotOnFailure("validateMinLengthAfterSubmit");
-      throw new Error(errorMsg);
+      await this.captureScreenshotOnFailure("verifyNotEqual");
+      throw error;
     }
   }
 
-  async scrollToTop() {
-    await this.page.evaluate(() => {
-      window.scrollTo({ top: 0, behavior: "smooth" });
-    });
-  }
-
-  async verifyNotEqual(actual: any, expected: any, message?: string) {
-    expect(
-      actual,
-      message || `Expected values to be different but got the same: ${actual}`
-    ).not.toBe(expected);
-  }
-
-  async verifyEqual(actual: any, expected: any, message?: string) {
-    expect(
-      actual,
-      message || `Expected ${actual} to be equal to ${expected}`
-    ).toBe(expected);
+  async verifyEqual(
+    actual: any,
+    expected: any,
+    message?: string
+  ): Promise<void> {
+    try {
+      expect(
+        actual,
+        message || `Expected ${actual} to be equal to ${expected}`
+      ).toBe(expected);
+      this.logMessage(
+        `✅ Verified equality — Actual: ${actual}, Expected: ${expected}`
+      );
+    } catch (error) {
+      const errorMsg =
+        message ||
+        `❌ Verification failed: expected ${actual} to be equal to ${expected}`;
+      this.logMessage(errorMsg, "error");
+      await this.captureScreenshotOnFailure("verifyEqual");
+      throw error;
+    }
   }
 
   async getAttributeFromLocator(
     locator: string,
     attributeName: string | "src" | "href"
-  ): Promise<string | null> {
-    const value = await this.page.locator(locator).getAttribute(attributeName);
-    if (value === null) {
-      throw new Error(
-        `Attribute '${attributeName}' not found for locator: ${locator}`
-      );
-    }
-    return value;
-  }
-  async getText(selector: string): Promise<string> {
+  ): Promise<string> {
     try {
-      const locator = this.page.locator(selector);
-      await expect(locator).toBeVisible();
-      const text = await locator.first().innerText();
-      this.logMessage(`Text of '${selector}' is "${text.trim()}"`);
-      return text.trim();
-    } catch (err: any) {
-      const msg = `Failed to get text from '${selector}': ${err.message}`;
-      this.logMessage(msg, "error");
-      await this.captureScreenshotOnFailure("getText");
-      throw new Error(msg);
-    }
-  }
+      const value = await this.page
+        .locator(locator)
+        .getAttribute(attributeName);
 
-  async getAllTexts(selector: string): Promise<string[]> {
-    try {
-      const elements = await this.page.$$(selector);
-      const texts = await Promise.all(
-        elements.map(async (el) => {
-          return (await el.textContent())?.trim() || "";
-        })
-      );
-      return texts;
-    } catch (error) {
+      if (value === null) {
+        const errorMsg = `Attribute '${attributeName}' not found for locator: ${locator}`;
+        this.logMessage(errorMsg, "error");
+        await this.captureScreenshotOnFailure("getAttributeFromLocator");
+        throw new Error(errorMsg);
+      }
+
       this.logMessage(
-        `Failed to get texts from selector: ${selector}`,
-        "error"
+        `✅ Retrieved attribute '${attributeName}' from locator: ${locator} — Value: ${value}`
       );
-      await this.captureScreenshotOnFailure("getAllTexts");
+      return value;
+    } catch (error) {
+      const errorMsg = `Failed to get attribute '${attributeName}' from locator: ${locator}`;
+      this.logMessage(errorMsg, "error");
+      await this.captureScreenshotOnFailure("getAttributeFromLocator");
       throw error;
     }
   }
@@ -545,6 +495,7 @@ export class Utils {
       throw new Error(msg);
     }
   }
+
   async verifyElementsAreEnabled(selector: string): Promise<void> {
     try {
       const elements = this.page.locator(selector);
@@ -610,11 +561,24 @@ export class Utils {
   }
 
   async getVideoCurrentTime(selector: string): Promise<number> {
-    return this.page.evaluate((sel) => {
-      const v = document.querySelector(sel) as HTMLVideoElement | null;
-      return v ? Math.floor(v.currentTime) : 0;
-    }, selector);
+    try {
+      const currentTime = await this.page.evaluate((sel) => {
+        const v = document.querySelector(sel) as HTMLVideoElement | null;
+        return v ? Math.floor(v.currentTime) : 0;
+      }, selector);
+
+      this.logMessage(
+        `🎥 Video current time for selector "${selector}" is ${currentTime}`
+      );
+      return currentTime;
+    } catch (error) {
+      const errorMsg = `❌ Failed to get video current time for selector: ${selector}`;
+      this.logMessage(errorMsg, "error");
+      await this.captureScreenshotOnFailure("getVideoCurrentTime");
+      throw error;
+    }
   }
+
   async refreshPage(): Promise<void> {
     try {
       await this.page.reload();
@@ -623,57 +587,6 @@ export class Utils {
       const errorMsg = "❌ Failed to refresh the page.";
       this.logMessage(errorMsg, "error");
       await this.captureScreenshotOnFailure("refreshPage");
-      throw new Error(errorMsg);
-    }
-  }
-
-  async clearSessionData(): Promise<void> {
-    try {
-      // ✅ Clear only sessionStorage
-      await this.page.evaluate(() => {
-        sessionStorage.clear();
-      });
-
-      // ✅ Clear cookies
-      await this.page.context().clearCookies();
-
-      this.logMessage(
-        "✅ Cleared sessionStorage and cookies. localStorage preserved."
-      );
-    } catch (error) {
-      const errorMsg = "❌ Failed to clear sessionStorage and cookies.";
-      this.logMessage(errorMsg, "error");
-      await this.captureScreenshotOnFailure("clearSessionData");
-      throw new Error(errorMsg);
-    }
-  }
-
-  async clickAndVerifyAlertMessage(
-    triggerSelector: string,
-    expectedAlertMessage: string
-  ): Promise<void> {
-    try {
-      this.page.once("dialog", async (dialog) => {
-        const actualMessage = dialog.message();
-
-        if (actualMessage !== expectedAlertMessage) {
-          const errorMsg = `Alert message mismatch: expected "${expectedAlertMessage}", but got "${actualMessage}"`;
-          this.logMessage(errorMsg, "error");
-          await this.captureScreenshotOnFailure("clickAndVerifyAlertMessage");
-          throw new Error(errorMsg);
-        }
-
-        this.logMessage(`Verified alert message: "${actualMessage}"`);
-        await dialog.accept();
-        this.logMessage("Alert accepted.");
-      });
-
-      await this.page.locator(triggerSelector).click();
-      this.logMessage(`Clicked on element: ${triggerSelector}`);
-    } catch (error) {
-      const errorMsg = `Failed to handle alert for ${triggerSelector}: ${error.message}`;
-      this.logMessage(errorMsg, "error");
-      await this.captureScreenshotOnFailure("clickAndVerifyAlertMessage");
       throw new Error(errorMsg);
     }
   }
@@ -700,176 +613,6 @@ export class Utils {
     }
   }
 
-  async getAllProductCards(selector: string): Promise<Locator[]> {
-    try {
-      const cardsLocator = this.page.locator(selector);
-      const count = await cardsLocator.count();
-
-      const cards: Locator[] = [];
-      for (let i = 0; i < count; i++) {
-        cards.push(cardsLocator.nth(i));
-      }
-
-      this.logMessage(`✅ Found ${count} product cards`);
-      return cards;
-    } catch (error) {
-      const errorMsg = `❌ Failed to get product cards for selector '${selector}': ${error.message}`;
-      this.logMessage(errorMsg, "error");
-      await this.captureScreenshotOnFailure("getAllProductCards");
-      throw new Error(errorMsg);
-    }
-  }
-
-  async validateProductContainers(locator: string): Promise<void> {
-    try {
-      await this.page.waitForSelector(locator, { timeout: 10000 });
-
-      const containers = this.page.locator(locator);
-      const count = await containers.count();
-      this.logMessage(`✅ Found ${count} product cards`);
-
-      if (count === 0) {
-        const errorMsg = "❌ No product containers found.";
-        this.logMessage(errorMsg, "error");
-        await this.captureScreenshotOnFailure("validateProductContainers");
-        throw new Error(errorMsg);
-      }
-
-      for (let i = 0; i < count; i++) {
-        await expect(containers.nth(i)).toBeVisible();
-      }
-    } catch (error: any) {
-      const errorMsg = `Failed to validate product containers: ${error.message}`;
-      this.logMessage(errorMsg, "error");
-      await this.captureScreenshotOnFailure("validateProductContainers");
-      throw new Error(errorMsg);
-    }
-  }
-
-  async validateProductTitles(selector: string): Promise<void> {
-    try {
-      const titles = this.page.locator(selector);
-      const count = await titles.count();
-
-      for (let i = 0; i < count; i++) {
-        const title = await titles.nth(i).innerText();
-        const pattern = this.expected.getExpectedProductTitlePattern();
-        if (!pattern.test(title)) {
-          throw new Error(
-            `❌ Title at index ${i} failed validation: "${title}"`
-          );
-        }
-        this.logMessage(`✅ Title ${i + 1} passed: "${title}"`);
-      }
-    } catch (error: any) {
-      const errorMsg = `Failed to validate product titles: ${error.message}`;
-      this.logMessage(errorMsg, "error");
-      await this.captureScreenshotOnFailure("validateProductTitles");
-      throw new Error(errorMsg);
-    }
-  }
-
-  async validateProductPrices(selector: string): Promise<void> {
-    try {
-      const prices = this.page.locator(selector);
-      const count = await prices.count();
-
-      for (let i = 0; i < count; i++) {
-        const price = await prices.nth(i).innerText();
-        const pattern = this.expected.getExpectedProductPricePattern();
-        if (!pattern.test(price)) {
-          throw new Error(
-            `❌ Price at index ${i} failed validation: "${price}"`
-          );
-        }
-        this.logMessage(`✅ Price ${i + 1} passed: "${price}"`);
-      }
-    } catch (error: any) {
-      const errorMsg = `Failed to validate product prices: ${error.message}`;
-      this.logMessage(errorMsg, "error");
-      await this.captureScreenshotOnFailure("validateProductPrices");
-      throw new Error(errorMsg);
-    }
-  }
-
-  async validateProductImages(selector: string): Promise<void> {
-    try {
-      const images = this.page.locator(selector);
-      const count = await images.count();
-
-      for (let i = 0; i < count; i++) {
-        const src = await images.nth(i).getAttribute("src");
-        const pattern = this.expected.getExpectedProductImagePattern();
-        if (!src || !pattern.test(src)) {
-          throw new Error(`❌ Image at index ${i} failed validation: "${src}"`);
-        }
-        this.logMessage(`✅ Image ${i + 1} passed: "${src}"`);
-      }
-    } catch (error: any) {
-      const errorMsg = `Failed to validate product images: ${error.message}`;
-      this.logMessage(errorMsg, "error");
-      await this.captureScreenshotOnFailure("validateProductImages");
-      throw new Error(errorMsg);
-    }
-  }
-
-  async validateProductDescriptions(selector: string): Promise<void> {
-    try {
-      const containers = this.page.locator(selector);
-      const count = await containers.count();
-
-      for (let i = 0; i < count; i++) {
-        const text = (await containers.nth(i).innerText()).trim();
-        if (!text) {
-          throw new Error(`❌ Description at index ${i} is empty.`);
-        }
-        this.logMessage(`✅ Description ${i + 1} is present.`);
-      }
-    } catch (error: any) {
-      const errorMsg = `Failed to validate product descriptions: ${error.message}`;
-      this.logMessage(errorMsg, "error");
-      await this.captureScreenshotOnFailure("validateProductDescriptions");
-      throw new Error(errorMsg);
-    }
-  }
-
-  async getAttributesFromLocator(
-    selector: string,
-    attributeName: string
-  ): Promise<string[]> {
-    try {
-      const locator = this.page.locator(selector);
-      const count = await locator.count();
-      const attributes: string[] = [];
-
-      for (let i = 0; i < count; i++) {
-        const attr = await locator.nth(i).getAttribute(attributeName);
-        if (attr) {
-          attributes.push(attr);
-        } else {
-          this.logMessage(
-            `⚠️ No "${attributeName}" attribute found on element at index ${i}.`,
-            "warn"
-          );
-        }
-      }
-
-      this.logMessage(
-        `✅ Successfully extracted "${attributeName}" attribute from ${attributes.length} element(s) using selector: ${selector}`,
-        "info"
-      );
-      return attributes;
-    } catch (error) {
-      this.logMessage(
-        `❌ Failed to extract "${attributeName}" attributes using selector "${selector}": ${error}`,
-        "error"
-      );
-      await this.captureScreenshotOnFailure("attribute_extraction_error");
-      throw error;
-    }
-  }
-
-  // fixed
   async verifyAllCarouselImagesAutoChange(
     activeImageLocator: string,
     allImagesLocator: string
@@ -958,10 +701,21 @@ export class Utils {
     nextButtonLocator: string
   ): Promise<void> {
     try {
-      const expectedSrcs = await this.getAttributesFromLocator(
-        allImageLocators,
-        "src"
-      );
+      const locator = this.page.locator(allImageLocators);
+      const count = await locator.count();
+      const expectedSrcs: string[] = [];
+
+      for (let i = 0; i < count; i++) {
+        const attr = await locator.nth(i).getAttribute("src");
+        if (attr) {
+          expectedSrcs.push(attr);
+        } else {
+          this.logMessage(
+            `⚠️ No "src" attribute found on element at index ${i}.`,
+            "warn"
+          );
+        }
+      }
 
       if (expectedSrcs.length < 2) {
         throw new Error(
@@ -1032,10 +786,21 @@ export class Utils {
     prevButtonLocator: string
   ): Promise<void> {
     try {
-      const expectedSrcs = await this.getAttributesFromLocator(
-        allImageLocators,
-        "src"
-      );
+      const locator = this.page.locator(allImageLocators);
+      const count = await locator.count();
+      const expectedSrcs: string[] = [];
+
+      for (let i = 0; i < count; i++) {
+        const attr = await locator.nth(i).getAttribute("src");
+        if (attr) {
+          expectedSrcs.push(attr);
+        } else {
+          this.logMessage(
+            `⚠️ No "src" attribute found on element at index ${i}.`,
+            "warn"
+          );
+        }
+      }
 
       if (expectedSrcs.length < 2) {
         throw new Error(
@@ -1045,7 +810,6 @@ export class Utils {
 
       const visitedSrcs: string[] = [];
 
-      // Start from current image and go backward through all images
       for (let i = 0; i < expectedSrcs.length; i++) {
         const currentSrc = await this.getAttributeFromLocator(
           activeImageLocator,
@@ -1062,7 +826,6 @@ export class Utils {
         }
       }
 
-      // Verify all expected images were visited (may be in reverse order)
       const missing = expectedSrcs.filter((src) => !visitedSrcs.includes(src));
       if (missing.length > 0) {
         throw new Error(
@@ -1072,7 +835,6 @@ export class Utils {
         );
       }
 
-      // Now check if clicking previous again returns to the first seen image
       const firstImageSrc = visitedSrcs[0];
       await this.clickOnElement(prevButtonLocator);
       await this.wait(1);
@@ -1105,44 +867,410 @@ export class Utils {
     }
   }
 
-  async verifyProductTitlesMatch(
+  async verifyElementsIsExist(
     selector: string,
-    pattern: RegExp
+    isImage: boolean = false
   ): Promise<void> {
     try {
-      const titleElements = this.page.locator(selector);
-      const count = await titleElements.count();
+      const elementCount = await this.page.locator(selector).count();
 
-      if (count === 0) {
-        const errorMsg = `❌ No product titles found for selector: ${selector}`;
+      if (elementCount === 0) {
+        const errorMsg = `❌ No element selector displayed in: "${selector}"`;
         this.logMessage(errorMsg, "error");
-        await this.captureScreenshotOnFailure("verifyProductTitlesMatch");
+        await this.captureScreenshotOnFailure("verifyElementIsExist");
         throw new Error(errorMsg);
       }
 
-      for (let i = 0; i < count; i++) {
-        const title = (await titleElements.nth(i).innerText()).trim();
-        if (!pattern.test(title)) {
-          const errorMsg = `❌ Title "${title}" at index ${i} did not match expected pattern`;
+      this.logMessage(
+        `✅ ${elementCount} element(s) found under selector: "${selector}"`
+      );
+
+      for (let i = 0; i < elementCount; i++) {
+        let target: string | null;
+
+        if (!isImage) {
+          target = await this.page.locator(selector).nth(i).textContent();
+        } else {
+          target = await this.page.locator(selector).nth(i).getAttribute("src");
+        }
+
+        if (!target?.trim()) {
+          const errorMsg = `❌ Element ${
+            i + 1
+          } missing or empty in selector: "${selector}"`;
           this.logMessage(errorMsg, "error");
-          await this.captureScreenshotOnFailure("verifyProductTitlesMatch");
+          await this.captureScreenshotOnFailure("verifyElementIsExist");
           throw new Error(errorMsg);
+        }
+
+        this.logMessage(`✅ Element ${i + 1} content information: "${target}"`);
+      }
+    } catch (error) {
+      const errorMsg = `Failed to verify elements for selector: "${selector}"`;
+      this.logMessage(errorMsg, "error");
+      await this.captureScreenshotOnFailure("verifyElementIsExist");
+      throw new Error(errorMsg);
+    }
+  }
+
+  async validateAttribute(
+    selector: string,
+    attribute: string,
+    expectedValue: string
+  ): Promise<void> {
+    try {
+      const actualValue = await this.page.getAttribute(selector, attribute);
+
+      if (actualValue !== expectedValue) {
+        const errorMsg = `Attribute "${attribute}" value mismatch. Expected: "${expectedValue}", Got: "${actualValue}"`;
+        this.logMessage(errorMsg, "error");
+        await this.captureScreenshotOnFailure("validateAttribute");
+        throw new Error(errorMsg);
+      }
+      this.logMessage(
+        `Validated attribute "${attribute}" with value "${expectedValue}" on selector "${selector}"`
+      );
+    } catch (error) {
+      const errorMsg = `Failed to validate attribute "${attribute}" on selector "${selector}"`;
+      this.logMessage(errorMsg, "error");
+      await this.captureScreenshotOnFailure("validateAttribute");
+      throw new Error(errorMsg);
+    }
+  }
+
+  async validateAttributes(selector: string, attribute: string): Promise<void> {
+    try {
+      const elements = this.page.locator(selector);
+      const count = await elements.count();
+
+      if (count === 0) {
+        const errorMsg = `No elements found for selector "${selector}".`;
+        this.logMessage(errorMsg, "error");
+        await this.captureScreenshotOnFailure(
+          "validateAttributeExistsForAllElements"
+        );
+        throw new Error(errorMsg);
+      }
+
+      let missingCount = 0;
+
+      for (let i = 0; i < count; i++) {
+        const element = elements.nth(i);
+        const attrValue = await element.getAttribute(attribute);
+
+        if (!attrValue) {
+          missingCount++;
+          this.logMessage(
+            `❌ Element ${i + 1} is missing attribute "${attribute}".`
+          );
+        } else {
+          this.logMessage(
+            `✅ Element ${
+              i + 1
+            } has attribute "${attribute}" with value "${attrValue}".`
+          );
         }
       }
 
+      if (missingCount > 0) {
+        const errorMsg = `❌ ${missingCount} of ${count} element(s) are missing attribute "${attribute}".`;
+        this.logMessage(errorMsg, "error");
+        await this.captureScreenshotOnFailure(
+          "validateAttributeExistsForAllElements"
+        );
+        throw new Error(errorMsg);
+      }
+
       this.logMessage(
-        `✅ All ${count} product titles matched the expected pattern`
+        `✅ All ${count} element(s) have attribute "${attribute}".`
       );
+    } catch (err: any) {
+      const errorMsg = `❌ Failed to validate attribute "${attribute}" existence for all elements: ${err.message}`;
+      this.logMessage(errorMsg, "error");
+      await this.captureScreenshotOnFailure(
+        "validateAttributeExistsForAllElements"
+      );
+      throw new Error(errorMsg);
+    }
+  }
+
+  async getProductTitles(productTitleLocator: string): Promise<string[]> {
+    try {
+      const elements = await this.page.$$(productTitleLocator);
+      const titles = await Promise.all(
+        elements.map(async (el) => {
+          return (await el.textContent())?.trim() || "";
+        })
+      );
+
+      this.logMessage(
+        `📄 Captured product titles: ${JSON.stringify(titles)}`,
+        "info"
+      );
+      return titles;
+    } catch (error) {
+      this.logMessage(`❌ Error in getProductTitles: ${error}`, "error");
+      await this.captureScreenshotOnFailure("get_product_titles_error");
+      throw error;
+    }
+  }
+
+  async verifyTitlesMatch(expected: string[], actual: string[]): Promise<void> {
+    try {
+      const normalizedActualSet = new Set(
+        actual.map((title) => title.trim().toLowerCase())
+      );
+
+      const missingTitles = expected.filter(
+        (title) => !normalizedActualSet.has(title.trim().toLowerCase())
+      );
+
+      if (missingTitles.length > 0) {
+        this.logMessage(
+          `⚠️ Product titles mismatch after returning to first page.\nExpected: ${JSON.stringify(
+            expected
+          )}\nActual: ${JSON.stringify(actual)}\nMissing: ${JSON.stringify(
+            missingTitles
+          )}`,
+          "warn"
+        );
+        await this.captureScreenshotOnFailure("title_mismatch_warning");
+      } else {
+        this.logMessage(
+          "✅ Titles match exactly after returning to first page.",
+          "info"
+        );
+      }
+    } catch (error) {
+      this.logMessage(
+        `❌ Error in verifyTitlesMatchExactly: ${error}`,
+        "error"
+      );
+      await this.captureScreenshotOnFailure("title_mismatch_error");
+      throw error;
+    }
+  }
+
+  async verifyTitlesNoMatch(
+    titles1: string[],
+    titles2: string[]
+  ): Promise<void> {
+    try {
+      const overlappingTitles = titles1.filter((title) =>
+        titles2.includes(title)
+      );
+
+      if (overlappingTitles.length > 0) {
+        this.logMessage(
+          `⚠️ Overlapping product titles found between pages: ${JSON.stringify(
+            overlappingTitles
+          )}`,
+          "warn"
+        );
+        await this.captureScreenshotOnFailure("title_overlap_warning");
+      } else {
+        this.logMessage(
+          "✅ No overlapping product titles found between pages.",
+          "info"
+        );
+      }
+    } catch (error) {
+      this.logMessage(`❌ Error in verifyTitlesNoMatch: ${error}`, "error");
+      await this.captureScreenshotOnFailure("title_overlap_error");
+      throw error;
+    }
+  }
+
+  async handleAlertWithMessage(expectedMessage: string): Promise<void> {
+    try {
+      this.page.on("dialog", async (dialog) => {
+        expect(dialog.type()).toContain("alert");
+        expect(dialog.message()).toContain(expectedMessage);
+        await dialog.accept();
+
+        this.logMessage(
+          `✅ Handled alert correctly with message: ${expectedMessage}`
+        );
+      });
+    } catch (error) {
+      this.logMessage(`❌ Failed to handle alert: ${error}`, "error");
+      await this.captureScreenshotOnFailure("alert_handling_error");
+      throw error;
+    }
+  }
+
+  async validateLabel(selector: string, expectedText: string): Promise<void> {
+    try {
+      await this.verifyContainText(selector, expectedText);
+    } catch (error) {
+      this.logMessage(`Failed to validate label: ${error}`);
+      await this.captureScreenshotOnFailure("validate_label_error");
+      throw error;
+    }
+  }
+
+  async verifyFieldIsPasswordType(selector: string): Promise<void> {
+    try {
+      const inputType = await this.page.getAttribute(selector, "type");
+
+      if (inputType !== "password") {
+        throw new Error(
+          `Expected field type to be "password", but got "${inputType}"`
+        );
+      }
+
+      this.logMessage(
+        `✅ Field "${selector}" is correctly set to type "password"`
+      );
+    } catch (error) {
+      this.logMessage(
+        `❌ Error verifying password field type for selector "${selector}": ${error.message}`
+      );
+      await this.captureScreenshotOnFailure("verify-password-type-error");
+      throw error;
+    }
+  }
+
+  async validateVisibleNavItems(
+    navItemSelector: string,
+    expectedVisibleTexts: string[]
+  ): Promise<string[]> {
+    try {
+      const navItems = this.page.locator(navItemSelector);
+      const visibleTexts: string[] = [];
+
+      const count = await navItems.count();
+
+      for (let i = 0; i < count; i++) {
+        const item = navItems.nth(i);
+        if (await item.isVisible()) {
+          let text = await item.innerText();
+
+          // Normalize: collapse whitespace, remove "(current)" if any
+          text = text.replace(/\s+/g, " ").replace("(current)", "").trim();
+
+          visibleTexts.push(text);
+        }
+      }
+
+      // Normalize expected as well
+      const expectedNormalized = expectedVisibleTexts.map((txt) =>
+        txt.replace(/\s+/g, " ").replace("(current)", "").trim()
+      );
+
+      // Debug logs
+      this.logMessage(
+        `🔍 Actual visible nav items: [${visibleTexts.join(", ")}]`
+      );
+      this.logMessage(
+        `📌 Expected visible nav items: [${expectedNormalized.join(", ")}]`
+      );
+
+      expect(visibleTexts).toEqual(expectedNormalized);
+      this.logMessage("✅ Navbar items validated successfully.");
+
+      return visibleTexts;
     } catch (error: any) {
-      const finalMsg = `Failed to verify product titles match: ${error.message}`;
-      this.logMessage(finalMsg, "error");
-      await this.captureScreenshotOnFailure("verifyProductTitlesMatch");
-      throw new Error(finalMsg);
+      const errorMsg = `❌ Navbar validation failed: ${error.message}`;
+      this.logMessage(errorMsg, "error");
+      await this.captureScreenshotOnFailure("validateVisibleNavItems");
+      throw new Error(errorMsg);
+    }
+  }
+
+  async verifyContainsValue(
+    selector: string,
+    expectedValue: string
+  ): Promise<void> {
+    try {
+      const input = this.page.locator(selector);
+      await expect(input).toHaveValue(expectedValue, { timeout: 5000 });
+
+      this.logMessage(
+        `✅ Verified input field "${selector}" contains value: "${expectedValue}".`
+      );
+    } catch (error) {
+      const errorMsg = `❌ Input field "${selector}" did not contain expected value: "${expectedValue}".`;
+      this.logMessage(errorMsg, "error");
+      await this.captureScreenshotOnFailure("verifyInputContainsValue");
+      throw new Error(errorMsg);
+    }
+  }
+
+  async verifyElementToHaveCSSProperty(
+    identifier: string | string[],
+    property: string,
+    expectedValue: string,
+    isHover: boolean = false,
+    timeout = 3000
+  ): Promise<void> {
+    const identifiers = Array.isArray(identifier) ? identifier : [identifier];
+
+    for (const id of identifiers) {
+      try {
+        await this.page.waitForSelector(id, { state: "visible" });
+        const elements = this.page.locator(id);
+        const count = await elements.count();
+
+        if (count === 0) {
+          throw new Error(`❌ No elements found for identifier "${id}".`);
+        }
+
+        for (let i = 0; i < count; i++) {
+          const element = elements.nth(i);
+          await element.waitFor({ state: "visible" });
+
+          if (isHover) {
+            await element.hover();
+            this.logMessage(
+              `Hovered over element with identifier: ${id} at index ${i}`
+            );
+            await this.page.waitForTimeout(300);
+          }
+
+          try {
+            await expect(element).toHaveCSS(property, expectedValue, {
+              timeout,
+            });
+
+            this.logMessage(
+              `✅ CSS property "${property}" of "${id}" at index ${i} is as expected: "${expectedValue}".`
+            );
+          } catch {
+            const actualValue = await element.evaluate(
+              (el, prop) =>
+                window.getComputedStyle(el).getPropertyValue(prop).trim(),
+              property
+            );
+            console.log(`🔍 [DEBUG] ${property} = "${actualValue}"`);
+
+            if (actualValue !== expectedValue.trim()) {
+              const errorMsg = `❌ Expected CSS property "${property}" to be "${expectedValue}", but found "${actualValue}" for "${id}" at index ${i}.`;
+              this.logMessage(errorMsg, "error");
+              await this.captureScreenshotOnFailure(
+                "verifyElementToHaveCSSProperty"
+              );
+              throw new Error(errorMsg);
+            }
+
+            this.logMessage(
+              `✅ CSS property "${property}" of "${id}" at index ${i} matches expected value (via fallback): "${actualValue}".`
+            );
+          }
+        }
+      } catch (error) {
+        const errorMsg = `❌ Failed to verify CSS property "${property}" for: ${id} | Reason: ${
+          error instanceof Error ? error.message : error
+        }`;
+        this.logMessage(errorMsg, "error");
+        await this.captureScreenshotOnFailure("verifyElementToHaveCSSProperty");
+        throw error instanceof Error ? error : new Error(String(error));
+      }
     }
   }
 
   async waitForProductChangeAfterPagination(
-    nextButtonSelector: string,
+    paginationButtonSelector: string,
     productTitleSelector: string,
     timeout = 5000
   ): Promise<void> {
@@ -1153,7 +1281,7 @@ export class Utils {
         .innerText();
       this.logMessage(`Initial product title: "${initialText}"`, "info");
 
-      await this.clickOnElement(nextButtonSelector);
+      await this.clickOnElement(paginationButtonSelector);
       this.logMessage("Clicked on pagination next button", "info");
 
       const endTime = Date.now() + timeout;
@@ -1188,82 +1316,8 @@ export class Utils {
     }
   }
 
-  // -----------------------------------------------------------------------------------
+  // <--------------------------------------------------------------------------->
 
-  async clickItemByIndex(
-    clickableElementLocator: string,
-    index: number
-  ): Promise<void> {
-    this.logMessage(
-      `[INFO] Attempting to click item at index: ${index} using locator: ${clickableElementLocator}`
-    );
-    try {
-      const clickableElement = this.page
-        .locator(clickableElementLocator)
-        .nth(index);
-      await Promise.all([
-        this.page.waitForLoadState("load"), // Wait for navigation after click
-        clickableElement.click(),
-      ]);
-      this.logMessage(`[INFO] Successfully clicked item at index: ${index}.`);
-    } catch (error: any) {
-      const errorMsg = `Failed to click item at index ${index}: ${error.message}`;
-      this.logMessage(errorMsg, "error");
-      await this.captureScreenshotOnFailure(`clickItemByIndex_${index}`);
-      throw new Error(errorMsg);
-    }
-  }
-
-  async selectRandomItemAndClick(
-    itemContainerLocator: string, // E.g., '.product-card', '.search-result-item' - used for total count
-    clickableElementLocator: string // E.g., '.product-card-link', '.item-title' - used for the actual click
-  ): Promise<number> {
-    this.logMessage(`[INFO] Attempting to select a random item and click it.`);
-    const totalItems = await this.page.locator(itemContainerLocator).count();
-    if (totalItems === 0) {
-      throw new Error(
-        `No items found using locator: ${itemContainerLocator}. Cannot select random item.`
-      );
-    }
-
-    const randomIndex = Math.floor(Math.random() * totalItems);
-    this.logMessage(`[INFO] Randomly selected item at index: ${randomIndex}.`);
-
-    // Reuse the atomic clickItemByIndex method
-    await this.clickItemByIndex(clickableElementLocator, randomIndex);
-
-    return randomIndex; // Return the index for external use (e.g., getting details after navigation)
-  }
-
-  async validatingProductUrl(): Promise<void> {
-    // The specific regex for DemoBlaze product pages
-    const expectedProductURLRegex =
-      /^https:\/\/demoblaze\.com\/prod\.html\?idp_=\d+$/;
-    const urlDescription = "DemoBlaze Product Page URL";
-    // A default scenario name is used for logging/screenshots since no parameter is provided
-    const scenarioNameForLogging = "ProductURLValidation";
-
-    const actualURL = this.page.url(); // Get the current page's URL automatically
-
-    this.logMessage(
-      `[INFO] Validating ${urlDescription}: "${actualURL}" for scenario "${scenarioNameForLogging}".`
-    );
-
-    try {
-      if (!expectedProductURLRegex.test(actualURL)) {
-        throw new Error(`URL did not match expected regex.`);
-      }
-      this.logMessage(
-        `✅ ${urlDescription} validated successfully: "${actualURL}" matches regex.`
-      );
-    } catch (error: any) {
-      const errorMsg = `❌ ${urlDescription} validation failed for scenario "${scenarioNameForLogging}": Expected URL to match ${expectedProductURLRegex.source}, but got "${actualURL}". Error: ${error.message}`;
-      this.logMessage(errorMsg, "error");
-      // Use the default scenario name for the screenshot
-      await this.captureScreenshotOnFailure(scenarioNameForLogging);
-      throw new Error(errorMsg);
-    }
-  }
   private async getImageSrcFromSpecificLocator(
     imageLocator: Locator
   ): Promise<string> {
@@ -1272,28 +1326,6 @@ export class Utils {
     await expect(imageLocator).toBeVisible({ timeout: 5000 });
     const src = await imageLocator.getAttribute("src");
     return src || ""; // Return empty string if src is null/undefined
-  }
-  public async getImageSrcByIndex(
-    imageLocator: string,
-    index: number
-  ): Promise<string | null> {
-    const element = this.page.locator(imageLocator).nth(index);
-    return await element.getAttribute("src");
-  }
-  public async getItemDetailsByIndex(
-    itemTextLocator: string,
-    itemNumericValueLocator: string,
-    index: number
-  ): Promise<{ text: string; numericValue: string }> {
-    const text = await this.page
-      .locator(itemTextLocator)
-      .nth(index)
-      .innerText();
-    const numericValue = await this.page
-      .locator(itemNumericValueLocator)
-      .nth(index)
-      .innerText();
-    return { text: text.trim(), numericValue: numericValue.trim() };
   }
 
   async selectAndCaptureRandomProductDetailsAndClick(
@@ -1549,18 +1581,7 @@ export class Utils {
       throw new Error(errorMsg);
     }
   }
-  async waitUntilSeconds(seconds: number): Promise<void> {
-    try {
-      const milliseconds = seconds * 1000;
-      await this.page.waitForTimeout(milliseconds);
-      this.logMessage(`Waited for ${seconds} second(s)`);
-    } catch (error) {
-      const errorMsg = `Failed to wait for ${seconds} second(s)`;
-      this.logMessage(errorMsg, "error");
-      await this.captureScreenshotOnFailure("waitUntilSeconds");
-      throw new Error(errorMsg);
-    }
-  }
+
   async deleteProductFromCartByIndex(
     productIndexToDelete: number,
     cartRowLocator: string
@@ -1639,215 +1660,6 @@ export class Utils {
     }
   }
 
-  async verifyElementsIsExist(
-    selector: string,
-    isImage: boolean = false
-  ): Promise<void> {
-    try {
-      const elementCount = await this.page.locator(selector).count();
-
-      if (elementCount === 0) {
-        const errorMsg = `❌ No element selector displayed in: "${selector}"`;
-        this.logMessage(errorMsg, "error");
-        await this.captureScreenshotOnFailure("verifyElementIsExist");
-        throw new Error(errorMsg);
-      }
-
-      this.logMessage(
-        `✅ ${elementCount} element(s) found under selector: "${selector}"`
-      );
-
-      for (let i = 0; i < elementCount; i++) {
-        let target: string | null;
-
-        if (!isImage) {
-          target = await this.page.locator(selector).nth(i).textContent();
-        } else {
-          target = await this.page.locator(selector).nth(i).getAttribute("src");
-        }
-
-        if (!target?.trim()) {
-          const errorMsg = `❌ Element ${
-            i + 1
-          } missing or empty in selector: "${selector}"`;
-          this.logMessage(errorMsg, "error");
-          await this.captureScreenshotOnFailure("verifyElementIsExist");
-          throw new Error(errorMsg);
-        }
-
-        this.logMessage(`✅ Element ${i + 1} content information: "${target}"`);
-      }
-    } catch (error) {
-      const errorMsg = `Failed to verify elements for selector: "${selector}"`;
-      this.logMessage(errorMsg, "error");
-      await this.captureScreenshotOnFailure("verifyElementIsExist");
-      throw new Error(errorMsg);
-    }
-  }
-
-  async validateAttribute(
-    selector: string,
-    attribute: string,
-    expectedValue: string
-  ): Promise<void> {
-    try {
-      const actualValue = await this.page.getAttribute(selector, attribute);
-
-      if (actualValue !== expectedValue) {
-        const errorMsg = `Attribute "${attribute}" value mismatch. Expected: "${expectedValue}", Got: "${actualValue}"`;
-        this.logMessage(errorMsg, "error");
-        await this.captureScreenshotOnFailure("validateAttribute");
-        throw new Error(errorMsg);
-      }
-
-      this.logMessage(
-        `Validated attribute "${attribute}" with value "${expectedValue}" on selector "${selector}"`
-      );
-    } catch (error) {
-      const errorMsg = `Failed to validate attribute "${attribute}" on selector "${selector}"`;
-      this.logMessage(errorMsg, "error");
-      await this.captureScreenshotOnFailure("validateAttribute");
-      throw new Error(errorMsg);
-    }
-  }
-
-  async validateAttributes(selector: string, attribute: string): Promise<void> {
-    try {
-      const elements = this.page.locator(selector);
-      const count = await elements.count();
-
-      if (count === 0) {
-        const errorMsg = `No elements found for selector "${selector}".`;
-        this.logMessage(errorMsg, "error");
-        await this.captureScreenshotOnFailure(
-          "validateAttributeExistsForAllElements"
-        );
-        throw new Error(errorMsg);
-      }
-
-      let missingCount = 0;
-
-      for (let i = 0; i < count; i++) {
-        const element = elements.nth(i);
-        const attrValue = await element.getAttribute(attribute);
-
-        if (!attrValue) {
-          missingCount++;
-          this.logMessage(
-            `❌ Element ${i + 1} is missing attribute "${attribute}".`
-          );
-        } else {
-          this.logMessage(
-            `✅ Element ${
-              i + 1
-            } has attribute "${attribute}" with value "${attrValue}".`
-          );
-        }
-      }
-
-      if (missingCount > 0) {
-        const errorMsg = `❌ ${missingCount} of ${count} element(s) are missing attribute "${attribute}".`;
-        this.logMessage(errorMsg, "error");
-        await this.captureScreenshotOnFailure(
-          "validateAttributeExistsForAllElements"
-        );
-        throw new Error(errorMsg);
-      }
-
-      this.logMessage(
-        `✅ All ${count} element(s) have attribute "${attribute}".`
-      );
-    } catch (err: any) {
-      const errorMsg = `❌ Failed to validate attribute "${attribute}" existence for all elements: ${err.message}`;
-      this.logMessage(errorMsg, "error");
-      await this.captureScreenshotOnFailure(
-        "validateAttributeExistsForAllElements"
-      );
-      throw new Error(errorMsg);
-    }
-  }
-
-  async getProductTitles(productTitleLocator: string): Promise<string[]> {
-    try {
-      const titles = await this.getAllTexts(productTitleLocator);
-      this.logMessage(
-        `📄 Captured product titles: ${JSON.stringify(titles)}`,
-        "info"
-      );
-      return titles;
-    } catch (error) {
-      this.logMessage(`❌ Error in getProductTitles: ${error}`, "error");
-      await this.captureScreenshotOnFailure("get_product_titles_error");
-      throw error;
-    }
-  }
-
-  async verifyTitlesMatch(expected: string[], actual: string[]): Promise<void> {
-    try {
-      const normalizedActualSet = new Set(
-        actual.map((title) => title.trim().toLowerCase())
-      );
-
-      const missingTitles = expected.filter(
-        (title) => !normalizedActualSet.has(title.trim().toLowerCase())
-      );
-
-      if (missingTitles.length > 0) {
-        this.logMessage(
-          `⚠️ Product titles mismatch after returning to first page.\nExpected: ${JSON.stringify(
-            expected
-          )}\nActual: ${JSON.stringify(actual)}\nMissing: ${JSON.stringify(
-            missingTitles
-          )}`,
-          "warn"
-        );
-        await this.captureScreenshotOnFailure("title_mismatch_warning");
-      } else {
-        this.logMessage(
-          "✅ Titles match exactly after returning to first page.",
-          "info"
-        );
-      }
-    } catch (error) {
-      this.logMessage(
-        `❌ Error in verifyTitlesMatchExactly: ${error}`,
-        "error"
-      );
-      await this.captureScreenshotOnFailure("title_mismatch_error");
-      throw error;
-    }
-  }
-
-  async verifyTitlesNoMatch(
-    titles1: string[],
-    titles2: string[]
-  ): Promise<void> {
-    try {
-      const overlappingTitles = titles1.filter((title) =>
-        titles2.includes(title)
-      );
-
-      if (overlappingTitles.length > 0) {
-        this.logMessage(
-          `⚠️ Overlapping product titles found between pages: ${JSON.stringify(
-            overlappingTitles
-          )}`,
-          "warn"
-        );
-        await this.captureScreenshotOnFailure("title_overlap_warning");
-      } else {
-        this.logMessage(
-          "✅ No overlapping product titles found between pages.",
-          "info"
-        );
-      }
-    } catch (error) {
-      this.logMessage(`❌ Error in verifyTitlesNoMatch: ${error}`, "error");
-      await this.captureScreenshotOnFailure("title_overlap_error");
-      throw error;
-    }
-  }
-
   async getCartProductCount(cartRowLocator: string): Promise<string> {
     this.logMessage("[INFO] Checking cart product count.");
     try {
@@ -1871,24 +1683,6 @@ export class Utils {
     }
   }
 
-  async handleAlertWithMessage(expectedMessage: string): Promise<void> {
-    try {
-      this.page.on("dialog", async (dialog) => {
-        expect(dialog.type()).toContain("alert");
-        expect(dialog.message()).toContain(expectedMessage);
-        await dialog.accept();
-
-        this.logMessage(
-          `✅ Handled alert correctly with message: ${expectedMessage}`
-        );
-      });
-    } catch (error) {
-      this.logMessage(`❌ Failed to handle alert: ${error}`, "error");
-      await this.captureScreenshotOnFailure("alert_handling_error");
-      throw error;
-    }
-  }
-
   async verifyContainsDigit(
     selector: string,
     prefix: string = "Id:"
@@ -1908,6 +1702,7 @@ export class Utils {
 
     this.logMessage(`✅ Found valid 7-digit ID with prefix "${prefix}".`);
   }
+
   async verifyContainsTodayDate(
     selector: string,
     prefix: string = "Date:"
@@ -1933,241 +1728,5 @@ export class Utils {
     );
   }
 
-  async validateLabel(selector: string, expectedText: string): Promise<void> {
-    try {
-      await this.verifyContainText(selector, expectedText);
-    } catch (error) {
-      this.logMessage(`Failed to validate label: ${error}`);
-      await this.captureScreenshotOnFailure("validate_label_error");
-      throw error;
-    }
-  }
-
-  async verifyFieldIsPasswordType(selector: string): Promise<void> {
-    try {
-      const inputType = await this.page.getAttribute(selector, "type");
-
-      if (inputType !== "password") {
-        throw new Error(
-          `Expected field type to be "password", but got "${inputType}"`
-        );
-      }
-
-      this.logMessage(
-        `✅ Field "${selector}" is correctly set to type "password"`
-      );
-    } catch (error) {
-      this.logMessage(
-        `❌ Error verifying password field type for selector "${selector}": ${error.message}`
-      );
-      await this.captureScreenshotOnFailure("verify-password-type-error");
-      throw error;
-    }
-  }
-
-  async validateVisibleNavItems(
-    navItemSelector: string,
-    expectedVisibleTexts: string[]
-  ): Promise<string[]> {
-    try {
-      const navItems = this.page.locator(navItemSelector);
-      const visibleTexts: string[] = [];
-
-      const count = await navItems.count();
-
-      for (let i = 0; i < count; i++) {
-        const item = navItems.nth(i);
-        if (await item.isVisible()) {
-          let text = await item.innerText();
-
-          // Normalize: collapse whitespace, remove "(current)" if any
-          text = text.replace(/\s+/g, " ").replace("(current)", "").trim();
-
-          visibleTexts.push(text);
-        }
-      }
-
-      // Normalize expected as well
-      const expectedNormalized = expectedVisibleTexts.map((txt) =>
-        txt.replace(/\s+/g, " ").replace("(current)", "").trim()
-      );
-
-      // Debug logs
-      this.logMessage(
-        `🔍 Actual visible nav items: [${visibleTexts.join(", ")}]`
-      );
-      this.logMessage(
-        `📌 Expected visible nav items: [${expectedNormalized.join(", ")}]`
-      );
-
-      expect(visibleTexts).toEqual(expectedNormalized);
-      this.logMessage("✅ Navbar items validated successfully.");
-
-      return visibleTexts;
-    } catch (error: any) {
-      const errorMsg = `❌ Navbar validation failed: ${error.message}`;
-      this.logMessage(errorMsg, "error");
-      await this.captureScreenshotOnFailure("validateVisibleNavItems");
-      throw new Error(errorMsg);
-    }
-  }
-
-  async validateExclusiveHoverColorChangeForNavItems(
-    this: any,
-    navItemSelector: string,
-    visibleNavTexts: string[],
-    expectedHoverRgb: string
-  ): Promise<void> {
-    const navItems = this.page.locator(navItemSelector);
-    const total = await navItems.count();
-
-    for (const visibleText of visibleNavTexts) {
-      let matchIndex = -1;
-
-      for (let i = 0; i < total; i++) {
-        const item = navItems.nth(i);
-        if (!(await item.isVisible())) continue;
-
-        const rawText = await item.innerText();
-        const cleanText = rawText.replace(/\s+/g, " ").trim();
-
-        // 🧼 Normalize screen-reader artifacts (e.g., '(current)')
-        const normalizedText = cleanText.replace("(current)", "").trim();
-
-        if (normalizedText === visibleText) {
-          matchIndex = i;
-          break;
-        }
-      }
-
-      if (matchIndex === -1) {
-        throw new Error(
-          `❌ Could not find nav item matching text: "${visibleText}"`
-        );
-      }
-
-      const currentItem = navItems.nth(matchIndex);
-      await currentItem.hover();
-      await this.page.waitForTimeout(150);
-
-      for (let j = 0; j < total; j++) {
-        const item = navItems.nth(j);
-        if (!(await item.isVisible())) continue;
-
-        const text = (await item.innerText()).replace(/\s+/g, " ").trim();
-        const normalizedText = text.replace("(current)", "").trim();
-
-        const color = await item.evaluate((el) => getComputedStyle(el).color);
-
-        if (normalizedText === visibleText) {
-          assert.strictEqual(
-            color,
-            expectedHoverRgb,
-            `❌ Hovered nav item "${visibleText}" did not match expected hover color. Got: ${color}`
-          );
-        } else {
-          assert.strictEqual(
-            color,
-            "rgb(255, 255, 255)",
-            `❌ Nav item "${normalizedText}" changed unexpectedly while hovering "${visibleText}"`
-          );
-        }
-      }
-
-      this.logMessage(`✅ Hover color verified for: "${visibleText}"`);
-    }
-
-    this.logMessage("✅ All hover validations on visible nav items passed.");
-  }
-
-  async verifyContainsValue(
-    selector: string,
-    expectedValue: string
-  ): Promise<void> {
-    try {
-      const input = this.page.locator(selector);
-      await expect(input).toHaveValue(expectedValue, { timeout: 5000 });
-
-      this.logMessage(
-        `✅ Verified input field "${selector}" contains value: "${expectedValue}".`
-      );
-    } catch (error) {
-      const errorMsg = `❌ Input field "${selector}" did not contain expected value: "${expectedValue}".`;
-      this.logMessage(errorMsg, "error");
-      await this.captureScreenshotOnFailure("verifyInputContainsValue");
-      throw new Error(errorMsg);
-    }
-  }
-
-  async verifyElementToHaveCSSProperty(
-    identifier: string | string[],
-    property: string,
-    expectedValue: string,
-    isHover: boolean = false,
-    timeout = 3000
-  ): Promise<void> {
-    const identifiers = Array.isArray(identifier) ? identifier : [identifier];
-
-    for (const id of identifiers) {
-      try {
-        await this.page.waitForSelector(id, { state: "visible" });
-        const elements = this.page.locator(id);
-        const count = await elements.count();
-
-        if (count === 0) {
-          throw new Error(`❌ No elements found for identifier "${id}".`);
-        }
-
-        for (let i = 0; i < count; i++) {
-          const element = elements.nth(i);
-          await element.waitFor({ state: "visible" });
-
-          if (isHover) {
-            await element.hover();
-            this.logMessage(
-              `Hovered over element with identifier: ${id} at index ${i}`
-            );
-            await this.page.waitForTimeout(300);
-          }
-
-          try {
-            await expect(element).toHaveCSS(property, expectedValue, {
-              timeout,
-            });
-
-            this.logMessage(
-              `✅ CSS property "${property}" of "${id}" at index ${i} is as expected: "${expectedValue}".`
-            );
-          } catch {
-            const actualValue = await element.evaluate(
-              (el, prop) =>
-                window.getComputedStyle(el).getPropertyValue(prop).trim(),
-              property
-            );
-            console.log(`🔍 [DEBUG] ${property} = "${actualValue}"`);
-
-            if (actualValue !== expectedValue.trim()) {
-              const errorMsg = `❌ Expected CSS property "${property}" to be "${expectedValue}", but found "${actualValue}" for "${id}" at index ${i}.`;
-              this.logMessage(errorMsg, "error");
-              await this.captureScreenshotOnFailure(
-                "verifyElementToHaveCSSProperty"
-              );
-              throw new Error(errorMsg);
-            }
-
-            this.logMessage(
-              `✅ CSS property "${property}" of "${id}" at index ${i} matches expected value (via fallback): "${actualValue}".`
-            );
-          }
-        }
-      } catch (error) {
-        const errorMsg = `❌ Failed to verify CSS property "${property}" for: ${id} | Reason: ${
-          error instanceof Error ? error.message : error
-        }`;
-        this.logMessage(errorMsg, "error");
-        await this.captureScreenshotOnFailure("verifyElementToHaveCSSProperty");
-        throw error instanceof Error ? error : new Error(String(error));
-      }
-    }
-  }
+  // <--------------------------------------------------------------------------->
 }
