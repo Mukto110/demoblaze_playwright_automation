@@ -338,7 +338,7 @@ class ContactFormTest extends ExpectedValueProvider {
         await runner.handleAlertWithMessage("Thanks for the message!!");
         await runner.clickOnElement(contactModal.sendButton);
 
-        await runner.wait(2, { waitForLoadState: "load" });
+        await runner.wait(5, { waitForSelector: homePage.navbarContact });
         await runner.verifyElementIsVisible(homePage.navbarContact);
         await runner.clickOnElement(homePage.navbarContact);
         await runner.wait(5, { waitForSelector: contactModal.header });

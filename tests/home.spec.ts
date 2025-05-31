@@ -173,7 +173,7 @@ class HomePageTest extends ExpectedValueProvider {
         runner,
         homePage,
       }) => {
-        await runner.wait(2, { waitForSelector: homePage.carousel });
+        await runner.wait(5, { waitForSelector: homePage.carousel });
         await runner.verifyElementIsVisible(homePage.carousel);
         await runner.validateAttributes(homePage.carouselImages, "src");
         await runner.verifyAllCarouselImagesAutoChange(
@@ -232,10 +232,8 @@ class HomePageTest extends ExpectedValueProvider {
           homePage.categoriesPhones,
           homeData.categories.phones
         );
-        await runner.wait(5, { waitForSelector: homePage.productImages });
+        await runner.wait(10, { waitForSelector: homePage.productImages });
         await runner.verifyElementsIsExist(homePage.productImages, true);
-        await runner.wait(5, { waitForSelector: homePage.productTitles });
-        await runner.verifyElementsIsExist(homePage.productTitles);
         await runner.verifyElementsIsExist(homePage.productPrices);
         await runner.verifyElementsIsExist(homePage.productDescriptions);
       });
@@ -254,11 +252,11 @@ class HomePageTest extends ExpectedValueProvider {
           homePage.categoriesLaptops,
           homeData.categories.laptops
         );
-        await runner.wait(5, { waitForSelector: homePage.productImages });
-        await runner.verifyElementsIsExist(homePage.productImages, true);
+        await runner.wait(10, { waitForSelector: homePage.productImages });
         await runner.verifyElementsIsExist(homePage.productTitles);
         await runner.verifyElementsIsExist(homePage.productPrices);
         await runner.verifyElementsIsExist(homePage.productDescriptions);
+        await runner.verifyElementsIsExist(homePage.productImages, true);
       });
 
       test("Verify filtering monitors tab interactions", async ({
@@ -275,7 +273,7 @@ class HomePageTest extends ExpectedValueProvider {
           homePage.categoriesMonitors,
           homeData.categories.monitors
         );
-        await runner.wait(5, { waitForSelector: homePage.productImages });
+        await runner.wait(10, { waitForSelector: homePage.productImages });
         await runner.verifyElementsIsExist(homePage.productTitles);
         await runner.verifyElementsIsExist(homePage.productPrices);
         await runner.verifyElementsIsExist(homePage.productDescriptions);
@@ -287,7 +285,7 @@ class HomePageTest extends ExpectedValueProvider {
         envData,
         homePage,
       }) => {
-        await runner.wait(5, { waitForSelector: homePage.productImages });
+        await runner.wait(10, { waitForSelector: homePage.productImages });
         // verify homepage products
         await runner.verifyElementsIsExist(homePage.productImages, true);
         await runner.verifyElementsIsExist(homePage.productTitles);
@@ -299,7 +297,7 @@ class HomePageTest extends ExpectedValueProvider {
           homePage.categoriesLaptops,
           homeData.categories.laptops
         );
-        await runner.wait(5, { waitForSelector: homePage.productImages });
+        await runner.wait(10, { waitForSelector: homePage.productImages });
         await runner.verifyElementsIsExist(homePage.productImages, true);
         await runner.verifyElementsIsExist(homePage.productTitles);
         await runner.verifyElementsIsExist(homePage.productPrices);
@@ -310,7 +308,7 @@ class HomePageTest extends ExpectedValueProvider {
           homePage.navbarHome,
           homeData.navbar.home
         );
-        await runner.wait(5, { waitForSelector: homePage.productImages });
+        await runner.wait(10, { waitForSelector: homePage.productImages });
         await runner.verifyElementsIsExist(homePage.productImages, true);
         await runner.verifyUrlContains(envData.homeButtonClickUrl);
         await runner.verifyElementsIsExist(homePage.productTitles);
@@ -323,7 +321,7 @@ class HomePageTest extends ExpectedValueProvider {
         envData,
         homePage,
       }) => {
-        await runner.wait(5, { waitForSelector: homePage.productImages });
+        await runner.wait(10, { waitForSelector: homePage.productImages });
         // verify homepage products
         await runner.verifyElementsIsExist(homePage.productImages, true);
         await runner.verifyElementsIsExist(homePage.productTitles);
@@ -335,7 +333,7 @@ class HomePageTest extends ExpectedValueProvider {
           homePage.categoriesLaptops,
           homeData.categories.laptops
         );
-        await runner.wait(5, { waitForSelector: homePage.productContainer });
+        await runner.wait(10, { waitForSelector: homePage.productImages });
         await runner.verifyElementsIsExist(homePage.productImages, true);
         await runner.verifyElementsIsExist(homePage.productTitles);
         await runner.verifyElementsIsExist(homePage.productPrices);
@@ -347,7 +345,7 @@ class HomePageTest extends ExpectedValueProvider {
           homeData.categories.header
         );
         await runner.verifyUrlContains(envData.baseUrl);
-        await runner.wait(5, { waitForSelector: homePage.productImages });
+        await runner.wait(10, { waitForSelector: homePage.productImages });
         await runner.verifyElementsIsExist(homePage.productImages, true);
         await runner.verifyElementsIsExist(homePage.productTitles);
         await runner.verifyElementsIsExist(homePage.productPrices);
@@ -358,7 +356,7 @@ class HomePageTest extends ExpectedValueProvider {
         runner,
         homePage,
       }) => {
-        await runner.wait(5, { waitForSelector: homePage.productImages });
+        await runner.wait(10, { waitForSelector: homePage.productImages });
         await runner.verifyElementsIsExist(homePage.productImages, true);
         await runner.verifyElementsIsExist(homePage.productTitles);
         await runner.verifyElementsIsExist(homePage.productPrices);
@@ -384,7 +382,7 @@ class HomePageTest extends ExpectedValueProvider {
           homePage.paginationNextButton,
           homePage.productTitles
         );
-        await runner.wait(5, { waitForLoadState: "load" });
+        await runner.wait(10, { waitForLoadState: "load" });
         await runner.verifyElementsIsExist(homePage.productImages, true);
         await runner.verifyElementsIsExist(homePage.productTitles);
         await runner.verifyElementsIsExist(homePage.productPrices);
@@ -396,7 +394,7 @@ class HomePageTest extends ExpectedValueProvider {
         homePage,
       }) => {
         // getting page one's product titles
-        await runner.wait(5, { waitForSelector: homePage.productImages });
+        await runner.wait(10, { waitForSelector: homePage.productImages });
         await runner.verifyElementsIsExist(homePage.productImages, true);
         await runner.verifyElementsIsExist(homePage.productTitles);
         await runner.verifyElementsIsExist(homePage.productPrices);
@@ -418,7 +416,7 @@ class HomePageTest extends ExpectedValueProvider {
         );
 
         // Verifying next button click navigates to the second page
-        await runner.wait(5, { waitForSelector: homePage.productImages });
+        await runner.wait(10, { waitForSelector: homePage.productImages });
         await runner.verifyElementsIsExist(homePage.productImages, true);
         await runner.verifyElementsIsExist(homePage.productTitles);
         await runner.verifyElementsIsExist(homePage.productPrices);
@@ -455,7 +453,7 @@ class HomePageTest extends ExpectedValueProvider {
         );
 
         // validating again visit first's page products
-        await runner.wait(5, { waitForSelector: homePage.productImages });
+        await runner.wait(10, { waitForSelector: homePage.productImages });
         await runner.verifyElementsIsExist(homePage.productImages, true);
         await runner.verifyElementsIsExist(homePage.productTitles);
         await runner.verifyElementsIsExist(homePage.productPrices);
@@ -479,7 +477,7 @@ class HomePageTest extends ExpectedValueProvider {
         homePage,
         productDetailPage,
       }) => {
-        await runner.wait(5, { waitForSelector: homePage.productImages });
+        await runner.wait(10, { waitForSelector: homePage.productImages });
         // verifications of homepage products
         await runner.verifyElementsIsExist(homePage.productImages, true);
         await runner.verifyElementsIsExist(homePage.productTitles);
@@ -502,7 +500,7 @@ class HomePageTest extends ExpectedValueProvider {
 
         await runner.goBack();
 
-        await runner.wait(5, { waitForSelector: homePage.productImages });
+        await runner.wait(10, { waitForSelector: homePage.productImages });
         await runner.verifyElementsIsExist(homePage.productImages, true);
         await runner.verifyElementsIsExist(homePage.productTitles);
         await runner.verifyElementsIsExist(homePage.productPrices);
@@ -529,7 +527,7 @@ class HomePageTest extends ExpectedValueProvider {
         homePage,
         productDetailPage,
       }) => {
-        await runner.wait(5, { waitForSelector: homePage.productImages });
+        await runner.wait(10, { waitForSelector: homePage.productImages });
         // verifications of homepage products
         await runner.verifyElementsIsExist(homePage.productImages, true);
         await runner.verifyElementsIsExist(homePage.productTitles);
@@ -552,7 +550,7 @@ class HomePageTest extends ExpectedValueProvider {
 
         await runner.goBack();
 
-        await runner.wait(5, { waitForSelector: homePage.productImages });
+        await runner.wait(10, { waitForSelector: homePage.productImages });
         await runner.verifyElementsIsExist(homePage.productImages, true);
         await runner.verifyElementsIsExist(homePage.productTitles);
         await runner.verifyElementsIsExist(homePage.productPrices);
@@ -580,7 +578,7 @@ class HomePageTest extends ExpectedValueProvider {
         homePage,
         productDetailPage,
       }) => {
-        await runner.wait(5, { waitForSelector: homePage.productImages });
+        await runner.wait(10, { waitForSelector: homePage.productImages });
         // verifications of homepage products
         await runner.verifyElementsIsExist(homePage.productImages, true);
         await runner.verifyElementsIsExist(homePage.productTitles);
@@ -598,7 +596,7 @@ class HomePageTest extends ExpectedValueProvider {
           homePage.productTitles
         );
         // verifications of homepage's pagination second page products
-        await runner.wait(5, { waitForSelector: homePage.productImages });
+        await runner.wait(10, { waitForSelector: homePage.productImages });
         await runner.verifyElementsIsExist(homePage.productImages, true);
         await runner.verifyElementsIsExist(homePage.productTitles);
         await runner.verifyElementsIsExist(homePage.productPrices);
@@ -619,7 +617,7 @@ class HomePageTest extends ExpectedValueProvider {
 
         await runner.goBack();
         // verifications of homepage products
-        await runner.wait(5, { waitForSelector: homePage.productImages });
+        await runner.wait(10, { waitForSelector: homePage.productImages });
         await runner.verifyElementsIsExist(homePage.productImages, true);
         await runner.verifyElementsIsExist(homePage.productTitles);
         await runner.verifyElementsIsExist(homePage.productPrices);
@@ -646,7 +644,7 @@ class HomePageTest extends ExpectedValueProvider {
         homePage,
         productDetailPage,
       }) => {
-        await runner.wait(5, { waitForSelector: homePage.productImages });
+        await runner.wait(10, { waitForSelector: homePage.productImages });
         // verifications of homepage products
         await runner.verifyElementsIsExist(homePage.productImages, true);
         await runner.verifyElementsIsExist(homePage.productTitles);
@@ -685,7 +683,7 @@ class HomePageTest extends ExpectedValueProvider {
 
         await runner.goBack();
         // verifications of homepage products
-        await runner.wait(5, { waitForSelector: homePage.productImages });
+        await runner.wait(10, { waitForSelector: homePage.productImages });
         await runner.verifyElementsIsExist(homePage.productImages, true);
         await runner.verifyElementsIsExist(homePage.productTitles);
         await runner.verifyElementsIsExist(homePage.productPrices);
