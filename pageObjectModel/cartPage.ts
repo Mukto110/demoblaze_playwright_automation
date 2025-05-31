@@ -42,7 +42,7 @@ export class CartPage {
     this.firstCartedProduct = `css=body > div:nth-child(7) > div:nth-child(1) > div:nth-child(1) > div:nth-child(2) > table:nth-child(1) > tbody:nth-child(2) > tr:nth-child(1)`;
     this.secondCartedProduct = `css=body > div:nth-child(7) > div:nth-child(1) > div:nth-child(1) > div:nth-child(2) > table:nth-child(1) > tbody:nth-child(2) > tr:nth-child(2)`;
     //---------------------------------------------------------------------------------------------------
-    this.cartPageHeaderText = `css=div[class='col-lg-8'] h2`;
+    this.cartPageHeaderText = `css=div[id='page-wrapper'] div[class='col-lg-8'] h2`;
     this.totalText = `css=div[class='col-lg-1'] h2`;
     this.placeOrderButton = `css=button[class="btn btn-success"]`;
     this.orderModalHeader = `css=h5[id="orderModalLabel"]`;
@@ -56,7 +56,6 @@ export class CartPage {
     this.closeButtonInOrderModal = `css=div[id='orderModal'] div[class='modal-footer'] button[data-dismiss="modal"]`;
     this.purchaseButtonInOrderModal = `css=div[id='orderModal'] div[class='modal-footer'] button[class="btn btn-primary"]`;
 
-    
     this.purchaseCofimationMessageAlert = `css=div[class="sweet-alert  showSweetAlert visible"] h2`;
     this.purchaseCofimationDetailsInAlert = `css=p[class="lead text-muted "]`;
     this.okButtonInAlert = `css=button[class="confirm btn btn-lg btn-primary"]`;

@@ -270,7 +270,6 @@ class LoginModal extends ExpectedValueProvider {
         await runner.verifyElementsAreEnabled(loginModal.loginButton);
         await loginHelper.login(envData.username, envData.password);
         await runner.wait(5, { waitForSelector: homePage.navLogoutButton });
-        await runner.wait(6, { waitForSelector: homePage.navLogoutButton });
         await runner.validateVisibleNavItems(homePage.navItems, [
           homeData.navbar.home,
           homeData.navbar.contact,

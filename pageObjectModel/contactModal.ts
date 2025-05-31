@@ -13,7 +13,7 @@ export class ContactModal {
   readonly crossButton: string;
 
   constructor(page: Page) {
-    this.header = `css=h5[id='exampleModalLabel']`;
+    this.header = `css=div[class='modal-header'] h5[id='exampleModalLabel']`;
     this.closeButton = `xpath=//div[@id='exampleModal']//button[@type='button'][normalize-space()='Close']`;
     this.emailInputLabel = `xpath=//label[normalize-space()='Contact Email:']`;
     this.emailInput = `css=input[id='recipient-email']`;

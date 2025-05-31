@@ -196,7 +196,10 @@ class ContactFormTest extends ExpectedValueProvider {
         await runner.handleAlertWithMessage(
           contactModalData.allFieldRequiredText
         );
-        await runner.clickOnElement(contactModal.sendButton);
+        await runner.validateAndClick(
+          contactModal.sendButton,
+          contactModalData.sendButtonText
+        );
       });
 
       // BUG_CONTACT_02 -> The form is getting submitted when only the email field is filled
@@ -298,17 +301,16 @@ class ContactFormTest extends ExpectedValueProvider {
         await runner.handleAlertWithMessage("Thanks for the message!!");
         await runner.clickOnElement(contactModal.sendButton);
 
-        await runner.wait(5, { waitForSelector: homePage.navbarContact });
+        await runner.wait(5, { waitForLoadState: "load" });
+
         // again click to the contact button from navbar
         await runner.verifyElementIsVisible(homePage.navbarContact);
         await runner.clickOnElement(homePage.navbarContact);
-        await runner.wait(5, { waitForSelector: contactModal.header });
         await runner.verifyElementIsVisible(contactModal.header);
         await runner.verifyContainText(
           contactModal.header,
           contactModalData.contactModalHeader
         );
-
         // checking all the fields are empty
         await runner.verifyToHaveValue(contactModal.emailInput, "");
         await runner.verifyToHaveValue(contactModal.nameInput, "");
@@ -336,7 +338,7 @@ class ContactFormTest extends ExpectedValueProvider {
         await runner.handleAlertWithMessage("Thanks for the message!!");
         await runner.clickOnElement(contactModal.sendButton);
 
-        await runner.wait(5, { waitForSelector: homePage.navbarContact });
+        await runner.wait(2, { waitForLoadState: "load" });
         await runner.verifyElementIsVisible(homePage.navbarContact);
         await runner.clickOnElement(homePage.navbarContact);
         await runner.wait(5, { waitForSelector: contactModal.header });
@@ -363,6 +365,7 @@ class ContactFormTest extends ExpectedValueProvider {
         await runner.wait(5, { waitForSelector: homePage.navbarContact });
         await runner.verifyElementIsVisible(homePage.navbarContact);
         await runner.clickOnElement(homePage.navbarContact);
+        await runner.wait(5, { waitForSelector: contactModal.header });
         await runner.verifyElementIsVisible(contactModal.header);
         await runner.verifyContainText(
           contactModal.header,
