@@ -10,10 +10,11 @@ export class ContactModal {
   readonly messageInputLabel: string;
   readonly messageTextarea: string;
   readonly sendButton: string;
+  readonly crossButton: string;
 
   constructor(page: Page) {
     this.header = `css=h5[id='exampleModalLabel']`;
-    this.closeButton = `xpath=/html[1]/body[1]/div[1]/div[1]/div[1]/div[3]/button[1]`;
+    this.closeButton = `xpath=//div[@id='exampleModal']//button[@type='button'][normalize-space()='Close']`;
     this.emailInputLabel = `xpath=//label[normalize-space()='Contact Email:']`;
     this.emailInput = `css=input[id='recipient-email']`;
     this.nameInputLabel = `xpath=//label[normalize-space()='Contact Name:']`;
@@ -21,5 +22,6 @@ export class ContactModal {
     this.messageInputLabel = `css=div[class='form-group'] label[for='message-text']`;
     this.messageTextarea = `css=textarea[id='message-text']`;
     this.sendButton = `css=button[onclick='send()']`;
+    this.crossButton = `css=div[id='exampleModal'] button[aria-label='Close']`;
   }
 }

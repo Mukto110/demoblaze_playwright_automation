@@ -23,7 +23,7 @@ class AboutUsTest extends ExpectedValueProvider {
         );
       });
 
-      // BUG_ABOUT_01 -> Expecting src value but getting null
+      // BUG_ABOUT_01 -> No video content and expecting src value but getting null
       test("Verify modal contains video element", async ({
         runner,
         aboutModal,

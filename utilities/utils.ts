@@ -174,6 +174,7 @@ export class Utils {
 
   async fillInputBox(identifier: string, text: string): Promise<void> {
     try {
+      await this.page.locator(identifier).clear();
       await this.page.locator(identifier).fill(text);
       this.logMessage(`Filled input box (${identifier}) with text: "${text}"`);
     } catch (error) {
