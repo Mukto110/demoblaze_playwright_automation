@@ -41,10 +41,12 @@ class LoginModal extends ExpectedValueProvider {
         runner,
         loginModal,
       }) => {
+        await runner.verifyElementIsVisible(loginModal.usernameLabel);
         await runner.validateLabel(
           loginModal.usernameLabel,
           loginData.labels.userName
         );
+        await runner.verifyElementIsVisible(loginModal.passwordInputField);
         await runner.validateLabel(
           loginModal.passwordLabel,
           loginData.labels.Password
