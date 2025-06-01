@@ -1269,25 +1269,25 @@ export class Utils {
     }
   }
 
-  async waitForProductChangeAfterPagination(
-    paginationButtonSelector: string,
-    productTitleSelector: string,
+  async clickAndWaitForProductChange(
+    clickableButtonSelector: string,
+    changeItemSelector: string,
     timeout = 5000
   ): Promise<void> {
     try {
       const initialText = await this.page
-        .locator(productTitleSelector)
+        .locator(changeItemSelector)
         .first()
         .innerText();
       this.logMessage(`Initial product title: "${initialText}"`, "info");
 
-      await this.clickOnElement(paginationButtonSelector);
+      await this.page.click(clickableButtonSelector);
       this.logMessage("Clicked on pagination next button", "info");
 
       const endTime = Date.now() + timeout;
       while (Date.now() < endTime) {
         const currentText = await this.page
-          .locator(productTitleSelector)
+          .locator(changeItemSelector)
           .first()
           .innerText();
 
