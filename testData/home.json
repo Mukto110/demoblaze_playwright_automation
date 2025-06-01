@@ -14,6 +14,15 @@
     "logout": "Log out"
   },
 
+  "navAttributeValues": {
+    "home": "index.html",
+    "contact": "#",
+    "about": "#",
+    "cart": "cart.html",
+    "login": "#",
+    "signup": "#"
+  },
+
   "carousel": {
     "nextButtonAttributeValue": "#carouselExampleIndicators",
     "previousButtonAttributeValue": "#carouselExampleIndicators"
@@ -24,17 +33,6 @@
     "phones": "Phones",
     "laptops": "Laptops",
     "monitors": "Monitors"
-  },
-
-  "productCardTitles": {
-    "homePage": {
-        "first": "Samsung galaxy s6",
-        "second": "Nokia lumia 1520"
-    },
-    "paginationSecondPage": {
-        "first": "Apple monitor 24",
-        "second": "MacBook air"
-    }
   },
 
    "pagination": {

@@ -62,6 +62,40 @@ class HomePageTest extends ExpectedValueProvider {
           homeData.navbar.login,
           homeData.navbar.signup,
         ]);
+
+        // Validating attributes
+        await runner.validateAttribute(
+          homePage.navbarHome,
+          "href",
+          homeData.navAttributeValues.home
+        );
+        await runner.validateAttribute(
+          homePage.navbarContact,
+          "href",
+          homeData.navAttributeValues.contact
+        );
+        await runner.validateAttribute(
+          homePage.navbarAbout,
+          "href",
+          homeData.navAttributeValues.about
+        );
+        await runner.validateAttribute(
+          homePage.navbarCart,
+          "href",
+          homeData.navAttributeValues.cart
+        );
+        await runner.validateAttribute(
+          homePage.navbarLogin,
+          "href",
+          homeData.navAttributeValues.login
+        );
+        await runner.validateAttribute(
+          homePage.navbarSignup,
+          "href",
+          homeData.navAttributeValues.signup
+        );
+
+        // validating color
         await runner.verifyElementToHaveCSSProperty(
           [
             homePage.navbarHome,
@@ -100,6 +134,7 @@ class HomePageTest extends ExpectedValueProvider {
           contactData.contactModalHeader
         );
         await runner.clickOnElement(contactModal.closeButton);
+        await runner.verifyElementIsHidden(contactModal.header);
 
         // about us modal
         await runner.verifyElementIsVisible(homePage.navbarAbout);
@@ -115,6 +150,7 @@ class HomePageTest extends ExpectedValueProvider {
           aboutData.aboutUsTitle
         );
         await runner.clickOnElement(aboutModal.closeButton);
+        await runner.verifyElementIsHidden(aboutModal.title);
 
         // login modal
         await runner.verifyElementIsVisible(homePage.navbarLogin);
@@ -130,6 +166,7 @@ class HomePageTest extends ExpectedValueProvider {
           loginData.headerText
         );
         await runner.clickOnElement(loginModal.closeButton);
+        await runner.verifyElementIsHidden(loginModal.loginModalHeader);
 
         // signup modal
         await runner.verifyElementIsVisible(homePage.navbarSignup);
@@ -145,6 +182,7 @@ class HomePageTest extends ExpectedValueProvider {
           signupData.headerText
         );
         await runner.clickOnElement(signUpModal.closeButton);
+        await runner.verifyElementIsHidden(signUpModal.signUpModalHeader);
       });
 
       test("Verify cart button in navbar navigates to cart page", async ({
@@ -234,6 +272,7 @@ class HomePageTest extends ExpectedValueProvider {
         );
         await runner.wait(10, { waitForSelector: homePage.productImages });
         await runner.verifyElementsIsExist(homePage.productImages, true);
+        await runner.verifyElementsIsExist(homePage.productTitles);
         await runner.verifyElementsIsExist(homePage.productPrices);
         await runner.verifyElementsIsExist(homePage.productDescriptions);
       });
@@ -285,17 +324,22 @@ class HomePageTest extends ExpectedValueProvider {
         envData,
         homePage,
       }) => {
+        // Ensure products are loaded initially
         await runner.wait(10, { waitForSelector: homePage.productImages });
-        // verify homepage products
         await runner.verifyElementsIsExist(homePage.productImages, true);
         await runner.verifyElementsIsExist(homePage.productTitles);
         await runner.verifyElementsIsExist(homePage.productPrices);
         await runner.verifyElementsIsExist(homePage.productDescriptions);
 
-        // click on laptops tab to show laptops products
-        await runner.validateAndClick(
+        // Apply a filter (Laptops)
+        await runner.verifyElementIsVisible(homePage.categoriesLaptops);
+        await runner.verifyContainText(
           homePage.categoriesLaptops,
           homeData.categories.laptops
+        );
+        await runner.clickAndWaitForProductChange(
+          homePage.categoriesLaptops,
+          homePage.productTitles
         );
         await runner.wait(10, { waitForSelector: homePage.productImages });
         await runner.verifyElementsIsExist(homePage.productImages, true);
@@ -303,14 +347,16 @@ class HomePageTest extends ExpectedValueProvider {
         await runner.verifyElementsIsExist(homePage.productPrices);
         await runner.verifyElementsIsExist(homePage.productDescriptions);
 
-        // click on home button and reset filter
+        // Click 'Home' in navbar to reset filter and reload homepage
         await runner.validateAndClick(
           homePage.navbarHome,
           homeData.navbar.home
         );
+        await runner.verifyUrlContains(envData.homeButtonClickUrl);
+
+        // Confirm homepage is reset and all products are shown
         await runner.wait(10, { waitForSelector: homePage.productImages });
         await runner.verifyElementsIsExist(homePage.productImages, true);
-        await runner.verifyUrlContains(envData.homeButtonClickUrl);
         await runner.verifyElementsIsExist(homePage.productTitles);
         await runner.verifyElementsIsExist(homePage.productPrices);
         await runner.verifyElementsIsExist(homePage.productDescriptions);
@@ -329,9 +375,13 @@ class HomePageTest extends ExpectedValueProvider {
         await runner.verifyElementsIsExist(homePage.productDescriptions);
 
         // click on laptops tab to show laptops products
-        await runner.validateAndClick(
+        await runner.verifyContainText(
           homePage.categoriesLaptops,
           homeData.categories.laptops
+        );
+        await runner.clickAndWaitForProductChange(
+          homePage.categoriesLaptops,
+          homePage.productTitles
         );
         await runner.wait(10, { waitForSelector: homePage.productImages });
         await runner.verifyElementsIsExist(homePage.productImages, true);
@@ -377,8 +427,7 @@ class HomePageTest extends ExpectedValueProvider {
           "id",
           "next2"
         );
-        await runner.verifyElementsAreEnabled(homePage.paginationNextButton);
-        await runner.waitForProductChangeAfterPagination(
+        await runner.clickAndWaitForProductChange(
           homePage.paginationNextButton,
           homePage.productTitles
         );
@@ -410,7 +459,7 @@ class HomePageTest extends ExpectedValueProvider {
         });
         await runner.verifyElementIsVisible(homePage.paginationNextButton);
         await runner.verifyElementsAreEnabled(homePage.paginationNextButton);
-        await runner.waitForProductChangeAfterPagination(
+        await runner.clickAndWaitForProductChange(
           homePage.paginationNextButton,
           homePage.productTitles
         );
@@ -447,7 +496,7 @@ class HomePageTest extends ExpectedValueProvider {
           "id",
           "prev2"
         );
-        await runner.waitForProductChangeAfterPagination(
+        await runner.clickAndWaitForProductChange(
           homePage.paginationPreviousButton,
           homePage.productTitles
         );
@@ -591,7 +640,7 @@ class HomePageTest extends ExpectedValueProvider {
         // navigating to the second page of pagination
         await runner.verifyElementIsVisible(homePage.paginationNextButton);
         await runner.verifyElementsAreEnabled(homePage.paginationNextButton);
-        await runner.waitForProductChangeAfterPagination(
+        await runner.clickAndWaitForProductChange(
           homePage.paginationNextButton,
           homePage.productTitles
         );
@@ -656,7 +705,7 @@ class HomePageTest extends ExpectedValueProvider {
         });
         // navigating to the second page of pagination
         await runner.verifyElementsAreEnabled(homePage.paginationNextButton);
-        await runner.waitForProductChangeAfterPagination(
+        await runner.clickAndWaitForProductChange(
           homePage.paginationNextButton,
           homePage.productTitles
         );
